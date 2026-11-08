@@ -7,6 +7,7 @@ import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
+import type { HistoricalDiscrepancy } from "@/lib/data/discrepanciesSeed";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
@@ -14,16 +15,19 @@ interface HistoricalMapProps {
   routes?: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })[];
   monuments?: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })[];
   campaigns?: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[];
+  discrepancies?: HistoricalDiscrepancy[];
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
   onSelectEvent?: (event: HistoricalEventRecord) => void;
   onSelectRoute?: (route: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })) => void;
   onSelectMonument?: (monument: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })) => void;
   onSelectCampaign?: (campaign: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })) => void;
+  onSelectDiscrepancy?: (discrepancy: HistoricalDiscrepancy) => void;
   selectedTerritoryId?: string | null;
   selectedEventId?: string | null;
   selectedRouteId?: string | null;
   selectedMonumentId?: string | null;
   selectedCampaignId?: string | null;
+  selectedDiscrepancyId?: string | null;
 }
 
 const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
@@ -55,16 +59,19 @@ export function HistoricalMap({
   routes = [],
   monuments = [],
   campaigns = [],
+  discrepancies = [],
   onSelectTerritory,
   onSelectEvent,
   onSelectRoute,
   onSelectMonument,
   onSelectCampaign,
+  onSelectDiscrepancy,
   selectedTerritoryId,
   selectedEventId,
   selectedRouteId,
   selectedMonumentId,
   selectedCampaignId,
+  selectedDiscrepancyId,
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
@@ -73,6 +80,7 @@ export function HistoricalMap({
   const routesLayerRef = useRef<LayerGroup | null>(null);
   const monumentsLayerRef = useRef<LayerGroup | null>(null);
   const campaignsLayerRef = useRef<LayerGroup | null>(null);
+  const discrepanciesLayerRef = useRef<LayerGroup | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -437,6 +445,61 @@ export function HistoricalMap({
 
     updateCampaigns();
   }, [campaigns, selectedCampaignId, onSelectCampaign]);
+
+  // Update Historical Discrepancies & Contested Boundaries Layer
+  useEffect(() => {
+    async function updateDiscrepancies() {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (discrepanciesLayerRef.current) {
+        map.removeLayer(discrepanciesLayerRef.current);
+        discrepanciesLayerRef.current = null;
+      }
+
+      if (discrepancies.length === 0) return;
+
+      const discrepancyLayers = discrepancies
+        .map((discrepancy) => {
+          const geojson = discrepancy.geometryGeojson as any;
+          if (!geojson) return null;
+
+          const isSelected = discrepancy.id === selectedDiscrepancyId;
+
+          const layer = L.geoJSON(geojson, {
+            style: {
+              color: isSelected ? "#B45309" : "#D97706",
+              weight: isSelected ? 3.5 : 2,
+              fillColor: "#FDE68A",
+              fillOpacity: isSelected ? 0.45 : 0.25,
+              dashArray: "6, 6",
+            },
+          });
+
+          layer.bindTooltip(
+            `<strong>${discrepancy.title}</strong><br/><span class="text-amber-800 font-medium">Status: ${discrepancy.confidenceRating}</span><br/><span class="text-[11px]">${discrepancy.regionName}</span>`,
+            { sticky: true, className: "font-sans text-xs" }
+          );
+
+          layer.on("click", () => {
+            if (onSelectDiscrepancy) {
+              onSelectDiscrepancy(discrepancy);
+            }
+          });
+
+          return layer;
+        })
+        .filter(Boolean);
+
+      const group = L.layerGroup(discrepancyLayers as any[]);
+      group.addTo(map);
+      discrepanciesLayerRef.current = group;
+    }
+
+    updateDiscrepancies();
+  }, [discrepancies, selectedDiscrepancyId, onSelectDiscrepancy]);
 
   return (
     <div
