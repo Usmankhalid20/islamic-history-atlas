@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+dotenv.config({ path: ".env.local", override: true });
+
 import { db } from "./index";
 import { sources } from "./schema/sources";
 import { polities } from "./schema/polities";

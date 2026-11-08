@@ -12,7 +12,7 @@ export interface HistoricalScholarResponse {
   error?: string;
 }
 
-const DEFAULT_MODEL = "google/gemini-2.0-flash-001";
+const DEFAULT_MODEL = "google/gemini-3.7-flash";
 
 const SCHOLAR_SYSTEM_PROMPT = `You are the Islamic History Atlas Academic Scholar, an AI historical research assistant specializing in the classical Islamic world (600–1500 CE), with particular depth in the 7th–10th centuries CE (Rashidun, Umayyad, Abbasid, Cordoba, and Fatimid periods).
 
