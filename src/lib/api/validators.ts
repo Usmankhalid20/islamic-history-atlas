@@ -40,3 +40,17 @@ export const eventsQuerySchema = z.object({
   eventType: z.string().optional(),
 });
 
+/**
+ * Validation schema for POST /api/ai/inquire
+ */
+export const aiInquirySchema = z.object({
+  query: z
+    .string()
+    .min(3, "Query must be at least 3 characters long")
+    .max(500, "Query cannot exceed 500 characters"),
+  year: z.number().int().min(500).max(2000).optional(),
+  polities: z.array(z.string()).optional(),
+  model: z.string().optional(),
+});
+
+
