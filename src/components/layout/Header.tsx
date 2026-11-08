@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, BookOpen, Clock, ShieldCheck } from "lucide-react";
+import { Compass, BookOpen, Clock, Landmark } from "lucide-react";
 
 export function Header() {
   return (
@@ -19,25 +19,24 @@ export function Header() {
             className="flex items-center gap-1.5 text-sm font-medium text-archival-ink hover:text-archival-gold transition-colors focus-visible:rounded py-1"
           >
             <Clock className="w-4 h-4 text-archival-muted" aria-hidden="true" />
-            <span>Explore Timeline</span>
+            <span>Explore Map</span>
           </Link>
           <Link
-            href="#sources"
+            href="/polities"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
+          >
+            <Landmark className="w-4 h-4" aria-hidden="true" />
+            <span>Polities</span>
+          </Link>
+          <Link
+            href="/sources"
             className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
           >
             <BookOpen className="w-4 h-4" aria-hidden="true" />
             <span>Sources</span>
-          </Link>
-          <Link
-            href="#policy"
-            className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
-          >
-            <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-            <span>Evidence Policy</span>
           </Link>
         </nav>
       </div>
     </header>
   );
 }
-
