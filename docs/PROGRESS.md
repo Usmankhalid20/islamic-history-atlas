@@ -93,14 +93,50 @@
   - Install selected agent skills into `.agents/skills/`.
   - Scaffold Next.js application with TypeScript, Tailwind CSS, and Vitest.
 
+### Milestone Log: 2026-11-08 (Milestone 1: Project Scaffolding & Agent Skills)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Installed approved open-source agent skills into `.agents/skills/`:
+    - `digital-accessibility` (WCAG 2.2 AA audit and patterns)
+    - `gravitas` & `gravitas-typescript` (core reliability invariants and TypeScript checks)
+  - Initialized Next.js 14 App Router application scaffold with strict TypeScript, Tailwind CSS, PostCSS, and Autoprefixer.
+  - Configured Vitest for unit testing with TypeScript path aliases (`@/*`).
+  - Implemented accessible application shell:
+    - Root layout with semantic HTML, skip-to-content link, `lang="en"`, and archival design system theme.
+    - Header navigation with Lucide icons and ARIA labels.
+    - Footer with historical evidence disclaimer and attribution notices.
+    - Focus visible rings and `prefers-reduced-motion` CSS overrides.
+  - Created initial utility helpers (`cn`, `formatHistoricalYear`) and baseline type definitions (`DatePrecision`, `Polity`, `HistoricalSource`, `TerritoryControlType`).
+  - Added unit smoke test suite verifying year formatting and class merging.
+- **Files changed:**
+  - `.agents/skills/*`
+  - `package.json`, `package-lock.json`
+  - `tsconfig.json`, `next.config.mjs`, `postcss.config.mjs`, `tailwind.config.ts`, `.eslintrc.json`, `vitest.config.ts`
+  - `src/app/globals.css`, `src/app/layout.tsx`, `src/app/page.tsx`
+  - `src/components/layout/Header.tsx`, `src/components/layout/Footer.tsx`
+  - `src/lib/utils.ts`, `src/types/index.ts`
+  - `tests/unit/smoke.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (3 passed in 17ms)
+  - `npm.cmd run type-check` -> Exit code 0 (tsc --noEmit passed clean)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (Compiled successfully, static routes generated)
+- **Decisions made:**
+  - Established project scaffold following modular monolith pattern.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/project-scaffold` to `develop`.
+  - Proceed to Milestone 2: Drizzle ORM schema foundation and initial seed data for 7th–10th century polities.
+
 ### Not yet completed
 - Review and approve MVP date range, regions, and initial historical entities.
-- Create the Next.js application scaffold.
-- Configure linting, formatting, type checking, and tests.
-- Build a minimal map prototype.
+- Configure PostgreSQL database and Drizzle ORM schemas.
+- Build a minimal map prototype using Leaflet.
 
 ### Next step
-Create feature branch `feature/project-scaffold`, install approved agent skills into `.agents/skills/`, and initialize Next.js application scaffold.
+Merge `feature/project-scaffold` into `develop`, then create `feature/database-foundation` to implement Drizzle ORM data models.
 
 ### Update format
 For each milestone, record:
