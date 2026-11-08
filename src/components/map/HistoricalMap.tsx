@@ -6,20 +6,24 @@ import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
+import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
   events?: HistoricalEventRecord[];
   routes?: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })[];
   monuments?: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })[];
+  campaigns?: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[];
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
   onSelectEvent?: (event: HistoricalEventRecord) => void;
   onSelectRoute?: (route: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })) => void;
   onSelectMonument?: (monument: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })) => void;
+  onSelectCampaign?: (campaign: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })) => void;
   selectedTerritoryId?: string | null;
   selectedEventId?: string | null;
   selectedRouteId?: string | null;
   selectedMonumentId?: string | null;
+  selectedCampaignId?: string | null;
 }
 
 const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
@@ -50,14 +54,17 @@ export function HistoricalMap({
   events = [],
   routes = [],
   monuments = [],
+  campaigns = [],
   onSelectTerritory,
   onSelectEvent,
   onSelectRoute,
   onSelectMonument,
+  onSelectCampaign,
   selectedTerritoryId,
   selectedEventId,
   selectedRouteId,
   selectedMonumentId,
+  selectedCampaignId,
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
@@ -65,6 +72,7 @@ export function HistoricalMap({
   const eventsLayerRef = useRef<LayerGroup | null>(null);
   const routesLayerRef = useRef<LayerGroup | null>(null);
   const monumentsLayerRef = useRef<LayerGroup | null>(null);
+  const campaignsLayerRef = useRef<LayerGroup | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -370,6 +378,65 @@ export function HistoricalMap({
 
     updateMonumentMarkers();
   }, [monuments, selectedMonumentId, onSelectMonument]);
+
+  // Update Military Campaigns Layer
+  useEffect(() => {
+    async function updateCampaigns() {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (campaignsLayerRef.current) {
+        map.removeLayer(campaignsLayerRef.current);
+        campaignsLayerRef.current = null;
+      }
+
+      if (campaigns.length === 0) return;
+
+      const campaignLayers = campaigns
+        .map((campaign) => {
+          const geojson = campaign.routeGeojson as any;
+          if (!geojson || !geojson.coordinates) return null;
+
+          const isSelected = campaign.id === selectedCampaignId;
+
+          const layer = L.geoJSON(geojson, {
+            style: {
+              color: isSelected ? "#000000" : "#DC2626", // Bold Crimson
+              weight: isSelected ? 4.5 : 2.75,
+              opacity: isSelected ? 1 : 0.9,
+              dashArray: isSelected ? undefined : "6, 4",
+            },
+          });
+
+          const yearLabel =
+            campaign.startYear === campaign.endYear
+              ? `${campaign.startYear} CE`
+              : `${campaign.startYear}–${campaign.endYear} CE`;
+
+          layer.bindTooltip(
+            `<strong>${campaign.name} (${yearLabel})</strong><br/><span class="text-red-700 font-medium">Cmdr: ${campaign.commanderName}</span><br/><span class="text-[11px]">${campaign.keyLocations}</span>`,
+            { sticky: true, className: "font-sans text-xs" }
+          );
+
+          layer.on("click", () => {
+            if (onSelectCampaign) {
+              onSelectCampaign(campaign);
+            }
+          });
+
+          return layer;
+        })
+        .filter(Boolean);
+
+      const group = L.layerGroup(campaignLayers as any[]);
+      group.addTo(map);
+      campaignsLayerRef.current = group;
+    }
+
+    updateCampaigns();
+  }, [campaigns, selectedCampaignId, onSelectCampaign]);
 
   return (
     <div

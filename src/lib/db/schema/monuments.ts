@@ -14,7 +14,9 @@ export const monuments = pgTable("monuments", {
   architecturalFeatures: text("architectural_features"),
   description: text("description"),
   reviewStatus: text("review_status").default("draft").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export type MonumentRecord = typeof monuments.$inferSelect;
