@@ -816,6 +816,52 @@
 - **Next step:**
   - Release `v1.1.0`. Await user input on the next roadmap milestone.
 
+### Milestone Log: 2026-11-09 (Milestone 17: Comprehensive Technical Audit, Dead Link Resolution, API Expansion, PWA Assets & Centralized Queries)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Conducted full-system technical audit across architecture, frontend, backend, database, security, performance, accessibility, and documentation.
+  - Resolved 404 dead links across directory pages: updated `/atlas?year=...` links in `src/app/campaigns/page.tsx`, `src/app/monuments/page.tsx`, and `src/app/scholars/page.tsx` to point to `/?year=...`. Added an automatic 308 permanent redirect rule in `next.config.mjs` from `/atlas` to `/` to protect legacy bookmarks.
+  - Generated missing binary PWA assets: created high-resolution PNGs with Islamic geometric motifs at `public/icon-192.png` and `public/icon-512.png`, and `public/favicon.ico`, resolving missing asset warnings and browser 404s.
+  - Implemented missing REST endpoints:
+    - `src/app/api/events/[id]/route.ts`: dynamic lookup by event ID with database and seed fallback, `temporalMap` caching headers, and ETag conditional validation.
+    - `src/app/api/sources/route.ts`: primary source bibliography catalog with offset pagination, `staticCatalog` caching headers, and ETag validation.
+  - Centralized database queries in `src/lib/db/queries.ts` with strongly typed helpers: `queryEvents`, `queryEventById`, `queryPolities`, `queryPolityById`, `queryRulers`, `querySources`.
+  - Added new automated test suites and expanded coverage:
+    - Added single-event retrieval tests in `tests/unit/events.test.ts`.
+    - Added sources catalog pagination tests in `tests/unit/api.test.ts`.
+    - Added route redirect verification in `tests/unit/navigation.test.ts`.
+    - Automated tests increased from 114 to 118 passing tests across 21 test suites.
+  - Integrated Neon Serverless PostgreSQL agent skills (`neon` and `neon-postgres`) and installed Neon CLI v9.2.0.
+- **Files changed:**
+  - `src/app/campaigns/page.tsx` (updated)
+  - `src/app/monuments/page.tsx` (updated)
+  - `src/app/scholars/page.tsx` (updated)
+  - `next.config.mjs` (updated)
+  - `public/icon-192.png` (created)
+  - `public/icon-512.png` (created)
+  - `public/favicon.ico` (created)
+  - `src/app/api/events/[id]/route.ts` (created)
+  - `src/app/api/sources/route.ts` (created)
+  - `src/lib/db/queries.ts` (updated)
+  - `tests/unit/events.test.ts` (updated)
+  - `tests/unit/api.test.ts` (updated)
+  - `tests/unit/navigation.test.ts` (created)
+  - `docs/API_DESIGN.md` (updated)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `vitest run` -> Exit code 0 (118 passed across 21 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero TypeScript errors)
+  - `npm.cmd run lint` -> Exit code 0 (zero ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (37 static, SSG, and dynamic routes compiled successfully + 27.1 kB Edge middleware)
+- **Decisions made:**
+  - Permanent 308 redirect from `/atlas` to `/` ensures backward compatibility for users while standardizing all internal navigation on the unified root interactive map explorer (`/?year=...`).
+  - Added binary PWA assets directly in `public/` adhering to the web app manifest specification.
+  - Centralized database query helpers in `src/lib/db/queries.ts` provide a uniform data access layer between Next.js API routes and Drizzle ORM.
+- **Known issues/blockers:**
+  - Neon CLI cloud connection requires browser OAuth sign-in (`neon.cmd login`) by the user to execute `neon init` and `neon deploy`.
+- **Next step:**
+  - Commit and push `audit/comprehensive-technical-audit`, merge into `develop`, and deliver the Comprehensive Technical Audit Report.
+
 ### Update format
 For each milestone, record:
 - Date

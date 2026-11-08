@@ -192,7 +192,7 @@ export default function ScholarsPage() {
                   <span>Flourished c. {formatHistoricalYear(midpointYear)}</span>
                 </span>
                 <Link
-                  href={`/atlas?year=${midpointYear}`}
+                  href={`/?year=${midpointYear}`}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-medium text-xs transition-colors shadow-sm"
                   aria-label={`Explore era on map at year ${midpointYear} during ${scholar.name}'s life`}
                 >

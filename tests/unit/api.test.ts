@@ -4,8 +4,11 @@ import {
   politiesQuerySchema,
   eventsQuerySchema,
 } from "@/lib/api/validators";
+import { GET as getSourcesRoute } from "@/app/api/sources/route";
+import { NextRequest } from "next/server";
+import { initialSources } from "@/lib/data/historicalSeed";
 
-describe("API Query Validators", () => {
+describe("API Query Validators & Bibliography API", () => {
   describe("territoriesQuerySchema", () => {
     it("accepts valid historical years", () => {
       const result = territoriesQuerySchema.safeParse({ year: "750" });
@@ -63,5 +66,19 @@ describe("API Query Validators", () => {
       }
     });
   });
-});
 
+  describe("GET /api/sources", () => {
+    it("serves academic bibliography register with pagination and cache headers", async () => {
+      const req = new NextRequest("http://localhost:3000/api/sources");
+      const res = await getSourcesRoute(req);
+      const data = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(data.count).toBe(initialSources.length);
+      expect(data.items.length).toBe(initialSources.length);
+      expect(data.pagination).toBeDefined();
+      expect(data.pagination.page).toBe(1);
+      expect(res.headers.get("Cache-Control")).toContain("max-age=3600");
+    });
+  });
+});

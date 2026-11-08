@@ -184,7 +184,7 @@ export default function MonumentsPage() {
                   {formatHistoricalYear(monument.foundingYear)}
                 </span>
                 <Link
-                  href={`/atlas?year=${monument.foundingYear}`}
+                  href={`/?year=${monument.foundingYear}`}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-medium text-xs transition-colors shadow-sm"
                   aria-label={`View ${monument.name} on map at year ${monument.foundingYear}`}
                 >

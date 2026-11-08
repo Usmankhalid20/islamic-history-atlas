@@ -5,6 +5,15 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["pg", "pg-connection-string"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/atlas",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

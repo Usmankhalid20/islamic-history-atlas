@@ -158,7 +158,7 @@ export default function CampaignsPage() {
                   Vector: {campaign.routeGeojson ? "GeoJSON LineString" : ""}
                 </span>
                 <Link
-                  href={`/atlas?year=${campaign.startYear}`}
+                  href={`/?year=${campaign.startYear}`}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white font-medium text-xs transition-colors shadow-sm"
                   aria-label={`Explore ${campaign.name} on map at year ${campaign.startYear}`}
                 >
