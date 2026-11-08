@@ -45,10 +45,33 @@
 - **Next step:**
   - Await user approval to initialize Git, commit documentation, create `develop` branch, and proceed with technical evaluations (ORM: Prisma vs Drizzle; Map: MapLibre vs Leaflet).
 
+### Milestone Log: 2026-11-08 (Repository Setup & Initial Commit)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Initialized local Git repository on branch `main`.
+  - Added comprehensive `.gitignore` for Node/Next.js/TypeScript.
+  - Added and committed initial documentation foundation and engineering rules (`docs: add project foundation`).
+  - Added remote origin `https://github.com/Usmankhalid20/islamic-history-atlas.git` and pushed `main`.
+  - Created integration branch `develop` and pushed `origin/develop`.
+- **Files changed:**
+  - `.gitignore` (created)
+  - `README.md` & `docs/*` (committed to git)
+- **Commands/tests actually run and results:**
+  - `git init; git branch -M main` -> Exit code 0
+  - `git add .` -> Exit code 0
+  - `git commit -m "docs: add project foundation"` -> Exit code 0 (commit `51ecca9`)
+  - `git remote add origin https://github.com/Usmankhalid20/islamic-history-atlas.git` -> Exit code 0
+  - `git push -u origin main` -> Exit code 0 (remote updated)
+  - `git switch -c develop; git push -u origin develop` -> Exit code 0 (remote `develop` branch created)
+  - `git status` -> Exit code 0 (working tree clean on `develop`)
+- **Decisions made:**
+  - Repository foundation established on `main` with integration branch `develop` active for all ongoing development.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Review and approve initial skill installation (e.g. `digital-accessibility` or `gravitas`), technical architecture evaluations (ORM: Prisma vs Drizzle; Map: MapLibre vs Leaflet), and application scaffolding.
+
 ### Not yet completed
-- Confirm the GitHub repository URL and whether it is empty.
-- Add these files to the repository and verify the initial commit.
-- Create and push the `develop` branch.
 - Review and approve MVP date range, regions, and initial historical entities.
 - Evaluate ORM and map-renderer choices.
 - Create the Next.js application scaffold.
@@ -56,7 +79,7 @@
 - Build a minimal map prototype before committing to a map library.
 
 ### Next step
-Confirm the repository state, then add the documentation package and push the initial documentation commit. Do not scaffold the application until the requirements and open architecture choices have been reviewed.
+Review technical evaluations for ORM and Map renderer, install approved agent skills into `.agents/skills/`, then create feature branch for application scaffold (`feature/project-scaffold`).
 
 ### Update format
 For each milestone, record:
