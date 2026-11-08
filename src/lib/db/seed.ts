@@ -3,11 +3,15 @@ import { sources } from "./schema/sources";
 import { polities } from "./schema/polities";
 import { territoryPeriods } from "./schema/territoryPeriods";
 import { historicalEvents } from "./schema/historicalEvents";
+import { rulers } from "./schema/rulers";
+import { reigns } from "./schema/reigns";
 import {
   initialSources,
   initialPolities,
   initialTerritoryPeriods,
   initialHistoricalEvents,
+  initialRulers,
+  initialReigns,
 } from "../data/historicalSeed";
 
 export async function seedDatabase() {
@@ -41,6 +45,18 @@ export async function seedDatabase() {
     await db.insert(historicalEvents).values(evt).onConflictDoNothing();
   }
   console.log(`✓ Seeded ${initialHistoricalEvents.length} historical events`);
+
+  // Seed rulers
+  for (const rul of initialRulers) {
+    await db.insert(rulers).values(rul).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${initialRulers.length} rulers`);
+
+  // Seed reigns
+  for (const rgn of initialReigns) {
+    await db.insert(reigns).values(rgn).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${initialReigns.length} reigns`);
 
   console.log("Database seeding completed successfully!");
 }
