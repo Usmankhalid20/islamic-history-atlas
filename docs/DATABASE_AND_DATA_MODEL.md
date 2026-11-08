@@ -81,6 +81,50 @@ Candidate fields:
 ### ClaimSource
 Links a source to a specific historical claim/record. This is preferable to attaching one generic bibliography to an entire page.
 
+### TradeRoute
+Represents an overland caravan artery, pilgrim road (*darb*), or maritime sea lane.
+- `id`: primary key
+- `name`: canonical historical name
+- `route_type`: `caravan_route` | `pilgrim_road` | `maritime_lane`
+- `active_from_year` / `active_to_year`: temporal validity bounds
+- `path_geojson`: GeoJSON LineString representing the historical vector
+- `primary_commodities`: freight freight and traveler traffic notes
+- `description`: historical narrative and geographer citations
+
+### Monument
+Represents monumental architecture, congregational mosques, libraries, and observatories.
+- `id`: primary key
+- `name`: canonical Arabic name and transliteration
+- `monument_type`: `mosque` | `academy_library` | `palace` | `observatory`
+- `polity_id`: foreign key to `polities`
+- `founding_year`: year founded/consecrated
+- `city_name`: historical city location
+- `location_geojson`: GeoJSON Point coordinates `[lng, lat]`
+- `architectural_features`: structural innovations (hypostyle arches, domes, epigraphy)
+
+### Scholar
+Represents polymaths, theologians, philosophers, and scientists of the Islamic Golden Age.
+- `id`: primary key
+- `name`: canonical name and Latinized appellation
+- `birth_year` / `death_year`: lifespan bounds
+- `fields_of_study`: disciplines (algebra, optics, medicine, logic, astronomy)
+- `primary_city`: main intellectual center of activity
+- `patronized_by_polity_id`: caliphate or court providing patronage
+- `major_works`: canonical treatises and manuscripts
+- `biography`: historical and scientific significance
+
+### Campaign
+Represents strategic military expeditions and territorial conquest vectors.
+- `id`: primary key
+- `name`: campaign title
+- `start_year` / `end_year`: operational date bounds
+- `polity_id`: foreign key to commanding caliphate
+- `commander_name`: field general / commander
+- `ruler_id`: sovereign commissioning the expedition
+- `route_geojson`: GeoJSON LineString tracking the march vector
+- `key_locations`: staging cities and battlefield waypoints
+- `strategic_outcome`: territorial and political consequence
+
 ## 3. Date representation
 
 Historical dates may be:
@@ -121,6 +165,88 @@ This predicate is only valid when both bounds are known and inclusive. The final
 6. Mark the record reviewed before publishing.
 7. Revisit records when better evidence is found.
 
-## 6. Schema status
+## 6. Implementation Status
 
-This document describes a conceptual model only. Do not generate migrations until the ORM, date strategy, geometry storage strategy, and initial content scope are approved.
+The schema has been formally authored and implemented in PostgreSQL via Drizzle ORM across modular domain schema definitions under `src/lib/db/schema/` (`polities`, `nameVariants`, `rulers`, `reigns`, `territoryPeriods`, `historicalEvents`, `eventParticipants`, `sources`, `claimSources`, `tradeRoutes`, `monuments`, `scholars`, `campaigns`).
+
+## 7. PostgreSQL Indexing Strategy & Query Optimization
+
+To guarantee sub-10ms query latency across historical cartographic layers and timeline sliders, indexes are designed to prevent sequential table scans:
+
+### 7.1 Temporal Range Indexes (B-Tree)
+The dominant atlas query pattern filters records by an active historical year $Y$. B-Tree indexes are established on all temporal boundaries:
+- `territory_periods(valid_from_year, valid_to_year)`
+- `polities(start_year, end_year)`
+- `historical_events(event_year)`
+- `trade_routes(active_from_year, active_to_year)`
+- `campaigns(start_year, end_year)`
+- `monuments(founding_year)`
+- `scholars(birth_year, death_year)`
+
+**Composite Temporal Index:**
+```sql
+CREATE INDEX idx_territory_periods_temporal
+ON territory_periods (valid_from_year, valid_to_year);
+```
+Query execution with `EXPLAIN (ANALYZE, BUFFERS)` verifies that temporal year queries perform an **Index Scan** rather than a sequential table scan.
+
+### 7.2 Relational & Foreign Key Indexes (B-Tree)
+PostgreSQL does not automatically index foreign key columns. All relational joins are explicitly indexed to prevent full-table scans during nested joins:
+- `territory_periods(polity_id)`
+- `reigns(ruler_id, polity_id)`
+- `event_participants(event_id, polity_id, ruler_id)`
+- `monuments(polity_id)`
+- `scholars(patronized_by_polity_id)`
+- `campaigns(polity_id, ruler_id)`
+
+### 7.3 Text Search & Fuzzy Matching Indexes (GIN / `pg_trgm`)
+For search queries on scholar names, treatise titles, monument cities, and ruler appellations:
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX idx_scholars_trgm_name ON scholars USING gin (name gin_trgm_ops);
+CREATE INDEX idx_monuments_trgm_city ON monuments USING gin (city_name gin_trgm_ops);
+```
+
+### 7.4 Spatial Indexes (GiST)
+When geometries are queried by bounding-box or viewport intersection:
+```sql
+-- PostGIS GiST index for viewport filtering
+CREATE INDEX idx_territory_periods_geom ON territory_periods USING gist (geometry);
+```
+
+---
+
+## 8. Database Pagination Architecture
+
+### 8.1 Keyset (Cursor) Pagination Execution
+For large historical event timelines and source bibliographies, keyset pagination uses a composite comparison on the sort column and unique primary key:
+```sql
+-- Fetch page of 20 historical events after cursor
+SELECT id, title, event_year, location_name
+FROM historical_events
+WHERE event_year >= 632
+  AND (event_year, id) > ($cursor_year, $cursor_id)
+ORDER BY event_year ASC, id ASC
+LIMIT 21;
+```
+- Fetching `LIMIT + 1` rows determines `hasMore` without executing a separate expensive `COUNT(*)` query.
+- The `nextCursor` is generated by encoding the tuple `($event_year, $id)` of the 20th record as URL-safe base64.
+- **Index Seek Guarantee:** Because `(event_year, id)` is indexed, PostgreSQL jumps directly to the matching index node ($O(1)$) without reading preceding discarded records.
+
+### 8.2 Offset Pagination Execution
+For small, discrete catalogs (e.g. `/api/polities`, `/api/scholars`):
+```sql
+SELECT * FROM scholars
+ORDER BY birth_year ASC NULLS LAST, id ASC
+LIMIT $limit OFFSET $offset;
+```
+Total records in these curated catalogs are bounded ($N < 100$), so $O(N)$ scanning cost is negligible (<1ms) while affording standard page-number navigation.
+
+---
+
+## 9. Cache Invalidation & Data Mutations
+
+1. **Tag-Based Invalidation:** Caches in the Next.js Data Cache are tagged by domain (`tags: ['polities', 'territories', 'events', 'routes', 'monuments', 'scholars', 'campaigns']`).
+2. **Editorial Revalidation:** When an administrative database migration or batch seed script runs, `revalidateTag(domain)` or `revalidatePath('/api/...')` is triggered.
+3. **Immutable History Invariant:** Because historical events (e.g., Battle of Yarmouk 636 CE) are past facts that do not mutate dynamically at runtime, cache lifetimes default to long durations (`s-maxage=86400` / 24 hours).
+
