@@ -4,14 +4,18 @@ import React, { useEffect, useRef } from "react";
 import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, LayerGroup } from "leaflet";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
+import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
   events?: HistoricalEventRecord[];
+  routes?: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })[];
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
   onSelectEvent?: (event: HistoricalEventRecord) => void;
+  onSelectRoute?: (route: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })) => void;
   selectedTerritoryId?: string | null;
   selectedEventId?: string | null;
+  selectedRouteId?: string | null;
 }
 
 const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
@@ -33,15 +37,19 @@ const DEFAULT_STYLE = { fill: "#64748B", stroke: "#475569" };
 export function HistoricalMap({
   territories,
   events = [],
+  routes = [],
   onSelectTerritory,
   onSelectEvent,
+  onSelectRoute,
   selectedTerritoryId,
   selectedEventId,
+  selectedRouteId,
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
   const eventsLayerRef = useRef<LayerGroup | null>(null);
+  const routesLayerRef = useRef<LayerGroup | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -222,6 +230,69 @@ export function HistoricalMap({
 
     updateEventMarkers();
   }, [events, selectedEventId, onSelectEvent]);
+
+  // Update Trade & Pilgrimage Routes Layer
+  useEffect(() => {
+    async function updateRoutes() {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (routesLayerRef.current) {
+        map.removeLayer(routesLayerRef.current);
+        routesLayerRef.current = null;
+      }
+
+      if (routes.length === 0) return;
+
+      const routeLayers = routes.map((route) => {
+        const geojson = route.pathGeojson as any;
+        if (!geojson || !geojson.coordinates) return null;
+
+        const isSelected = route.id === selectedRouteId;
+
+        let strokeColor = "#9A3412"; // Terracotta caravan
+        let dashArray = "5, 5";
+
+        if (route.routeType === "pilgrim_road") {
+          strokeColor = "#D97706"; // Amber / Gold
+          dashArray = "6, 4";
+        } else if (route.routeType === "maritime_lane") {
+          strokeColor = "#2563EB"; // Blue / Azure
+          dashArray = "4, 6";
+        }
+
+        const layer = L.geoJSON(geojson, {
+          style: {
+            color: isSelected ? "#000000" : strokeColor,
+            weight: isSelected ? 4.5 : 2.5,
+            opacity: isSelected ? 1 : 0.85,
+            dashArray: isSelected ? undefined : dashArray,
+          },
+        });
+
+        layer.bindTooltip(
+          `<strong>${route.name}</strong><br/><span class="capitalize text-gray-500">${route.routeType.replace("_", " ")}</span>${route.primaryCommodities ? `<br/><span class="text-[11px]">${route.primaryCommodities}</span>` : ""}`,
+          { sticky: true, className: "font-sans text-xs" }
+        );
+
+        layer.on("click", () => {
+          if (onSelectRoute) {
+            onSelectRoute(route);
+          }
+        });
+
+        return layer;
+      }).filter(Boolean);
+
+      const group = L.layerGroup(routeLayers as any[]);
+      group.addTo(map);
+      routesLayerRef.current = group;
+    }
+
+    updateRoutes();
+  }, [routes, selectedRouteId, onSelectRoute]);
 
   return (
     <div

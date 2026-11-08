@@ -4,6 +4,8 @@ import { initialHistoricalEvents } from "@/lib/data/historicalSeed";
 import { db } from "@/lib/db";
 import { historicalEvents } from "@/lib/db/schema/historicalEvents";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

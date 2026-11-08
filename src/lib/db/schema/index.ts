@@ -18,6 +18,7 @@ export * from "./historicalEvents";
 export * from "./eventParticipants";
 export * from "./sources";
 export * from "./claimSources";
+export * from "./tradeRoutes";
 
 export const politiesRelations = relations(polities, ({ many }) => ({
   nameVariants: many(nameVariants),
