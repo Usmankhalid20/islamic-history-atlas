@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { YearSlider } from "@/components/timeline/YearSlider";
@@ -10,6 +10,7 @@ import { RouteDetailPanel } from "@/components/atlas/RouteDetailPanel";
 import { MonumentDetailPanel } from "@/components/atlas/MonumentDetailPanel";
 import { CampaignDetailPanel } from "@/components/atlas/CampaignDetailPanel";
 import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
+import { ExportModal } from "@/components/atlas/ExportModal";
 import {
   initialTerritoryPeriods,
   initialPolities,
@@ -25,7 +26,20 @@ import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 import { formatHistoricalYear } from "@/lib/utils";
-import { Layers, MapPin, Info, Swords, Sparkles, Filter, Navigation, Landmark, ShieldAlert } from "lucide-react";
+import {
+  Layers,
+  MapPin,
+  Info,
+  Swords,
+  Sparkles,
+  Filter,
+  Navigation,
+  Landmark,
+  ShieldAlert,
+  Share2,
+  Download,
+  Check,
+} from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
 const HistoricalMap = dynamic(
@@ -57,21 +71,127 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const paramYear = searchParams?.get("year");
   const parsedParamYear = paramYear ? parseInt(paramYear, 10) : undefined;
 
-  const defaultYear = (parsedParamYear && !isNaN(parsedParamYear)) 
-    ? parsedParamYear 
-    : (initialYear || 750);
+  const defaultYear =
+    parsedParamYear && !isNaN(parsedParamYear) ? parsedParamYear : initialYear || 750;
 
   const [selectedYear, setSelectedYear] = useState<number>(defaultYear);
   const [selectedTerritory, setSelectedTerritory] = useState<TerritoryPeriodRecord | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<HistoricalEventRecord | null>(null);
-  const [selectedRoute, setSelectedRoute] = useState<(Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
-  const [selectedMonument, setSelectedMonument] = useState<(Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
-  const [selectedCampaign, setSelectedCampaign] = useState<(Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<
+    (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date }) | null
+  >(null);
+  const [selectedMonument, setSelectedMonument] = useState<
+    (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date }) | null
+  >(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<
+    (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) | null
+  >(null);
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
   const [showCampaigns, setShowCampaigns] = useState<boolean>(true);
   const [showAiInquiry, setShowAiInquiry] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
+
+  // Sync state from URL parameters on initial mount
+  useEffect(() => {
+    if (!searchParams) return;
+
+    // Layers
+    const routesParam = searchParams.get("routes");
+    if (routesParam === "0") setShowRoutes(false);
+    else if (routesParam === "1") setShowRoutes(true);
+
+    const monParam = searchParams.get("monuments");
+    if (monParam === "0") setShowMonuments(false);
+    else if (monParam === "1") setShowMonuments(true);
+
+    const campParam = searchParams.get("campaigns");
+    if (campParam === "0") setShowCampaigns(false);
+    else if (campParam === "1") setShowCampaigns(true);
+
+    const eventsParam = searchParams.get("events");
+    if (eventsParam === "all") setShowAllEvents(true);
+    else if (eventsParam === "era") setShowAllEvents(false);
+
+    // Entity inspection deep link
+    const entityParam = searchParams.get("entity");
+    const idParam = searchParams.get("id");
+    if (entityParam && idParam) {
+      if (entityParam === "campaign") {
+        const found = initialCampaigns.find((c) => c.id === idParam);
+        if (found) setSelectedCampaign(found);
+      } else if (entityParam === "monument") {
+        const found = initialMonuments.find((m) => m.id === idParam);
+        if (found) setSelectedMonument(found);
+      } else if (entityParam === "route") {
+        const found = initialTradeRoutes.find((r) => r.id === idParam);
+        if (found) setSelectedRoute(found);
+      } else if (entityParam === "event") {
+        const found = initialHistoricalEvents.find((e) => e.id === idParam);
+        if (found) setSelectedEvent(found);
+      } else if (entityParam === "territory") {
+        const found = initialTerritoryPeriods.find((t) => t.id === idParam);
+        if (found) setSelectedTerritory(found);
+      }
+    }
+  }, [searchParams]);
+
+  // Synchronize state changes smoothly to URL query string without reloading page
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams();
+    params.set("year", selectedYear.toString());
+    if (!showRoutes) params.set("routes", "0");
+    if (!showMonuments) params.set("monuments", "0");
+    if (!showCampaigns) params.set("campaigns", "0");
+    if (showAllEvents) params.set("events", "all");
+
+    if (selectedCampaign) {
+      params.set("entity", "campaign");
+      params.set("id", selectedCampaign.id);
+    } else if (selectedMonument) {
+      params.set("entity", "monument");
+      params.set("id", selectedMonument.id);
+    } else if (selectedRoute) {
+      params.set("entity", "route");
+      params.set("id", selectedRoute.id);
+    } else if (selectedEvent) {
+      params.set("entity", "event");
+      params.set("id", selectedEvent.id);
+    } else if (selectedTerritory) {
+      params.set("entity", "territory");
+      params.set("id", selectedTerritory.id);
+    }
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", newUrl);
+  }, [
+    selectedYear,
+    showRoutes,
+    showMonuments,
+    showCampaigns,
+    showAllEvents,
+    selectedCampaign,
+    selectedMonument,
+    selectedRoute,
+    selectedEvent,
+    selectedTerritory,
+  ]);
+
+  // Copy shareable view URL to clipboard
+  const handleShareView = async () => {
+    if (typeof window === "undefined") return;
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopiedShareLink(true);
+      setTimeout(() => setCopiedShareLink(false), 2500);
+    } catch {
+      // Fallback
+    }
+  };
 
   // Filter active territories for the current year (pure, deterministic)
   const activeTerritories = useMemo(() => {
@@ -136,8 +256,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
         }}
       />
 
-      {/* Concurrent Polities & Events Controls */}
-      <div 
+      {/* Concurrent Polities & Layer Controls */}
+      <div
         className="bg-archival-surface border border-archival-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
         role="status"
         aria-live="polite"
@@ -160,13 +280,14 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                   POLITY_BADGE_COLORS[polity.id] || "bg-gray-100 text-gray-800 border-gray-300"
                 }`}
               >
-                {polity.canonicalName} ({formatHistoricalYear(polity.startYear)}–{polity.endYear ? formatHistoricalYear(polity.endYear) : "present"})
+                {polity.canonicalName} ({formatHistoricalYear(polity.startYear)}–
+                {polity.endYear ? formatHistoricalYear(polity.endYear) : "present"})
               </span>
             ))
           )}
         </div>
 
-        {/* Action Buttons: Routes Toggle, Monuments Toggle, Campaigns Toggle, Event Scope Toggle & AI Scholar */}
+        {/* Action Buttons: Layers, Citations, Share & Export */}
         <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-archival-border">
           <button
             type="button"
@@ -233,6 +354,35 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             <Sparkles className="w-3 h-3 text-archival-gold" aria-hidden="true" />
             <span>AI Scholar</span>
           </button>
+
+          <button
+            type="button"
+            onClick={handleShareView}
+            className="px-2.5 py-1 rounded border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors"
+            title="Copy shareable deep link with current year and active layers"
+          >
+            {copiedShareLink ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-600" aria-hidden="true" />
+                <span className="text-emerald-700">Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3 h-3 text-archival-gold" aria-hidden="true" />
+                <span>Share View</span>
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="px-2.5 py-1 rounded border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors"
+            title="Export cartographic snapshot as GeoJSON and academic citations"
+          >
+            <Download className="w-3 h-3 text-archival-gold" aria-hidden="true" />
+            <span>Export Data</span>
+          </button>
         </div>
       </div>
 
@@ -244,6 +394,19 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           onClose={() => setShowAiInquiry(false)}
         />
       )}
+
+      {/* Cartographic Export Modal */}
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        year={selectedYear}
+        activeTerritories={activeTerritories}
+        activeRoutes={activeRoutes}
+        activeMonuments={activeMonuments}
+        activeCampaigns={activeCampaigns}
+        displayedEvents={displayedEvents}
+        activePolities={activePolities}
+      />
 
       {/* Map and Detail Drawer Layout */}
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -408,6 +571,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                       setSelectedEvent(ev);
                       setSelectedTerritory(null);
                       setSelectedRoute(null);
+                      setSelectedMonument(null);
+                      setSelectedCampaign(null);
                     }}
                     className={`w-full text-left p-2 rounded text-xs transition-colors border ${
                       selectedEvent?.id === ev.id
