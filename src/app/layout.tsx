@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { OfflineIndicator } from "@/components/layout/OfflineIndicator";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "Islamic History Atlas | Interactive Historical Geography",
@@ -27,6 +29,8 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <OfflineIndicator />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

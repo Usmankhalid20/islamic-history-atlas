@@ -712,6 +712,41 @@
 - **Next step:**
   - Released in `v0.9.0`. Proceed with Milestone 15: Progressive Web App (PWA), Service Worker & Offline Cartography Caching.
 
+### Milestone Log: 2026-11-09 (Milestone 15: Progressive Web App, Service Worker & Offline Cartography Caching)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Implemented W3C Web App Manifest in [`src/app/manifest.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/manifest.ts) providing standalone PWA installation metadata, theme colors, and icons.
+  - Implemented lightweight vanilla Service Worker in [`public/sw.js`](file:///c:/Users/usman/Documents/Islamic-history-atlas/public/sw.js) with multi-tier caching:
+    - Pre-caching of core application shell routes (`/`, `/events`, `/campaigns`, `/routes`, `/monuments`, `/scholars`, `/rulers`, `/polities`, `/compare`, `/uncertainty`, `/sources`).
+    - Stale-while-revalidate caching strategy for cartographic map tiles (`cartocdn.com` and `openstreetmap.org`).
+    - Cache-first strategy for static assets and scripts (`/_next/static/`).
+    - Network-first with cache fallback for HTML pages and API queries.
+  - Built [`OfflineIndicator.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/OfflineIndicator.tsx) status widget alerting users when operating without network connectivity.
+  - Created [`ServiceWorkerRegister.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/pwa/ServiceWorkerRegister.tsx) client component safely registering `/sw.js` in production browsers.
+  - Integrated PWA components into root layout [`src/app/layout.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/layout.tsx).
+  - Added 2 automated unit tests in [`tests/unit/pwa.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/pwa.test.ts) (84 total unit tests passing across 16 test suites).
+- **Files changed:**
+  - `src/app/manifest.ts` (created)
+  - `public/sw.js` (created)
+  - `src/components/pwa/ServiceWorkerRegister.tsx` (created)
+  - `src/components/layout/OfflineIndicator.tsx` (created)
+  - `src/app/layout.tsx` (updated)
+  - `tests/unit/pwa.test.ts` (created)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (84 passed across 16 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 38 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Zero-runtime vanilla Service Worker chosen over heavy external service worker toolkits for maximum performance, minimal bundle size, and deterministic tile caching.
+  - Cartographic tiles use stale-while-revalidate to ensure map navigation remains fully functional when working offline in educational and field research contexts.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Milestone 16 (Admin & Editorial Workflow / Authentication) is explicitly postponed to a dedicated future milestone as requested by user.
+  - Production Release `v1.0.0` published.
+
 ### Update format
 For each milestone, record:
 - Date
