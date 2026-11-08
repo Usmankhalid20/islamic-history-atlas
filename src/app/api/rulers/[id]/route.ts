@@ -10,9 +10,12 @@ import { db } from "@/lib/db";
 import { rulers } from "@/lib/db/schema/rulers";
 import { reigns } from "@/lib/db/schema/reigns";
 import { eq } from "drizzle-orm";
+import { getCacheControlHeader, generateETag, isNotModified } from "@/lib/api/cacheHeaders";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -58,19 +61,36 @@ export async function GET(
         )
       : [];
 
-    return NextResponse.json({
+    const responseData = {
       ...ruler,
       reigns: rulerReigns,
       polity,
-      relatedEvents,
-      primarySource: initialSources[1] || initialSources[0], // Bosworth or Kennedy
+      events: relatedEvents,
+      sources: initialSources,
+    };
+
+    const etag = generateETag(responseData);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    if (isNotModified(ifNoneMatch, etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": getCacheControlHeader("staticCatalog"),
+        },
+      });
+    }
+
+    return NextResponse.json(responseData, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": getCacheControlHeader("staticCatalog"),
+      },
     });
   } catch (error) {
     return NextResponse.json(
-      {
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

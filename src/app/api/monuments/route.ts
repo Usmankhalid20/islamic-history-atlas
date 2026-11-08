@@ -3,6 +3,8 @@ import { monumentsQuerySchema } from "@/lib/api/validators";
 import { initialMonuments } from "@/lib/data/historicalSeed";
 import { db } from "@/lib/db";
 import { monuments } from "@/lib/db/schema/monuments";
+import { paginateWithOffset } from "@/lib/api/pagination";
+import { getCacheControlHeader, generateETag, isNotModified } from "@/lib/api/cacheHeaders";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,8 @@ export async function GET(request: NextRequest) {
       foundingYear: searchParams.get("foundingYear") || undefined,
       cityName: searchParams.get("cityName") || undefined,
       name: searchParams.get("name") || undefined,
+      page: searchParams.get("page") || undefined,
+      limit: searchParams.get("limit") || undefined,
     });
 
     if (!parsed.success) {
@@ -27,7 +31,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { monumentType, polityId, foundingYear, cityName, name } = parsed.data;
+    const { monumentType, polityId, foundingYear, cityName, name, page, limit } = parsed.data;
 
     let results = initialMonuments;
 
@@ -64,9 +68,38 @@ export async function GET(request: NextRequest) {
       results = results.filter((m) => m.name.toLowerCase().includes(lower));
     }
 
-    return NextResponse.json({
-      count: results.length,
-      items: results,
+    const effectiveLimit = limit !== undefined ? limit : 50;
+    const effectivePage = page !== undefined ? page : 1;
+
+    const paged = paginateWithOffset(results, {
+      page: effectivePage,
+      limit: effectiveLimit,
+    });
+
+    const responseData = {
+      count: paged.items.length,
+      items: paged.items,
+      pagination: paged.pagination,
+    };
+
+    const etag = generateETag(responseData);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    if (isNotModified(ifNoneMatch, etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": getCacheControlHeader("staticCatalog"),
+        },
+      });
+    }
+
+    return NextResponse.json(responseData, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": getCacheControlHeader("staticCatalog"),
+      },
     });
   } catch (error) {
     return NextResponse.json(
