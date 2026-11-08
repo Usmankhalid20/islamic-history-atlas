@@ -67,5 +67,20 @@ export const rulersQuerySchema = z.object({
   name: z.string().optional(),
 });
 
+/**
+ * Validation schema for GET /api/routes?routeType=...&activeYear=...
+ */
+export const routesQuerySchema = z.object({
+  routeType: z.string().optional(),
+  activeYear: z.coerce
+    .number()
+    .int("Active year must be an integer")
+    .min(500)
+    .max(2000)
+    .optional(),
+  name: z.string().optional(),
+});
+
+
 
 

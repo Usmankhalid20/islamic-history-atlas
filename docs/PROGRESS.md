@@ -391,6 +391,55 @@
 - **Next step:**
   - Commit `feature/rulers-and-reigns`, push, merge cleanly to `develop`, and promote to `main` with release tag `v0.3.0`.
 
+### Milestone Log: 2026-11-08 (Milestone 9: Trade Corridors & Pilgrimage Roads Layer)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Designed and authored Drizzle ORM schema for historical trade and pilgrimage routes in [`src/lib/db/schema/tradeRoutes.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/schema/tradeRoutes.ts) with GeoJSON LineString paths, commodities, and active temporal intervals.
+  - Curated and seeded 6 major historical corridors into [`src/lib/data/historicalSeed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/data/historicalSeed.ts):
+    - *Darb Zubaydah (Kufa–Mecca Pilgrim Highway)*
+    - *Great Khurasan Road (Silk Road Western Trunk)*
+    - *Darb al-Hajj al-Shami (Syrian Pilgrimage Road)*
+    - *Indian Ocean & Red Sea Maritime Spice Route*
+    - *Trans-Saharan Western Gold & Salt Route*
+    - *The Caliphal Highway of Al-Andalus*
+  - Updated database seed runner [`src/lib/db/seed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/seed.ts) to populate the `trade_routes` table.
+  - Implemented REST API routes:
+    - `GET /api/routes`: Query routes with filters by `routeType`, `activeYear`, and `name`.
+    - `GET /api/routes/[id]`: Returns single route record and historiographical citations.
+  - Upgraded Leaflet cartography in [`HistoricalMap.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/map/HistoricalMap.tsx) to render GeoJSON LineStrings with antique dashed styles (Gold/Amber for pilgrim roads, Azure/Blue for maritime sea lanes, Terracotta for caravan tracks).
+  - Built interactive [`RouteDetailPanel.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/RouteDetailPanel.tsx) modal displaying freight commodities, historical context, and primary source citations (Ibn Khordadbeh, al-Muqaddasi).
+  - Integrated dynamic route layer toggle and interactive route selection in [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx).
+  - Built dedicated directory page [`src/app/routes/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/routes/page.tsx) with route category filters and direct "Explore on Map" links.
+  - Added "Routes" link to main site header in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added 7 automated unit tests in [`tests/unit/routes.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/routes.test.ts) (48 total tests passing).
+- **Files changed:**
+  - `src/lib/db/schema/tradeRoutes.ts`
+  - `src/lib/db/schema/index.ts`
+  - `src/lib/data/historicalSeed.ts`
+  - `src/lib/db/seed.ts`
+  - `src/lib/api/validators.ts`
+  - `src/app/api/routes/route.ts`
+  - `src/app/api/routes/[id]/route.ts`
+  - `src/components/map/HistoricalMap.tsx`
+  - `src/components/atlas/RouteDetailPanel.tsx`
+  - `src/components/atlas/AtlasExplorer.tsx`
+  - `src/app/routes/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `tests/unit/routes.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (48 passed across 9 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 32 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Route vectors utilize standardized GeoJSON LineStrings with `[lng, lat]` coordinates matching international cartographic standards.
+  - Color palette matches archival design guidelines: Amber for sacred pilgrim trails (*darb*), Azure for Indian Ocean sea lanes, Terracotta for trans-continental caravan roads.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Commit `feature/trade-and-pilgrimage-routes`, push, merge into `develop`, and promote to `main` with release tag `v0.4.0`.
+
 ### Completed Milestones
 - **Milestone 0:** Foundation, Documentation, and Git Setup.
 - **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
@@ -401,9 +450,10 @@
 - **Milestone 6:** Database SQL Migrations, Seeding Pipeline, and Environment Configuration.
 - **Milestone 7:** Historical Events Engine, Map Markers, Events Directory & OpenRouter AI Scholar.
 - **Milestone 8:** Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines (FR-06).
+- **Milestone 9:** Trade Corridors & Pilgrimage Roads Layer.
 
 ### Next step
-Merge `feature/rulers-and-reigns` into `develop` and push to GitHub remote.
+Merge `feature/trade-and-pilgrimage-routes` into `develop` and push to GitHub remote.
 
 ### Update format
 For each milestone, record:
