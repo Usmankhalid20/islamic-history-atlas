@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { initialHistoricalEvents } from "@/lib/data/historicalSeed";
 import { GET as getEventsRoute } from "@/app/api/events/route";
+import { GET as getEventByIdRoute } from "@/app/api/events/[id]/route";
 import { NextRequest } from "next/server";
 
 describe("Historical Events Data & API", () => {
@@ -42,6 +43,7 @@ describe("Historical Events Data & API", () => {
     expect(res.status).toBe(200);
     expect(data.count).toBe(initialHistoricalEvents.length);
     expect(data.items.length).toBe(initialHistoricalEvents.length);
+    expect(data.pagination).toBeDefined();
   });
 
   it("filters events by year correctly via GET /api/events?year=750", async () => {
@@ -61,5 +63,28 @@ describe("Historical Events Data & API", () => {
     expect(res.status).toBe(200);
     expect(data.items.length).toBeGreaterThanOrEqual(1);
     expect(data.items.every((e: any) => e.eventType === "battle")).toBe(true);
+  });
+
+  it("serves a single event by ID via GET /api/events/[id]", async () => {
+    const targetEvent = initialHistoricalEvents[0];
+    const req = new NextRequest(`http://localhost:3000/api/events/${targetEvent.id}`);
+    const res = await getEventByIdRoute(req, { params: { id: targetEvent.id } });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.id).toBe(targetEvent.id);
+    expect(data.title).toBe(targetEvent.title);
+    expect(data.eventYear).toBe(targetEvent.eventYear);
+    expect(data.primarySource).toBeDefined();
+    expect(res.headers.get("Cache-Control")).toContain("max-age=1800");
+  });
+
+  it("returns 404 for unknown event ID via GET /api/events/[id]", async () => {
+    const req = new NextRequest("http://localhost:3000/api/events/unknown_event_999");
+    const res = await getEventByIdRoute(req, { params: { id: "unknown_event_999" } });
+    const data = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(data.error).toBe("Historical event not found");
   });
 });
