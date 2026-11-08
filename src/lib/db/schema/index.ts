@@ -8,6 +8,8 @@ import { historicalEvents } from "./historicalEvents";
 import { eventParticipants } from "./eventParticipants";
 import { sources } from "./sources";
 import { claimSources } from "./claimSources";
+import { monuments } from "./monuments";
+import { scholars } from "./scholars";
 
 export * from "./polities";
 export * from "./nameVariants";
@@ -19,12 +21,16 @@ export * from "./eventParticipants";
 export * from "./sources";
 export * from "./claimSources";
 export * from "./tradeRoutes";
+export * from "./monuments";
+export * from "./scholars";
 
 export const politiesRelations = relations(polities, ({ many }) => ({
   nameVariants: many(nameVariants),
   reigns: many(reigns),
   territoryPeriods: many(territoryPeriods),
   eventParticipants: many(eventParticipants),
+  monuments: many(monuments),
+  scholars: many(scholars),
 }));
 
 export const nameVariantsRelations = relations(nameVariants, ({ one }) => ({
@@ -95,4 +101,19 @@ export const claimSourcesRelations = relations(claimSources, ({ one }) => ({
     references: [sources.id],
   }),
 }));
+
+export const monumentsRelations = relations(monuments, ({ one }) => ({
+  polity: one(polities, {
+    fields: [monuments.polityId],
+    references: [polities.id],
+  }),
+}));
+
+export const scholarsRelations = relations(scholars, ({ one }) => ({
+  patronPolity: one(polities, {
+    fields: [scholars.patronizedByPolityId],
+    references: [polities.id],
+  }),
+}));
+
 
