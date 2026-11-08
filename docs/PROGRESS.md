@@ -130,13 +130,50 @@
   - Merge `feature/project-scaffold` to `develop`.
   - Proceed to Milestone 2: Drizzle ORM schema foundation and initial seed data for 7th–10th century polities.
 
+### Milestone Log: 2026-11-08 (Milestone 2: Database Foundation & Drizzle ORM)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Installed `drizzle-orm`, `pg`, `dotenv`, and developer tooling `drizzle-kit`, `@types/pg`, `@types/geojson`.
+  - Configured `drizzle.config.ts` targeting PostgreSQL with migrations folder `./drizzle`.
+  - Implemented relational schemas in `src/lib/db/schema/`:
+    - `sources` (bibliographic citations, licenses, URLs)
+    - `polities` (canonical name, entity type, start/end years, precision, capital)
+    - `name_variants` (multilingual alternate names, language codes)
+    - `rulers` & `reigns` (biographical data, reign intervals, co-ruler flags)
+    - `territory_periods` (GeoJSON polygon geometries, control type, confidence, compound year range index)
+    - `historical_events` & `event_participants` (dated events, locations, participant roles)
+    - `claim_sources` (source citations mapped to individual claims)
+    - Drizzle ORM relations across all entities.
+  - Implemented temporal query logic in `src/lib/db/queries.ts` (`isTerritoryActiveInYear`, `filterActiveTerritories`, `formatTerritoriesToGeoJson`).
+  - Authored reviewed seed fixtures in `src/lib/data/historicalSeed.ts` covering 7th–10th century CE (Rashidun, Umayyad, Abbasid, Cordoba, Fatimid) with GeoJSON polygons and citations to Hugh Kennedy (2004) and C.E. Bosworth (1996).
+  - Added unit test suite in `tests/unit/queries.test.ts` verifying exact year boundaries, concurrent dynasties (e.g. 750, 800, 920 CE), and GeoJSON FeatureCollection generation.
+- **Files changed:**
+  - `package.json`, `package-lock.json`
+  - `drizzle.config.ts`
+  - `src/lib/db/index.ts`, `src/lib/db/schema/*`, `src/lib/db/queries.ts`
+  - `src/lib/data/historicalSeed.ts`
+  - `tests/unit/queries.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (8 passed in 13ms)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (Compiled successfully, static routes generated)
+- **Decisions made:**
+  - Standardized on Drizzle ORM with clean PostgreSQL schemas and pure functional temporal predicates.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/database-foundation` into `develop`.
+  - Begin Milestone 3: Interactive Leaflet Map Prototype with dynamic year slider.
+
 ### Not yet completed
-- Review and approve MVP date range, regions, and initial historical entities.
-- Configure PostgreSQL database and Drizzle ORM schemas.
 - Build a minimal map prototype using Leaflet.
+- Implement timeline / year slider component.
+- Build polity/territory information drawers.
 
 ### Next step
-Merge `feature/project-scaffold` into `develop`, then create `feature/database-foundation` to implement Drizzle ORM data models.
+Merge `feature/database-foundation` into `develop`, then create `feature/map-prototype` to implement the interactive Leaflet map and year slider.
 
 ### Update format
 For each milestone, record:
