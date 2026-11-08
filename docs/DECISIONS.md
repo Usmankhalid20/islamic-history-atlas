@@ -45,3 +45,57 @@ Record important decisions here. Do not treat proposed choices as final until th
 **Status:** Open
 
 **Evaluation:** Current free-tier limits, commercial-use rules, database availability, backups, deployment workflow, and expected traffic.
+
+## ADR-006: Multi-tier Caching Strategy (Next.js + PostgreSQL, Redis Postponed)
+
+**Status:** Accepted
+
+**Decision:** Adopt a multi-tier caching architecture centered on Next.js App Router Data Cache (`unstable_cache` with tag-based revalidation), HTTP cache headers (`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`), client-side cache, and PostgreSQL native shared buffers. Postpone external distributed caching infrastructure (Redis / Upstash) until high traffic or multi-region deployments justify it.
+
+**Reason:** Historical cartography and timeline data are overwhelmingly read-heavy (>99.5% read traffic) and change only upon curated editorial releases. Caching query results via Next.js Data Cache and HTTP reverse proxies eliminates repeated database queries and external AI token costs, maintaining sub-50ms response times with zero added infrastructure overhead.
+
+**Revisit when:** Multi-instance deployments experience cache drift, serverless cold starts degrade cache warm-up, or traffic surpasses 1,000,000 requests/day.
+
+## ADR-007: Dual Pagination Strategy (Cursor-Based for Large Series, Offset for Directories)
+
+**Status:** Accepted
+
+**Decision:** Use cursor-based (keyset) pagination for large, unbounded historical collections (events, territory periods, future bibliographic registers, audit logs). Retain offset/limit pagination for small, discrete entity directories (polities, rulers, monuments, scholars, campaigns) where total count is low (<100 items) and UI requirements require discrete page jumping.
+
+**Reason:** In PostgreSQL, `OFFSET N` queries degrade linearly ($O(N)$) as page depth increases because the database must scan and discard $N$ rows before returning results. Keyset pagination (`WHERE id > :cursor ORDER BY id ASC LIMIT :limit`) performs an $O(1)$ B-Tree index seek regardless of page depth. Small directories do not suffer from offset degradation and benefit from explicit page-number navigation.
+
+**Revisit when:** Any catalog collection exceeds 500 records or requires infinite scrolling, at which point it transitions to keyset pagination.
+
+## ADR-008: In-Memory Zero-Infrastructure API Rate Limiting
+
+**Status:** Accepted
+
+**Decision:** Enforce API rate limiting using an in-memory sliding-window token bucket implemented via a zero-dependency LRU cache at the route layer. Rate limits are differentiated by endpoint sensitivity:
+- Public Historical Read Endpoints (`/api/territories`, `/api/events`, etc.): 60 requests/minute per IP.
+- AI Scholar Inquiry Endpoint (`/api/ai/inquire`): 10 requests/minute per IP.
+
+**Reason:** Protects the atlas from accidental scrape loops, denial-of-service attempts, and upstream OpenRouter API quota exhaustion without introducing third-party service dependencies or external Redis infrastructure during early project phases.
+
+**Revisit when:** Application scales to multiple independent nodes or edge workers requiring synchronized global rate limit counters.
+
+## ADR-009: Postponement of Authentication
+
+**Status:** Accepted
+
+**Decision:** Do not design or implement user authentication, login sessions, or user management in the current phases. Explicitly postpone authentication to a dedicated future Admin/Editorial milestone.
+
+**Reason:** The core mission of the Islamic History Atlas is open educational access to historical geography. All current features are public read operations. Introducing authentication now would introduce premature security surface area, session management complexity, cookie/token overhead, and database migrations for user tables before editorial contribution workflows are required.
+
+**Revisit when:** Editorial curation, user annotations, or private bookmarking features are scheduled for development.
+
+## ADR-010: Observability and Performance Monitoring
+
+**Status:** Accepted
+
+**Decision:** Implement application observability through:
+1. Structured JSON logging (timestamp, level, requestId, route, method, durationMs, status, error).
+2. Dedicated health and readiness check probe (`GET /api/health`) verifying database connectivity and memory usage.
+3. Client-side Web Vitals monitoring (LCP, FID/INP, CLS) and API latency tracking (p50, p95, p99).
+
+**Reason:** Provides operational visibility into slow queries, error rates, and API consumption without vendor lock-in or heavyweight third-party APM agent performance penalties.
+

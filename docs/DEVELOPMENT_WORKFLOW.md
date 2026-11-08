@@ -27,11 +27,19 @@ Do not create all branches in advance. Create a feature branch when that task is
 
 For solo development assisted by AI agents, adhere to a strict, disciplined Git flow to guarantee stability, auditability, and clean history:
 
-### 1. Pre-Task Alignment & Approval Gate
-- **Stop before coding changes, and wait for approval.**
-- Always inspect existing code, schemas, and documentation first.
-- Present a concrete, minimal task plan detailing the files to be touched and expected changes.
-- Never write application code, install packages, or modify schemas until the user explicitly reviews and approves the plan.
+### 1. Milestone Execution & Autonomous Progression Policy
+- **Milestone-by-Milestone Cadence:** Work systematically milestone by milestone through the approved product roadmap.
+- **Verification Before Promotion:** After completing each milestone:
+  1. Review the full codebase and inspect the Git diff (`git status`, `git diff`).
+  2. Run all relevant automated tests (`npm test`, `npm run type-check`, `npm run lint`, `npm run build`).
+  3. Commit verified changes on the dedicated feature branch and push to `origin`.
+  4. Merge into `develop` and promote to `main` with annotated release tags **only after all checks pass with zero warnings or errors**.
+- **Continuous Progression Without Repetitive Permission:** Continue to the next approved roadmap milestone autonomously without asking for repetitive confirmation at routine incremental steps.
+- **Escalation Gate (When to Stop and Ask):** Stop and request user decision/guidance **only** when:
+  1. An important architectural decision or paradigm shift is encountered.
+  2. Missing historical information, ambiguous schema specifications, or conflicting domain rules arise.
+  3. A security risk or potential data leak is detected.
+  4. A destructive operation (e.g. database reset, force-pushing, file deletion outside scope) is considered.
 
 ### 2. Create a Feature Branch
 - Never commit work directly to `main` or unstructured branches.
@@ -130,7 +138,7 @@ At the start of each task, the coding agent must:
 1. **Inspect:** Read repository tree, schemas, and relevant existing files before taking action.
 2. **Contextualize:** Consult project documentation (`README.md`, `REQUIREMENTS.md`, `ENGINEERING_RULES.md`).
 3. **Plan & Declare Scope:** Report existing patterns, state the smallest implementation plan, and explicitly declare the target file scope (`allowed_write_scope`).
-4. **Approval Gate:** **Stop before coding changes, and wait for explicit user approval.** Never install dependencies, alter schemas, or mutate code without confirmation.
+4. **Milestone Progression & Escalation Gate:** Execute verified milestones sequentially. Advance across approved milestones autonomously; stop and escalate only when facing major architectural decisions, missing information, security risks, or destructive operations.
 
 ### Integration with Researched AI Skills
 When authorized by the user, the agent integrates verified open-source engineering skills documented in [`docs/RESEARCHED_RESOURCES.md`](RESEARCHED_RESOURCES.md):

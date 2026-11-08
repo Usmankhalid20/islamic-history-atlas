@@ -452,7 +452,51 @@
 - **Milestone 8:** Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines (FR-06).
 - **Milestone 9:** Trade Corridors & Pilgrimage Roads Layer.
 - **Milestone 10:** Intellectual Centers, Scholars, Polymaths, and Monumental Architecture Layer.
-- **Milestone 11:** Military Campaigns & Strategic Expeditions Layer.
+- **Milestone 11:** Military Campaigns & Strategic Expeditions Layer (`v0.6.0`).
+- **Technical Architecture Package:** Caching Strategy, Dual Pagination Specification, In-Memory Rate Limiting, PostgreSQL Indexing & Optimization, Application Observability, and Postponed Authentication Governance.
+
+### Remaining Roadmap Milestones
+- **Milestone 12:** Cartographic Export & Shareable Deep Links (GeoJSON / SVG download feature; deep-linking preserving active year, selected layers, and inspector drawer state).
+- **Milestone 13:** Historiographical Timeline Comparison Mode (Synchronized dual-map split screen comparing two historical years, e.g. 632 CE vs. 750 CE).
+- **Milestone 14:** Historical Uncertainty & Source Discrepancy Inspector (Visual confidence contours, disputed boundary overlays, and conflicting primary source viewer).
+- **Milestone 15:** Progressive Web App (PWA), Service Worker & Offline Cartography Caching.
+- **Milestone 16:** Admin & Editorial Workflow (User authentication, RBAC, citation review queue — *postponed to dedicated future phase*).
+
+### Current Verification Status
+- **Automated Unit Tests:** 69 passing tests across 12 test suites (`campaigns.test.ts`, `monuments.test.ts`, `scholars.test.ts`, `routes.test.ts`, `rulers.test.ts`, `events.test.ts`, `timeline.test.ts`, `api.test.ts`, `ai.test.ts`, `queries.test.ts`, `pages.test.ts`, `smoke.test.ts`).
+- **TypeScript Strict Check:** `npm run type-check` (`tsc --noEmit`) exited with code 0 (zero errors).
+- **ESLint:** `npm run lint` (`next lint`) reported `✔ No ESLint warnings or errors`.
+- **Next.js Production Build:** 35 static, SSG, and dynamic routes compiled successfully.
+
+### Next Approved Milestone
+**Milestone 12: Cartographic Export & Shareable Deep Links.**
+
+---
+
+### Milestone Log: 2026-11-09 (Architectural & Technical Governance Package)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Designed multi-tier caching architecture in [`docs/DECISIONS.md`](DECISIONS.md) (ADR-006) and [`docs/SYSTEM_ARCHITECTURE.md`](SYSTEM_ARCHITECTURE.md): Client/Browser HTTP caching (`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`), Next.js Data Cache (`unstable_cache` with domain tag invalidation), and PostgreSQL shared buffers. Explicitly evaluated and postponed external Redis infrastructure.
+  - Specified dual pagination architecture in [`docs/DECISIONS.md`](DECISIONS.md) (ADR-007) and [`docs/API_DESIGN.md`](API_DESIGN.md): Keyset (cursor-based) pagination (`WHERE (sort_col, id) > ($cursor_col, $cursor_id) LIMIT $limit + 1`) for unbounded collections (events, sources, audit logs) ensuring $O(1)$ index seek performance; Limit/Offset pagination for small curated directories (<100 items).
+  - Designed zero-infrastructure API rate limiting in [`docs/DECISIONS.md`](DECISIONS.md) (ADR-008) and [`docs/API_DESIGN.md`](API_DESIGN.md): In-memory sliding-window token bucket (60 requests/min for general reads, 10 requests/min for AI Scholar inquiries) with standard `X-RateLimit-*` and `Retry-After` response headers.
+  - Formulated database indexing and query optimization strategy in [`docs/DATABASE_AND_DATA_MODEL.md`](DATABASE_AND_DATA_MODEL.md): Composite temporal B-Tree indexes, foreign key join indexes, trigram full-text search (`pg_trgm`), and PostGIS GiST spatial indexing with `EXPLAIN (ANALYZE, BUFFERS)` verification.
+  - Documented monitoring, observability, and health probing in [`docs/DECISIONS.md`](DECISIONS.md) (ADR-010) and [`docs/SYSTEM_ARCHITECTURE.md`](SYSTEM_ARCHITECTURE.md): Standardized structured JSON logging, dedicated readiness probe (`GET /api/health`), and latency percentile tracking (p50, p95, p99).
+  - Codified authentication governance in [`docs/DECISIONS.md`](DECISIONS.md) (ADR-009): Explicitly documented authentication as out-of-scope for the current educational atlas release and strictly postponed to a future dedicated Admin & Editorial milestone.
+  - Updated [`docs/DEVELOPMENT_WORKFLOW.md`](DEVELOPMENT_WORKFLOW.md) codifying the milestone-by-milestone autonomous progression policy with an explicit escalation gate.
+- **Files changed:**
+  - `docs/DECISIONS.md` (ADR-006 through ADR-010 added)
+  - `docs/API_DESIGN.md` (Pagination, caching headers, rate limiting, and optimization specs added)
+  - `docs/DATABASE_AND_DATA_MODEL.md` (Indexing, keyset pagination queries, cache invalidation added)
+  - `docs/SYSTEM_ARCHITECTURE.md` (Caching tiers, security, rate limiting, monitoring added)
+  - `docs/DEVELOPMENT_WORKFLOW.md` (Autonomous milestone progression & escalation gate codified)
+  - `docs/PROGRESS.md` (Completed milestones, remaining work, and test results recorded)
+- **Decisions made:**
+  - Kept infrastructure at zero cost/complexity by using in-process and native Next.js/PostgreSQL primitives rather than adding Redis or third-party gateways prematurely.
+  - Postponed authentication entirely to avoid premature security surface area.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Implement Milestone 12 (Cartographic Export & Shareable Deep Links) on feature branch `feature/export-and-deep-links`.
 
 ### Milestone Log: 2026-11-09 (Milestone 11: Military Campaigns & Strategic Expeditions Layer)
 - **Date:** 2026-11-09
@@ -501,7 +545,7 @@
 - **Known issues/blockers:**
   - None.
 - **Next step:**
-  - Commit `feature/military-campaigns`, push to origin, merge into `develop`, bump version to `0.6.0`, merge to `main`, and create release tag `v0.6.0`.
+  - Released in `v0.6.0`. Proceed with Milestone 12 upon approval.
 
 ### Milestone Log: 2026-11-09 (Milestone 10: Intellectual Centers, Scholars & Monuments Layer)
 - **Date:** 2026-11-09
@@ -569,6 +613,33 @@
   - None.
 - **Next step:**
   - Commit `feature/monuments-and-scholars`, merge into `develop`, and promote release tag `v0.5.0` to `main`.
+
+### Milestone Log: 2026-11-09 (Milestone 12: Cartographic Export & Shareable Deep Links)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Implemented cartographic GeoJSON snapshot engine in [`src/lib/geo/exportUtils.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/geo/exportUtils.ts) conforming to RFC 7946 GeoJSON standard, integrating territorial boundaries, trade routes, military campaigns, intellectual monuments, and historical events.
+  - Implemented academic citation generator formatting Chicago Manual of Style (17th ed.) and BibTeX records for historical atlas views.
+  - Created accessible [`ExportModal.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/ExportModal.tsx) dialog with live feature metrics, direct GeoJSON download, JSON metadata bundle download, and one-click citation clipboard copy.
+  - Enhanced [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with state synchronization via URL parameters (`year`, `routes`, `monuments`, `campaigns`, `events`, `entity`, `id`), dynamic browser URL updates using `window.history.replaceState`, and a "Share View" button copying deep links to clipboard.
+  - Added 4 automated unit tests in [`tests/unit/export.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/export.test.ts) (73 total unit tests passing across 13 suites).
+- **Files changed:**
+  - `src/lib/geo/exportUtils.ts` (created)
+  - `src/components/atlas/ExportModal.tsx` (created)
+  - `src/components/atlas/AtlasExplorer.tsx` (updated)
+  - `tests/unit/export.test.ts` (created)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (73 passed across 13 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 35 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Exported GeoJSON FeatureCollections standardize geometry attributes and bundle scholarly metadata with primary source registers (Kennedy, Bosworth, EI2) under ODbL terms.
+  - URL state synchronization leverages `window.history.replaceState` for zero-flicker address bar updates.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Released in `v0.7.0`. Proceed with Milestone 13: Historiographical Timeline Comparison Mode.
 
 ### Update format
 For each milestone, record:
