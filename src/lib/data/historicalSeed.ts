@@ -102,6 +102,31 @@ export const initialPolities: NewPolityRecord[] = [
 
 export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
   {
+    id: "ter_rashidun_hijaz_levant_632_661",
+    polityId: "pol_rashidun",
+    regionName: "Arabian Peninsula & Levant (Medina Core)",
+    validFromYear: 632,
+    validToYear: 661,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [34.0, 21.0],
+          [40.0, 20.0],
+          [46.0, 24.0],
+          [44.0, 31.0],
+          [35.0, 32.5],
+          [34.0, 27.0],
+          [34.0, 21.0],
+        ],
+      ],
+    },
+    explanatoryNote: "Core domain of the Rashidun caliphate radiating from Medina across the Hijaz and southern Levant.",
+    reviewStatus: "published",
+  },
+  {
     id: "ter_umayyad_syria_661_750",
     polityId: "pol_umayyad",
     regionName: "Syria & Levant (Bilad al-Sham)",

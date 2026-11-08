@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Building2,
   ShieldAlert,
+  GitCompare,
 } from "lucide-react";
 
 export function Header() {
@@ -31,6 +32,13 @@ export function Header() {
           >
             <Clock className="w-4 h-4 text-archival-muted" aria-hidden="true" />
             <span>Map</span>
+          </Link>
+          <Link
+            href="/compare"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1 shrink-0"
+          >
+            <GitCompare className="w-4 h-4 text-archival-gold" aria-hidden="true" />
+            <span>Compare</span>
           </Link>
           <Link
             href="/events"
