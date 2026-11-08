@@ -641,6 +641,42 @@
 - **Next step:**
   - Released in `v0.7.0`. Proceed with Milestone 13: Historiographical Timeline Comparison Mode.
 
+### Milestone Log: 2026-11-09 (Milestone 13: Historiographical Timeline Comparison Mode)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Developed pure historical delta engine in [`src/lib/geo/comparisonUtils.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/geo/comparisonUtils.ts) with `computeEraDelta()` computing emerged, dissolved, and persistent polities, active route differentials, and monuments founded between eras.
+  - Authored 4 curated historiographical comparison transition presets with primary literature citations:
+    - *The Rashidun to Umayyad Transition (632 vs. 661 CE)*
+    - *The Abbasid Revolution & Umayyad Exile (749 vs. 756 CE)*
+    - *The Tri-Caliphate Era: Multi-Polar Hegemony (750 vs. 969 CE)*
+    - *The Golden Age of Translation & Science (786 vs. 900 CE)*
+  - Built interactive [`ComparisonDeltaPanel.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/compare/ComparisonDeltaPanel.tsx) visualizer breaking down sovereign polity deltas, intermediate architectural foundations, and citation bibliography.
+  - Built dual synchronized cartography view in [`ComparisonView.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/compare/ComparisonView.tsx) with dual timeline controls, era swapping, preset switcher, and shareable deep link URL synchronization.
+  - Implemented `/compare` page in [`src/app/compare/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/compare/page.tsx) and added "Compare" navigation link in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added seed territory record for `pol_rashidun` in [`src/lib/data/historicalSeed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/data/historicalSeed.ts) covering 632–661 CE Arabian Peninsula and Levant.
+  - Added 6 automated unit tests in [`tests/unit/compare.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/compare.test.ts) (79 total unit tests passing across 14 test suites).
+- **Files changed:**
+  - `src/lib/geo/comparisonUtils.ts` (created)
+  - `src/components/compare/ComparisonDeltaPanel.tsx` (created)
+  - `src/components/compare/ComparisonView.tsx` (created)
+  - `src/app/compare/page.tsx` (created)
+  - `src/components/layout/Header.tsx` (updated)
+  - `src/lib/data/historicalSeed.ts` (updated)
+  - `tests/unit/compare.test.ts` (created)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (79 passed across 14 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 36 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Dual map canvases are rendered independently with shared zoom/pan capability and isolated layer selection to enable precise chronological comparative analysis.
+  - Transitions automatically identify intermediate monument foundations to illuminate intellectual and infrastructural developments across eras.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Released in `v0.8.0`. Proceed with Milestone 14: Historical Uncertainty & Source Discrepancy Inspector.
+
 ### Update format
 For each milestone, record:
 - Date
