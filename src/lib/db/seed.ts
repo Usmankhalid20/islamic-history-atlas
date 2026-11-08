@@ -6,6 +6,8 @@ import { historicalEvents } from "./schema/historicalEvents";
 import { rulers } from "./schema/rulers";
 import { reigns } from "./schema/reigns";
 import { tradeRoutes } from "./schema/tradeRoutes";
+import { monuments } from "./schema/monuments";
+import { scholars } from "./schema/scholars";
 import {
   initialSources,
   initialPolities,
@@ -14,6 +16,8 @@ import {
   initialRulers,
   initialReigns,
   initialTradeRoutes,
+  initialMonuments,
+  initialScholars,
 } from "../data/historicalSeed";
 
 export async function seedDatabase() {
@@ -65,6 +69,18 @@ export async function seedDatabase() {
     await db.insert(tradeRoutes).values(tr as any).onConflictDoNothing();
   }
   console.log(`✓ Seeded ${initialTradeRoutes.length} trade & pilgrimage routes`);
+
+  // Seed monuments
+  for (const mon of initialMonuments) {
+    await db.insert(monuments).values(mon as any).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${initialMonuments.length} monuments`);
+
+  // Seed scholars
+  for (const sch of initialScholars) {
+    await db.insert(scholars).values(sch as any).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${initialScholars.length} scholars`);
 
   console.log("Database seeding completed successfully!");
 }

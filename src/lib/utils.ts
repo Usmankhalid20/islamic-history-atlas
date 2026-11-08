@@ -18,3 +18,17 @@ export function formatHistoricalYear(year: number): string {
   return `${year} CE`;
 }
 
+export const POLITY_COLOR_MAP: Record<string, string> = {
+  pol_rashidun: "#9A3412",
+  pol_umayyad: "#D97706",
+  pol_abbasid_early: "#1C1917",
+  pol_cordoba_emirate: "#059669",
+  pol_fatimid: "#2563EB",
+};
+
+export function getPolityColor(polityId?: string | null): string {
+  if (!polityId) return "#475569";
+  return POLITY_COLOR_MAP[polityId] || "#475569";
+}
+
+
