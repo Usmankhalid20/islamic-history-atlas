@@ -11,6 +11,7 @@ import {
   Building2,
   ShieldAlert,
   GitCompare,
+  AlertTriangle,
 } from "lucide-react";
 
 export function Header() {
@@ -95,6 +96,13 @@ export function Header() {
           >
             <BookOpen className="w-4 h-4" aria-hidden="true" />
             <span>Sources</span>
+          </Link>
+          <Link
+            href="/uncertainty"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1 shrink-0"
+          >
+            <AlertTriangle className="w-4 h-4 text-amber-600" aria-hidden="true" />
+            <span>Uncertainty</span>
           </Link>
         </nav>
       </div>
