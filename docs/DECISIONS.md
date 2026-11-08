@@ -48,7 +48,7 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-006: Multi-tier Caching Strategy (Next.js + PostgreSQL, Redis Postponed)
 
-**Status:** Accepted
+**Status:** Accepted (Implemented in Milestone 16 via `src/lib/api/cacheHeaders.ts` with profile-based `Cache-Control` headers and deterministic ETag conditional requests)
 
 **Decision:** Adopt a multi-tier caching architecture centered on Next.js App Router Data Cache (`unstable_cache` with tag-based revalidation), HTTP cache headers (`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`), client-side cache, and PostgreSQL native shared buffers. Postpone external distributed caching infrastructure (Redis / Upstash) until high traffic or multi-region deployments justify it.
 
@@ -58,7 +58,7 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-007: Dual Pagination Strategy (Cursor-Based for Large Series, Offset for Directories)
 
-**Status:** Accepted
+**Status:** Accepted (Implemented in Milestone 16 via `src/lib/api/pagination.ts` with URL-safe base64 opaque cursor tokens and offset/limit directory slicing)
 
 **Decision:** Use cursor-based (keyset) pagination for large, unbounded historical collections (events, territory periods, future bibliographic registers, audit logs). Retain offset/limit pagination for small, discrete entity directories (polities, rulers, monuments, scholars, campaigns) where total count is low (<100 items) and UI requirements require discrete page jumping.
 
@@ -68,7 +68,7 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-008: In-Memory Zero-Infrastructure API Rate Limiting
 
-**Status:** Accepted
+**Status:** Accepted (Implemented in Milestone 16 via `src/lib/api/rateLimiter.ts` and `src/middleware.ts` with standard and AI tiers)
 
 **Decision:** Enforce API rate limiting using an in-memory sliding-window token bucket implemented via a zero-dependency LRU cache at the route layer. Rate limits are differentiated by endpoint sensitivity:
 - Public Historical Read Endpoints (`/api/territories`, `/api/events`, etc.): 60 requests/minute per IP.
@@ -90,7 +90,7 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-010: Observability and Performance Monitoring
 
-**Status:** Accepted
+**Status:** Accepted (Implemented in Milestone 16 via `GET /api/health` providing database connection latency, system uptime, and memory metrics)
 
 **Decision:** Implement application observability through:
 1. Structured JSON logging (timestamp, level, requestId, route, method, durationMs, status, error).

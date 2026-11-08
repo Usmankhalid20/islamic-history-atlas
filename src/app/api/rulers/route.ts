@@ -4,7 +4,8 @@ import { initialRulers, initialReigns, initialPolities } from "@/lib/data/histor
 import { db } from "@/lib/db";
 import { rulers } from "@/lib/db/schema/rulers";
 import { reigns } from "@/lib/db/schema/reigns";
-import { eq } from "drizzle-orm";
+import { paginateWithOffset } from "@/lib/api/pagination";
+import { getCacheControlHeader, generateETag, isNotModified } from "@/lib/api/cacheHeaders";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,8 @@ export async function GET(request: NextRequest) {
       polityId: searchParams.get("polityId") || undefined,
       reignYear: searchParams.get("reignYear") || undefined,
       name: searchParams.get("name") || undefined,
+      page: searchParams.get("page") || undefined,
+      limit: searchParams.get("limit") || undefined,
     });
 
     if (!parsed.success) {
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { polityId, reignYear, name } = parsed.data;
+    const { polityId, reignYear, name, page, limit } = parsed.data;
 
     let rulerList = initialRulers;
     let reignList = initialReigns;
@@ -91,16 +94,42 @@ export async function GET(request: NextRequest) {
       return aStart - bStart;
     });
 
-    return NextResponse.json({
-      count: combined.length,
-      items: combined,
+    const effectiveLimit = limit !== undefined ? limit : 50;
+    const effectivePage = page !== undefined ? page : 1;
+
+    const paged = paginateWithOffset(combined, {
+      page: effectivePage,
+      limit: effectiveLimit,
+    });
+
+    const responseData = {
+      count: paged.items.length,
+      items: paged.items,
+      pagination: paged.pagination,
+    };
+
+    const etag = generateETag(responseData);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    if (isNotModified(ifNoneMatch, etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": getCacheControlHeader("staticCatalog"),
+        },
+      });
+    }
+
+    return NextResponse.json(responseData, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": getCacheControlHeader("staticCatalog"),
+      },
     });
   } catch (error) {
     return NextResponse.json(
-      {
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

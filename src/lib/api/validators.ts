@@ -15,7 +15,7 @@ export const territoriesQuerySchema = z.object({
 });
 
 /**
- * Validation schema for GET /api/polities?activeYear=...
+ * Validation schema for GET /api/polities?activeYear=...&page=...&limit=...
  */
 export const politiesQuerySchema = z.object({
   activeYear: z.coerce
@@ -25,10 +25,12 @@ export const politiesQuerySchema = z.object({
     .max(2000)
     .optional(),
   entityType: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
- * Validation schema for GET /api/events?year=...
+ * Validation schema for GET /api/events?year=...&eventType=...&limit=...&cursor=...
  */
 export const eventsQuerySchema = z.object({
   year: z.coerce
@@ -38,6 +40,8 @@ export const eventsQuerySchema = z.object({
     .max(2000)
     .optional(),
   eventType: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  cursor: z.string().optional(),
 });
 
 /**
@@ -54,7 +58,7 @@ export const aiInquirySchema = z.object({
 });
 
 /**
- * Validation schema for GET /api/rulers?polityId=...&reignYear=...
+ * Validation schema for GET /api/rulers?polityId=...&reignYear=...&page=...&limit=...
  */
 export const rulersQuerySchema = z.object({
   polityId: z.string().optional(),
@@ -65,10 +69,12 @@ export const rulersQuerySchema = z.object({
     .max(2000)
     .optional(),
   name: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
- * Validation schema for GET /api/routes?routeType=...&activeYear=...
+ * Validation schema for GET /api/routes?routeType=...&activeYear=...&page=...&limit=...
  */
 export const routesQuerySchema = z.object({
   routeType: z.string().optional(),
@@ -79,10 +85,12 @@ export const routesQuerySchema = z.object({
     .max(2000)
     .optional(),
   name: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
- * Validation schema for GET /api/monuments?monumentType=...&polityId=...&foundingYear=...
+ * Validation schema for GET /api/monuments?monumentType=...&polityId=...&page=...&limit=...
  */
 export const monumentsQuerySchema = z.object({
   monumentType: z.string().optional(),
@@ -95,10 +103,12 @@ export const monumentsQuerySchema = z.object({
     .optional(),
   cityName: z.string().optional(),
   name: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
- * Validation schema for GET /api/scholars?fieldsOfStudy=...&patronizedByPolityId=...&activeYear=...
+ * Validation schema for GET /api/scholars?fieldsOfStudy=...&patronizedByPolityId=...&page=...&limit=...
  */
 export const scholarsQuerySchema = z.object({
   fieldsOfStudy: z.string().optional(),
@@ -111,10 +121,12 @@ export const scholarsQuerySchema = z.object({
     .optional(),
   primaryCity: z.string().optional(),
   name: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
- * Validation schema for GET /api/campaigns?polityId=...&commander=...&activeYear=...
+ * Validation schema for GET /api/campaigns?polityId=...&commander=...&page=...&limit=...
  */
 export const campaignsQuerySchema = z.object({
   polityId: z.string().optional(),
@@ -126,10 +138,6 @@ export const campaignsQuerySchema = z.object({
     .max(2000)
     .optional(),
   name: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
-
-
-
-
-
-

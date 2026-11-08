@@ -3,9 +3,12 @@ import { initialPolities, initialTerritoryPeriods, initialSources } from "@/lib/
 import { db } from "@/lib/db";
 import { polities } from "@/lib/db/schema/polities";
 import { eq } from "drizzle-orm";
+import { getCacheControlHeader, generateETag, isNotModified } from "@/lib/api/cacheHeaders";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -35,10 +38,30 @@ export async function GET(
       (t) => t.polityId === id
     );
 
-    return NextResponse.json({
+    const responseData = {
       polity,
       territories: territoryPeriods,
       sources: initialSources,
+    };
+
+    const etag = generateETag(responseData);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    if (isNotModified(ifNoneMatch, etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": getCacheControlHeader("staticCatalog"),
+        },
+      });
+    }
+
+    return NextResponse.json(responseData, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": getCacheControlHeader("staticCatalog"),
+      },
     });
   } catch (error) {
     return NextResponse.json(
@@ -47,4 +70,3 @@ export async function GET(
     );
   }
 }
-

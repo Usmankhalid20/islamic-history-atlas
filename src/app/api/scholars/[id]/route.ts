@@ -4,9 +4,12 @@ import { db } from "@/lib/db";
 import { scholars } from "@/lib/db/schema/scholars";
 import { eq } from "drizzle-orm";
 import { getPolityColor } from "@/lib/utils";
+import { getCacheControlHeader, generateETag, isNotModified } from "@/lib/api/cacheHeaders";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -36,7 +39,7 @@ export async function GET(
       ? initialPolities.find((p) => p.id === scholar?.patronizedByPolityId)
       : null;
 
-    return NextResponse.json({
+    const responseData = {
       ...scholar,
       patronPolity: patronPolity
         ? {
@@ -46,6 +49,26 @@ export async function GET(
           }
         : null,
       primarySource: initialSources[0], // Hugh Kennedy / Routledge
+    };
+
+    const etag = generateETag(responseData);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    if (isNotModified(ifNoneMatch, etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": getCacheControlHeader("staticCatalog"),
+        },
+      });
+    }
+
+    return NextResponse.json(responseData, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": getCacheControlHeader("staticCatalog"),
+      },
     });
   } catch (error) {
     return NextResponse.json(
