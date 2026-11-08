@@ -747,6 +747,75 @@
   - Milestone 16 (Admin & Editorial Workflow / Authentication) is explicitly postponed to a dedicated future milestone as requested by user.
   - Production Release `v1.0.0` published.
 
+### Milestone Log: 2026-11-09 (Milestone 16: Runtime API Caching, Dual Pagination, In-Memory Rate Limiting & Observability Health Probe)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Resolved webpack chunk missing crash (`Cannot find module './161.js'`) by adding custom branded 404 page in [`src/app/not-found.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/not-found.tsx) and clearing stale compiler cache.
+  - Implemented multi-tier caching utility in [`src/lib/api/cacheHeaders.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/api/cacheHeaders.ts) conforming to ADR-006:
+    - Profile-based `Cache-Control` header generators (`staticCatalog`, `temporalMap`, `dynamic`, `health`).
+    - Deterministic ETag hashing and `If-None-Match` conditional request verification (`304 Not Modified`).
+  - Implemented dual pagination utilities and Zod validation schemas in [`src/lib/api/pagination.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/api/pagination.ts) conforming to ADR-007:
+    - Keyset (cursor-based) pagination with URL-safe base64 opaque cursor tokens (`encodeCursor`, `decodeCursor`, `paginateWithCursor`).
+    - Offset/limit pagination with metadata computation (`paginateWithOffset`).
+  - Implemented zero-infrastructure in-memory sliding-window token bucket rate limiter in [`src/lib/api/rateLimiter.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/api/rateLimiter.ts) and Next.js middleware in [`src/middleware.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/middleware.ts) conforming to ADR-008:
+    - Standard public read tier (60 req/min per IP) on all historical catalog endpoints.
+    - AI Scholar inquiry tier (10 req/min per IP) on `/api/ai/inquire`.
+    - Returns RFC-compliant `429 Too Many Requests` with `Retry-After` header and JSON error body.
+  - Implemented operational health and readiness probe in [`src/app/api/health/route.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/api/health/route.ts) conforming to ADR-010:
+    - Live PostgreSQL connection latency verification.
+    - System uptime, version, and memory usage metrics (`rssMb`, `heapTotalMb`, `heapUsedMb`).
+    - Cache-Control `no-cache, no-store, must-revalidate`.
+  - Updated all API routes (`/api/territories`, `/api/events`, `/api/polities`, `/api/rulers`, `/api/routes`, `/api/monuments`, `/api/scholars`, `/api/campaigns`, `/api/ai/inquire`) to integrate caching, pagination, and ETag conditional validation.
+  - Added 30 automated unit tests across 4 new test suites:
+    - [`tests/unit/rateLimit.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/rateLimit.test.ts) (8 tests)
+    - [`tests/unit/pagination.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/pagination.test.ts) (11 tests)
+    - [`tests/unit/cacheHeaders.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/cacheHeaders.test.ts) (10 tests)
+    - [`tests/unit/health.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/health.test.ts) (1 test)
+  - Total test suite now stands at 114 passing tests across 20 test suites (0 failures).
+- **Files changed:**
+  - `src/app/not-found.tsx` (created)
+  - `src/lib/api/cacheHeaders.ts` (created)
+  - `src/lib/api/pagination.ts` (created)
+  - `src/lib/api/rateLimiter.ts` (created)
+  - `src/middleware.ts` (created)
+  - `src/app/api/health/route.ts` (created)
+  - `src/lib/api/validators.ts` (updated)
+  - `src/app/api/territories/route.ts` (updated)
+  - `src/app/api/events/route.ts` (updated)
+  - `src/app/api/polities/route.ts` (updated)
+  - `src/app/api/polities/[id]/route.ts` (updated)
+  - `src/app/api/rulers/route.ts` (updated)
+  - `src/app/api/rulers/[id]/route.ts` (updated)
+  - `src/app/api/routes/route.ts` (updated)
+  - `src/app/api/routes/[id]/route.ts` (updated)
+  - `src/app/api/monuments/route.ts` (updated)
+  - `src/app/api/monuments/[id]/route.ts` (updated)
+  - `src/app/api/scholars/route.ts` (updated)
+  - `src/app/api/scholars/[id]/route.ts` (updated)
+  - `src/app/api/campaigns/route.ts` (updated)
+  - `src/app/api/campaigns/[id]/route.ts` (updated)
+  - `src/app/api/ai/inquire/route.ts` (updated)
+  - `tests/unit/rateLimit.test.ts` (created)
+  - `tests/unit/pagination.test.ts` (created)
+  - `tests/unit/cacheHeaders.test.ts` (created)
+  - `tests/unit/health.test.ts` (created)
+  - `docs/DECISIONS.md` (updated)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (114 passed across 20 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (37 static, SSG, and dynamic routes compiled successfully + 27.1 kB Edge middleware)
+- **Decisions made:**
+  - Zero-infrastructure in-memory sliding-window token bucket chosen to prevent external Redis dependencies while protecting upstream OpenRouter and database resources.
+  - Multi-tier caching headers with ETags ensure high read throughput without stale data risks.
+  - Dual pagination ensures optimal performance: keyset for unbounded series, offset for curated directories.
+  - Authentication remains strictly postponed for future admin milestone per ADR-009.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Release `v1.1.0`. Await user input on the next roadmap milestone.
+
 ### Update format
 For each milestone, record:
 - Date

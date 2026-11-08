@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { aiInquirySchema } from "@/lib/api/validators";
 import { queryHistoricalScholar } from "@/lib/ai/openrouter";
+import { getCacheControlHeader } from "@/lib/api/cacheHeaders";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +29,11 @@ export async function POST(request: NextRequest) {
       model,
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": getCacheControlHeader("dynamic"),
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       {
