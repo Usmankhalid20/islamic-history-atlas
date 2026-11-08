@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, BookOpen, Clock, Landmark, Swords } from "lucide-react";
+import { Compass, BookOpen, Clock, Landmark, Swords, Crown } from "lucide-react";
 
 export function Header() {
   return (
@@ -29,6 +29,13 @@ export function Header() {
             <span>Events</span>
           </Link>
           <Link
+            href="/rulers"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
+          >
+            <Crown className="w-4 h-4" aria-hidden="true" />
+            <span>Rulers</span>
+          </Link>
+          <Link
             href="/polities"
             className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
           >
@@ -47,4 +54,5 @@ export function Header() {
     </header>
   );
 }
+
 

@@ -352,6 +352,45 @@
 - **Next step:**
   - Merge `feature/historical-events` into `develop` and push to GitHub remote.
 
+### Milestone Log: 2026-11-08 (Milestone 8: Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines - FR-06)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Seeded 17 historical caliphs and rulers spanning the 7th–10th centuries CE across the Rashidun, Umayyad, Abbasid, Córdoba, and Fatimid dynasties into [`src/lib/data/historicalSeed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/data/historicalSeed.ts).
+  - Seeded 17 matching `reigns` linking each ruler to their respective polity with exact accession and deposition dates and titles.
+  - Updated database seeding runner [`src/lib/db/seed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/seed.ts) to populate `rulers` and `reigns` tables.
+  - Implemented REST API routes:
+    - `GET /api/rulers`: Supports filters by `polityId`, `reignYear`, and `name`.
+    - `GET /api/rulers/[id]`: Returns ruler record, associated reigns, and notable historical events during their reign.
+  - Built Rulers Directory [`src/app/rulers/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/rulers/page.tsx) with search input, dynasty filter tabs, reign intervals, and direct "Map at Accession" jump links.
+  - Built pre-rendered SSG Ruler Detail Pages [`src/app/rulers/[id]/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/rulers/[id]/page.tsx) via `generateStaticParams`, cross-referencing notable military events and capital foundations during their reign.
+  - Cross-linked dynasties to rulers: Updated [`src/app/polities/[id]/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/polities/[id]/page.tsx) with "Prominent Caliphs & Rulers" section.
+  - Added "Rulers" to main header navigation in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added 8 automated unit tests in [`tests/unit/rulers.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/rulers.test.ts) (41 total tests passing).
+- **Files changed:**
+  - `src/lib/data/historicalSeed.ts`
+  - `src/lib/db/seed.ts`
+  - `src/lib/api/validators.ts`
+  - `src/app/api/rulers/route.ts`
+  - `src/app/api/rulers/[id]/route.ts`
+  - `src/app/rulers/page.tsx`
+  - `src/app/rulers/[id]/page.tsx`
+  - `src/app/polities/[id]/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `tests/unit/rulers.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (41 passed across 8 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 35 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Caliphal dates and genealogical affiliations are strictly grounded in C.E. Bosworth's *The New Islamic Dynasties* (1996) and Hugh Kennedy's *The Prophet and the Age of the Caliphates* (2004).
+  - Every ruler detail page pre-renders all 17 caliphs at build time using Next.js `generateStaticParams` for sub-millisecond page loads with zero runtime DB fetch latency.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Commit `feature/rulers-and-reigns`, push, merge cleanly to `develop`, and promote to `main` with release tag `v0.3.0`.
+
 ### Completed Milestones
 - **Milestone 0:** Foundation, Documentation, and Git Setup.
 - **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
@@ -361,9 +400,10 @@
 - **Milestone 5:** Polity Directory, Dynamic Detail Pages, and Sources Register with SSG.
 - **Milestone 6:** Database SQL Migrations, Seeding Pipeline, and Environment Configuration.
 - **Milestone 7:** Historical Events Engine, Map Markers, Events Directory & OpenRouter AI Scholar.
+- **Milestone 8:** Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines (FR-06).
 
 ### Next step
-Merge `feature/historical-events` into `develop` and push to GitHub remote.
+Merge `feature/rulers-and-reigns` into `develop` and push to GitHub remote.
 
 ### Update format
 For each milestone, record:

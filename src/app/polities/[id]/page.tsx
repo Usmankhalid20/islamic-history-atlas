@@ -1,6 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { initialPolities, initialTerritoryPeriods, initialSources } from "@/lib/data/historicalSeed";
+import {
+  initialPolities,
+  initialTerritoryPeriods,
+  initialSources,
+  initialRulers,
+  initialReigns,
+} from "@/lib/data/historicalSeed";
 import { formatHistoricalYear } from "@/lib/utils";
 import {
   Calendar,
@@ -12,6 +18,8 @@ import {
   Compass,
   CheckCircle2,
   ShieldAlert,
+  Crown,
+  ChevronRight,
 } from "lucide-react";
 
 interface PolityDetailPageProps {
@@ -112,6 +120,59 @@ export default function PolityDetailPage({ params }: PolityDetailPageProps) {
           </p>
         </div>
       </div>
+
+      {/* Prominent Caliphs & Rulers */}
+      {(() => {
+        const polityReigns = initialReigns
+          .filter((r) => r.polityId === polity.id)
+          .sort((a, b) => a.startYear - b.startYear);
+
+        if (polityReigns.length === 0) return null;
+
+        return (
+          <section aria-labelledby="rulers-heading" className="space-y-4">
+            <div>
+              <h2 id="rulers-heading" className="text-2xl font-serif font-bold text-archival-ink flex items-center gap-2">
+                <Crown className="w-5 h-5 text-archival-gold" aria-hidden="true" />
+                <span>Prominent Caliphs & Rulers ({polityReigns.length})</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-archival-muted">
+                Documented rulers of this dynasty, citing Bosworth’s New Islamic Dynasties.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {polityReigns.map((reign) => {
+                const ruler = initialRulers.find((rul) => rul.id === reign.rulerId);
+                if (!ruler) return null;
+
+                return (
+                  <Link
+                    key={reign.id}
+                    href={`/rulers/${ruler.id}`}
+                    className="bg-archival-surface border border-archival-border hover:border-archival-gold/60 p-4 rounded-xl transition-colors space-y-2 group block"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-mono text-archival-gold font-bold">
+                        {formatHistoricalYear(reign.startYear)}–{reign.endYear ? formatHistoricalYear(reign.endYear) : "present"}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-archival-muted group-hover:text-archival-gold transition-colors" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-bold text-archival-ink group-hover:text-archival-gold transition-colors">
+                        {ruler.preferredName}
+                      </h3>
+                      {reign.title && (
+                        <p className="text-[11px] text-archival-muted">{reign.title}</p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Territorial Control Records */}
       <section aria-labelledby="territories-heading" className="space-y-4">
