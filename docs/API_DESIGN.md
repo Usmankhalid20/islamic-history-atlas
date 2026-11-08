@@ -92,6 +92,31 @@ Returns Islamic Golden Age polymaths and scientists. Supports filtering by `fiel
 #### `GET /api/scholars/:id`
 Returns scholar record with major treatises, patron dynasty, and citations.
 
+#### `GET /api/sources`
+Returns primary and secondary historiographical source bibliography and references. Supports offset pagination (`page`, `pageSize`) and entity queries.
+- **Caching:** `Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800`.
+- **Response Shape:**
+  ```json
+  {
+    "items": [
+      {
+        "id": "src_tabari",
+        "shortCitation": "Al-Tabari, Tarikh",
+        "fullTitle": "Tarikh al-Rusul wa al-Muluk (History of the Prophets and Kings)",
+        "author": "Muhammad ibn Jarir al-Tabari",
+        "originYear": 915,
+        "sourceType": "primary_text"
+      }
+    ],
+    "pagination": {
+      "total": 5,
+      "page": 1,
+      "pageSize": 20,
+      "totalPages": 1
+    }
+  }
+  ```
+
 ---
 
 ### 1.3 AI Scholar & Operational Health
