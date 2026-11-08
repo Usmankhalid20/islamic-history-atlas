@@ -41,3 +41,27 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Antigravity agent & IDE workspace state
+.agent/
+.gemini/
+.gsd/
+GSD-STYLE.md
+PROJECT_RULES.md
+model_capabilities.yaml
+VERSION
+adapters/
+scripts/
+.agents/agents/
+.agents/skills/codebase-mapper/
+.agents/skills/context-compressor/
+.agents/skills/context-fetch/
+.agents/skills/context-health-monitor/
+.agents/skills/debugger/
+.agents/skills/empirical-validation/
+.agents/skills/executor/
+.agents/skills/plan-checker/
+.agents/skills/planner/
+.agents/skills/subagent-delegation/
+.agents/skills/token-budget/
+.agents/skills/verifier/
+
