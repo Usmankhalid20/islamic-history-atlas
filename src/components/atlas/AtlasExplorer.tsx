@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { YearSlider } from "@/components/timeline/YearSlider";
 import { TerritoryDetailPanel } from "@/components/atlas/TerritoryDetailPanel";
-import { initialTerritoryPeriods, initialPolities } from "@/lib/data/historicalSeed";
+import { EventDetailPanel } from "@/components/atlas/EventDetailPanel";
+import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
+import { initialTerritoryPeriods, initialPolities, initialHistoricalEvents } from "@/lib/data/historicalSeed";
 import { filterActiveTerritories } from "@/lib/geo/territoryUtils";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
+import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import { formatHistoricalYear } from "@/lib/utils";
-import { Layers, MapPin, Info } from "lucide-react";
+import { Layers, MapPin, Info, Swords, Sparkles, Filter } from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
 const HistoricalMap = dynamic(
@@ -31,9 +35,24 @@ const POLITY_BADGE_COLORS: Record<string, string> = {
   pol_fatimid: "bg-blue-100 text-blue-900 border-blue-300",
 };
 
-export function AtlasExplorer() {
-  const [selectedYear, setSelectedYear] = useState<number>(750);
+interface AtlasExplorerProps {
+  initialYear?: number;
+}
+
+function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
+  const searchParams = useSearchParams();
+  const paramYear = searchParams?.get("year");
+  const parsedParamYear = paramYear ? parseInt(paramYear, 10) : undefined;
+
+  const defaultYear = (parsedParamYear && !isNaN(parsedParamYear)) 
+    ? parsedParamYear 
+    : (initialYear || 750);
+
+  const [selectedYear, setSelectedYear] = useState<number>(defaultYear);
   const [selectedTerritory, setSelectedTerritory] = useState<TerritoryPeriodRecord | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<HistoricalEventRecord | null>(null);
+  const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
+  const [showAiInquiry, setShowAiInquiry] = useState<boolean>(false);
 
   // Filter active territories for the current year (pure, deterministic)
   const activeTerritories = useMemo(() => {
@@ -45,6 +64,16 @@ export function AtlasExplorer() {
     const activePolityIds = new Set(activeTerritories.map((t) => t.polityId));
     return initialPolities.filter((p) => activePolityIds.has(p.id));
   }, [activeTerritories]);
+
+  // Filter events: either all events or events near selected year (within ±25 years)
+  const displayedEvents = useMemo(() => {
+    if (showAllEvents) {
+      return initialHistoricalEvents;
+    }
+    return initialHistoricalEvents.filter(
+      (e) => Math.abs(e.eventYear - selectedYear) <= 25
+    );
+  }, [selectedYear, showAllEvents]);
 
   return (
     <div className="space-y-6 w-full">
@@ -65,9 +94,9 @@ export function AtlasExplorer() {
         }}
       />
 
-      {/* Concurrent Polities Active in Selected Year */}
+      {/* Concurrent Polities & Events Controls */}
       <div 
-        className="bg-archival-surface border border-archival-border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+        className="bg-archival-surface border border-archival-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
         role="status"
         aria-live="polite"
       >
@@ -94,7 +123,43 @@ export function AtlasExplorer() {
             ))
           )}
         </div>
+
+        {/* Action Buttons: Event Scope Toggle & AI Scholar */}
+        <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-archival-border">
+          <button
+            type="button"
+            onClick={() => setShowAllEvents(!showAllEvents)}
+            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+              showAllEvents
+                ? "bg-archival-gold text-white border-archival-gold"
+                : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
+            }`}
+            title="Toggle between all historical events or events within ±25 years of the selected date"
+          >
+            <Filter className="w-3 h-3" aria-hidden="true" />
+            <span>{showAllEvents ? "All Events" : `Era Events (±25y: ${displayedEvents.length})`}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowAiInquiry(!showAiInquiry)}
+            className="px-2.5 py-1 rounded border border-archival-gold text-[11px] font-sans font-medium text-archival-gold hover:bg-archival-gold/10 flex items-center gap-1.5 transition-colors"
+            title="Open Historical AI Inquiry Scholar"
+          >
+            <Sparkles className="w-3 h-3 text-archival-gold" aria-hidden="true" />
+            <span>AI Scholar</span>
+          </button>
+        </div>
       </div>
+
+      {/* AI Inquiry Drawer if active */}
+      {showAiInquiry && (
+        <HistoricalInquiryWidget
+          currentYear={selectedYear}
+          activePolities={activePolities.map((p) => p.canonicalName)}
+          onClose={() => setShowAiInquiry(false)}
+        />
+      )}
 
       {/* Map and Detail Drawer Layout */}
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -102,20 +167,41 @@ export function AtlasExplorer() {
         <div className="lg:col-span-2 h-[480px] sm:h-[540px] w-full relative">
           <HistoricalMap
             territories={activeTerritories}
+            events={displayedEvents}
             selectedTerritoryId={selectedTerritory?.id}
-            onSelectTerritory={(t) => setSelectedTerritory(t)}
+            selectedEventId={selectedEvent?.id}
+            onSelectTerritory={(t) => {
+              setSelectedTerritory(t);
+              setSelectedEvent(null);
+            }}
+            onSelectEvent={(e) => {
+              setSelectedEvent(e);
+              setSelectedTerritory(null);
+            }}
           />
 
-          {/* Map Overlay Prompt */}
-          <div className="absolute bottom-3 left-3 z-[400] bg-archival-surface/90 backdrop-blur-sm border border-archival-border/80 px-3 py-1.5 rounded-lg text-xs text-archival-muted flex items-center gap-1.5 shadow-sm">
-            <Info className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
-            <span>Click any territory polygon to inspect evidence and sources</span>
+          {/* Map Overlay Prompt & Legend */}
+          <div className="absolute bottom-3 left-3 z-[400] bg-archival-surface/90 backdrop-blur-sm border border-archival-border/80 px-3 py-1.5 rounded-lg text-xs text-archival-muted flex items-center gap-3 shadow-sm">
+            <span className="flex items-center gap-1">
+              <Info className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+              <span>Click polygon for territory</span>
+            </span>
+            <span className="text-archival-border">•</span>
+            <span className="flex items-center gap-1">
+              <Swords className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
+              <span>Click circle for event</span>
+            </span>
           </div>
         </div>
 
-        {/* Territory & Source Inspection Drawer */}
-        <div className="lg:col-span-1 w-full">
-          {selectedTerritory ? (
+        {/* Territory & Event Inspection Drawer */}
+        <div className="lg:col-span-1 w-full space-y-4">
+          {selectedEvent ? (
+            <EventDetailPanel
+              event={selectedEvent}
+              onClose={() => setSelectedEvent(null)}
+            />
+          ) : selectedTerritory ? (
             <TerritoryDetailPanel
               territory={selectedTerritory}
               onClose={() => setSelectedTerritory(null)}
@@ -126,15 +212,56 @@ export function AtlasExplorer() {
                 <MapPin className="w-5 h-5 text-archival-gold" aria-hidden="true" />
               </div>
               <h3 className="font-serif font-semibold text-archival-ink text-base">
-                Territory Inspector
+                Historical Inspector
               </h3>
               <p className="text-xs text-archival-muted leading-relaxed">
-                Click any territory on the map or move the year slider above to explore changing political control across Islamic history.
+                Click any territory polygon or event marker on the map to inspect evidence, rulers, dates, and scholarly sources.
               </p>
-              <div className="pt-3 border-t border-archival-border/60 text-[11px] text-archival-muted space-y-1 text-left">
+              <div className="pt-3 border-t border-archival-border/60 text-[11px] text-archival-muted space-y-1.5 text-left">
                 <p>• <strong>Dashed borders:</strong> Approximate / disputed zones.</p>
                 <p>• <strong>Solid borders:</strong> Directly administered territories.</p>
+                <p>• <strong>Event circles:</strong> Decisive battles, conquests, and capital foundations.</p>
                 <p>• <strong>Attribution:</strong> All claims link to peer-reviewed literature.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Quick Era Events List */}
+          {displayedEvents.length > 0 && (
+            <div className="bg-archival-surface border border-archival-border rounded-xl p-4 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-serif font-semibold text-archival-ink">
+                <span className="flex items-center gap-1.5">
+                  <Swords className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+                  <span>Era Events ({displayedEvents.length})</span>
+                </span>
+                <span className="text-[10px] text-archival-muted font-sans">
+                  {showAllEvents ? "All 632–1000 CE" : `±25y of ${selectedYear} CE`}
+                </span>
+              </div>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {displayedEvents.map((ev) => (
+                  <button
+                    key={ev.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedEvent(ev);
+                      setSelectedTerritory(null);
+                    }}
+                    className={`w-full text-left p-2 rounded text-xs transition-colors border ${
+                      selectedEvent?.id === ev.id
+                        ? "bg-archival-gold/10 border-archival-gold text-archival-ink"
+                        : "bg-archival-bg hover:bg-archival-border/40 border-archival-border/40 text-archival-muted"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between font-mono text-[11px]">
+                      <span className="font-semibold text-archival-ink truncate mr-2">{ev.title}</span>
+                      <span className="text-archival-gold shrink-0">{formatHistoricalYear(ev.eventYear)}</span>
+                    </div>
+                    <div className="text-[10px] text-archival-muted truncate mt-0.5 capitalize">
+                      {ev.eventType} • {ev.locationName || "Recorded site"}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -144,3 +271,16 @@ export function AtlasExplorer() {
   );
 }
 
+export function AtlasExplorer(props: AtlasExplorerProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full h-96 rounded-xl border border-archival-border bg-archival-surface flex items-center justify-center text-archival-muted font-serif text-sm">
+          Loading Atlas Explorer...
+        </div>
+      }
+    >
+      <AtlasExplorerContent {...props} />
+    </Suspense>
+  );
+}

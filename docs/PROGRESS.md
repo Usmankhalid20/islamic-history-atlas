@@ -311,6 +311,47 @@
 - **Known issues/blockers:**
   - None. Full MVP application architecture and data foundation are complete and verified.
 
+### Milestone Log: 2026-11-08 (Milestone 7: Historical Events Engine, Map Markers, Events Directory & OpenRouter AI Scholar)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Expanded historical seed events database with 6 additional critical turning points (Battle of Yarmouk 636, Founding of Fustat 641, Gibraltar Crossing 711, Founding of Córdoba Emirate 756, Proclamation of Fatimid Caliphate 909, Founding of Cairo 969).
+  - Integrated dynamic event circular markers (`battle`, `conquest`, `founding`) into Leaflet cartography engine in [`HistoricalMap.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/map/HistoricalMap.tsx).
+  - Built interactive [`EventDetailPanel.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/EventDetailPanel.tsx) modal with accessible dialog role, coordinates, date badges, and cited references.
+  - Upgraded [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with era events filtering (±25y window or all events toggle), query-string synchronizer (`/?year=...`), and AI Scholar toggle.
+  - Built dedicated chronological register page [`src/app/events/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/events/page.tsx) with category filter tabs and direct "View on Map" links.
+  - Added "Events" link to main site [`Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Integrated OpenRouter API client [`src/lib/ai/openrouter.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/ai/openrouter.ts) configured via git-ignored `.env.local` for grounded AI historical inquiries with anti-hallucination prompts.
+  - Built POST `/api/ai/inquire` route with Zod input validation and interactive [`HistoricalInquiryWidget.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/HistoricalInquiryWidget.tsx) frontend drawer.
+  - Added 10 new automated unit tests in `tests/unit/events.test.ts` and `tests/unit/ai.test.ts` (33 total tests passing).
+- **Files changed:**
+  - `src/lib/data/historicalSeed.ts`
+  - `src/components/map/HistoricalMap.tsx`
+  - `src/components/atlas/EventDetailPanel.tsx`
+  - `src/components/atlas/AtlasExplorer.tsx`
+  - `src/components/atlas/HistoricalInquiryWidget.tsx`
+  - `src/app/events/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `src/lib/ai/openrouter.ts`
+  - `src/app/api/ai/inquire/route.ts`
+  - `src/lib/api/validators.ts`
+  - `.env.example`
+  - `tests/unit/events.test.ts`
+  - `tests/unit/ai.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (33 passed across 7 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (16 static, dynamic, and SSG routes compiled successfully)
+- **Decisions made:**
+  - Event markers use color taxonomy: Red (battles), Orange (conquests), Emerald (dynastic foundations).
+  - Leaflet expects `[lat, lng]`, while GeoJSON standard stores `[lng, lat]`; verified automatic coordinate translation.
+  - AI inquiries strictly ground citations in classical chronicles (al-Tabari, al-Baladhuri) and modern historiography (Kennedy, Bosworth).
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/historical-events` into `develop` and push to GitHub remote.
+
 ### Completed Milestones
 - **Milestone 0:** Foundation, Documentation, and Git Setup.
 - **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
@@ -319,9 +360,10 @@
 - **Milestone 4:** RESTful API Route Handlers (`/api/territories`, `/api/polities`, `/api/events`) and Zod input validation.
 - **Milestone 5:** Polity Directory, Dynamic Detail Pages, and Sources Register with SSG.
 - **Milestone 6:** Database SQL Migrations, Seeding Pipeline, and Environment Configuration.
+- **Milestone 7:** Historical Events Engine, Map Markers, Events Directory & OpenRouter AI Scholar.
 
 ### Next step
-Merge `feature/polity-pages` into `develop` and push to GitHub remote.
+Merge `feature/historical-events` into `develop` and push to GitHub remote.
 
 ### Update format
 For each milestone, record:
