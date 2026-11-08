@@ -5,17 +5,21 @@ import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, LayerGroup } from "l
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
+import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
   events?: HistoricalEventRecord[];
   routes?: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })[];
+  monuments?: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })[];
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
   onSelectEvent?: (event: HistoricalEventRecord) => void;
   onSelectRoute?: (route: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })) => void;
+  onSelectMonument?: (monument: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })) => void;
   selectedTerritoryId?: string | null;
   selectedEventId?: string | null;
   selectedRouteId?: string | null;
+  selectedMonumentId?: string | null;
 }
 
 const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
@@ -32,24 +36,35 @@ const EVENT_COLORS: Record<string, { fill: string; stroke: string }> = {
   founding: { fill: "#059669", stroke: "#047857" }, // Emerald
 };
 
+const MONUMENT_COLORS: Record<string, { fill: string; stroke: string }> = {
+  mosque: { fill: "#10B981", stroke: "#047857" }, // Emerald
+  academy_library: { fill: "#8B5CF6", stroke: "#5B21B6" }, // Purple
+  palace: { fill: "#F59E0B", stroke: "#B45309" }, // Amber
+  observatory: { fill: "#3B82F6", stroke: "#1D4ED8" }, // Blue
+};
+
 const DEFAULT_STYLE = { fill: "#64748B", stroke: "#475569" };
 
 export function HistoricalMap({
   territories,
   events = [],
   routes = [],
+  monuments = [],
   onSelectTerritory,
   onSelectEvent,
   onSelectRoute,
+  onSelectMonument,
   selectedTerritoryId,
   selectedEventId,
   selectedRouteId,
+  selectedMonumentId,
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
   const eventsLayerRef = useRef<LayerGroup | null>(null);
   const routesLayerRef = useRef<LayerGroup | null>(null);
+  const monumentsLayerRef = useRef<LayerGroup | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -293,6 +308,68 @@ export function HistoricalMap({
 
     updateRoutes();
   }, [routes, selectedRouteId, onSelectRoute]);
+
+  // Update Monument markers layer
+  useEffect(() => {
+    async function updateMonumentMarkers() {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (monumentsLayerRef.current) {
+        map.removeLayer(monumentsLayerRef.current);
+        monumentsLayerRef.current = null;
+      }
+
+      if (monuments.length === 0) return;
+
+      const markers = monuments
+        .map((monument) => {
+          const geojson = monument.locationGeojson as { coordinates: [number, number] } | null;
+          if (!geojson || !geojson.coordinates) return null;
+
+          // GeoJSON is [lng, lat]; Leaflet expects [lat, lng]
+          const lat = geojson.coordinates[1];
+          const lng = geojson.coordinates[0];
+
+          const colors = MONUMENT_COLORS[monument.monumentType] || {
+            fill: "#8B5CF6",
+            stroke: "#5B21B6",
+          };
+          const isSelected = monument.id === selectedMonumentId;
+
+          const circleMarker = L.circleMarker([lat, lng], {
+            radius: isSelected ? 9.5 : 7.5,
+            fillColor: colors.fill,
+            color: isSelected ? "#000000" : colors.stroke,
+            weight: isSelected ? 3.5 : 2,
+            opacity: 1,
+            fillOpacity: 0.95,
+          });
+
+          circleMarker.bindTooltip(
+            `<strong>${monument.name} (${monument.foundingYear} CE)</strong><br/><span class="capitalize text-purple-700 font-medium">${monument.monumentType.replace("_", " ")}</span> • ${monument.cityName}`,
+            { direction: "top", offset: [0, -6], className: "font-sans text-xs" }
+          );
+
+          circleMarker.on("click", () => {
+            if (onSelectMonument) {
+              onSelectMonument(monument);
+            }
+          });
+
+          return circleMarker;
+        })
+        .filter(Boolean);
+
+      const group = L.layerGroup(markers as any[]);
+      group.addTo(map);
+      monumentsLayerRef.current = group;
+    }
+
+    updateMonumentMarkers();
+  }, [monuments, selectedMonumentId, onSelectMonument]);
 
   return (
     <div

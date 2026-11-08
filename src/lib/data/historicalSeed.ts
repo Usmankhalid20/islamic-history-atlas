@@ -5,6 +5,8 @@ import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { NewRulerRecord } from "@/lib/db/schema/rulers";
 import type { NewReignRecord } from "@/lib/db/schema/reigns";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
+import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
+import type { NewScholarRecord } from "@/lib/db/schema/scholars";
 
 export const initialSources: NewSourceRecord[] = [
   {
@@ -761,6 +763,175 @@ export const initialTradeRoutes: (Omit<TradeRouteRecord, "createdAt"> & { create
     reviewStatus: "published",
   },
 ];
+
+export const initialMonuments: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })[] = [
+  {
+    id: "mon_dome_of_the_rock_691",
+    name: "Dome of the Rock (Qubbat al-Sakhrah)",
+    monumentType: "mosque",
+    polityId: "pol_umayyad",
+    foundingYear: 691,
+    cityName: "Jerusalem",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [35.2354, 31.778],
+    },
+    architecturalFeatures: "Octagonal ambulatory, gold-gilded wooden dome, earliest surviving monumental epigraphic Qur'anic inscriptions, Byzantine-Sasanian mosaic syntheses.",
+    description: "Commissioned by Umayyad Caliph Abd al-Malik ibn Marwan in 691 CE (72 AH). The earliest masterpiece of Islamic monumental architecture, enshrining the Sacred Rock with exquisite mosaic programs.",
+    reviewStatus: "published",
+  },
+  {
+    id: "mon_umayyad_mosque_damascus_706",
+    name: "Great Mosque of Damascus (Umayyad Mosque)",
+    monumentType: "mosque",
+    polityId: "pol_umayyad",
+    foundingYear: 706,
+    cityName: "Damascus",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [36.3065, 33.5119],
+    },
+    architecturalFeatures: "Triple-aisled prayer hall, monumental transept dome (Dome of the Eagle), Barada River landscape mosaics, square stone minarets.",
+    description: "Commissioned by Caliph al-Walid I in 706–715 CE on the site of the ancient Temenos of Damascus. Established the canonical congregational mosque plan with grand courtyard arcades and golden vegetal mosaics.",
+    reviewStatus: "published",
+  },
+  {
+    id: "mon_bayt_al_hikma_762",
+    name: "House of Wisdom (Bayt al-Hikma)",
+    monumentType: "academy_library",
+    polityId: "pol_abbasid_early",
+    foundingYear: 762,
+    cityName: "Baghdad",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [44.3615, 33.3152],
+    },
+    architecturalFeatures: "Caliphal research institute, scriptorium, astronomical observation stations, multi-language translation bureau, repository of Sanskrit, Persian, and Hellenistic codices.",
+    description: "The premier intellectual center of the Islamic Golden Age in Baghdad. Expanded under Caliphs Harun al-Rashid and al-Ma'mun, spearheading the monumental Greco-Arabic translation movement and scientific synthesis.",
+    reviewStatus: "published",
+  },
+  {
+    id: "mon_great_mosque_cordoba_785",
+    name: "Great Mosque of Córdoba (La Mezquita)",
+    monumentType: "mosque",
+    polityId: "pol_cordoba_emirate",
+    foundingYear: 785,
+    cityName: "Córdoba",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [-4.7794, 37.8789],
+    },
+    architecturalFeatures: "Hypostyle forest of 856 columns, double-tiered horseshoe and polylobed arches in alternating red brick and white stone, ribbed melon domes, octagonal shell-domed mihrab.",
+    description: "Founded in 785 CE by Abd al-Rahman I and expanded by subsequent Umayyad emirs and Caliph Abd al-Rahman III. A wonder of medieval architecture synthesizing Hispano-Roman, Visigothic, and Syrian Umayyad motifs.",
+    reviewStatus: "published",
+  },
+  {
+    id: "mon_al_qarawiyyin_859",
+    name: "University & Mosque of al-Qarawiyyin",
+    monumentType: "academy_library",
+    polityId: "pol_cordoba_emirate",
+    foundingYear: 859,
+    cityName: "Fez",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [-4.9734, 34.0649],
+    },
+    architecturalFeatures: "Central courtyard with Andalusi pavilions, vast hypostyle prayer hall, historic manuscript library housing unique 9th-century parchment Qur'ans, intricate plaster zellij tilework.",
+    description: "Founded in 859 CE by the pious benefactor Fatima al-Fihri in Fez, Morocco. Recognized by UNESCO as the oldest continually operating university in the world, becoming a beacon of astronomy, grammar, and Islamic jurisprudence.",
+    reviewStatus: "published",
+  },
+  {
+    id: "mon_al_azhar_970",
+    name: "Al-Azhar Mosque & Academy",
+    monumentType: "academy_library",
+    polityId: "pol_fatimid",
+    foundingYear: 970,
+    cityName: "Cairo",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [31.2625, 30.0457],
+    },
+    architecturalFeatures: "Fatimid keel-shaped stucco arches, rosette relief carvings, central peristyle sahn, five historical minarets from Fatimid to Mamluk eras.",
+    description: "Commissioned by the Fatimid conqueror general Jawhar al-Siqilli in 970 CE and inaugurated by Caliph al-Mu'izz in 972 CE. Rapidly evolved into one of the most prestigious academies of Islamic theology, philosophy, and sciences.",
+    reviewStatus: "published",
+  },
+];
+
+export const initialScholars: (Omit<NewScholarRecord, "createdAt"> & { createdAt?: Date })[] = [
+  {
+    id: "sch_al_khwarizmi",
+    name: "Muhammad ibn Musa al-Khwarizmi",
+    birthYear: 780,
+    deathYear: 850,
+    fieldsOfStudy: "Mathematics, Algebra, Astronomy, Geography",
+    primaryCity: "Baghdad",
+    patronizedByPolityId: "pol_abbasid_early",
+    majorWorks: "al-Kitab al-mukhtasar fi hisab al-jabr wal-muqabala (The Compendious Book on Calculation by Completion and Balancing), Kitab Surat al-Ard",
+    biography: "Persian polymath at the House of Wisdom in Baghdad. Known as the 'Father of Algebra' (from which the word algebra originates) and author of the text that introduced Hindu-Arabic numerals and positional decimal algorithms to Europe (giving rise to the term algorithm).",
+    reviewStatus: "published",
+  },
+  {
+    id: "sch_al_kindi",
+    name: "Abu Yusuf Ya'qub ibn Ishaq al-Kindi (Alkindus)",
+    birthYear: 801,
+    deathYear: 873,
+    fieldsOfStudy: "Philosophy, Cryptanalysis, Optics, Music Theory, Chemistry",
+    primaryCity: "Baghdad",
+    patronizedByPolityId: "pol_abbasid_early",
+    majorWorks: "Fi al-Falsafa al-Ula (On First Philosophy), Manuscript on Deciphering Cryptographic Messages",
+    biography: "Known as the 'Philosopher of the Arabs'. Pioneered the synthesis of Aristotelian and Neoplatonic philosophy with Islamic theology and authored the earliest known treatise on cryptanalysis and frequency analysis.",
+    reviewStatus: "published",
+  },
+  {
+    id: "sch_al_razi",
+    name: "Abu Bakr al-Razi (Rhazes)",
+    birthYear: 865,
+    deathYear: 925,
+    fieldsOfStudy: "Clinical Medicine, Chemistry, Experimental Pharmacology, Ophthalmology",
+    primaryCity: "Rayy & Baghdad",
+    patronizedByPolityId: "pol_abbasid_early",
+    majorWorks: "Kitab al-Hawi fi al-Tibb (The Comprehensive Book on Medicine / Continens), Treatise on Smallpox and Measles",
+    biography: "One of the greatest clinical physicians of antiquity. Chief physician of the imperial hospitals in Rayy and Baghdad, he was the first to clinically differentiate smallpox from measles and introduced the use of alcohol in antiseptic medicine.",
+    reviewStatus: "published",
+  },
+  {
+    id: "sch_al_battani",
+    name: "Muhammad ibn Jabir al-Battani (Albatenius)",
+    birthYear: 858,
+    deathYear: 929,
+    fieldsOfStudy: "Astronomy, Trigonometry, Spherical Geometry",
+    primaryCity: "al-Raqqa",
+    patronizedByPolityId: "pol_abbasid_early",
+    majorWorks: "Kitab az-Zij (Book of Astronomical Tables), Treatises on Solar Equations",
+    biography: "Renowned astronomer and mathematician based at al-Raqqa on the Euphrates. Calculated the solar year with astonishing precision (365 days, 5 hours, 46 minutes, and 24 seconds, differing by only 2 minutes from modern measurements) and popularized the trigonometric sine, tangent, and secant functions.",
+    reviewStatus: "published",
+  },
+  {
+    id: "sch_al_farabi",
+    name: "Abu Nasr al-Farabi (Alpharabius)",
+    birthYear: 872,
+    deathYear: 950,
+    fieldsOfStudy: "Political Philosophy, Logic, Metaphysics, Musicology",
+    primaryCity: "Damascus & Baghdad",
+    patronizedByPolityId: "pol_abbasid_early",
+    majorWorks: "al-Madina al-Fadila (The Virtuous City), Kitab al-Musiqa al-Kabir (The Great Book of Music)",
+    biography: "Revered in medieval Arabic tradition as 'The Second Teacher' (after Aristotle). Author of foundational works on political ethics, civic order, formal logic, and the physics of acoustics.",
+    reviewStatus: "published",
+  },
+  {
+    id: "sch_ibn_al_haytham",
+    name: "al-Hasan Ibn al-Haytham (Alhazen)",
+    birthYear: 965,
+    deathYear: 1040,
+    fieldsOfStudy: "Experimental Optics, Visual Perception, Astronomy, Mathematics",
+    primaryCity: "Cairo",
+    patronizedByPolityId: "pol_fatimid",
+    majorWorks: "Kitab al-Manazir (Book of Optics / De Aspectibus), On the Configuration of the World",
+    biography: "Pioneering polymath born in Basra who flourished in Fatimid Cairo. Celebrated as the 'Father of Modern Optics' for disproving extramission theory, inventing the camera obscura, and formulating the rigorous experimental scientific method based on falsifiable empirical verification.",
+    reviewStatus: "published",
+  },
+];
+
 
 
 

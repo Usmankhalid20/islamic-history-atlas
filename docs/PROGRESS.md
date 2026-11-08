@@ -451,9 +451,74 @@
 - **Milestone 7:** Historical Events Engine, Map Markers, Events Directory & OpenRouter AI Scholar.
 - **Milestone 8:** Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines (FR-06).
 - **Milestone 9:** Trade Corridors & Pilgrimage Roads Layer.
+- **Milestone 10:** Intellectual Centers, Scholars, Polymaths, and Monumental Architecture Layer.
 
-### Next step
-Merge `feature/trade-and-pilgrimage-routes` into `develop` and push to GitHub remote.
+### Milestone Log: 2026-11-09 (Milestone 10: Intellectual Centers, Scholars & Monuments Layer)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Designed and authored Drizzle ORM schemas [`monuments.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/schema/monuments.ts) and [`scholars.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/schema/scholars.ts).
+  - Seeded 6 monumental landmarks with verified Point GeoJSON coordinates:
+    - *Dome of the Rock (Jerusalem, 691 CE, Umayyad)*
+    - *Great Mosque of Damascus (Damascus, 706 CE, Umayyad)*
+    - *House of Wisdom / Bayt al-Hikma (Baghdad, 762 CE, Abbasid)*
+    - *Great Mosque of Córdoba (Córdoba, 785 CE, Emirate of Córdoba)*
+    - *University & Mosque of al-Qarawiyyin (Fez, 859 CE, Fatima al-Fihri)*
+    - *Al-Azhar Mosque & Academy (Cairo, 970 CE, Fatimid)*
+  - Seeded 6 foundational polymaths and scientists with lifespan and major works:
+    - *Muhammad ibn Musa al-Khwarizmi (780–850 CE, Algebra, Baghdad)*
+    - *Abu Yusuf Ya'qub al-Kindi / Alkindus (801–873 CE, Philosophy, Baghdad)*
+    - *Abu Bakr al-Razi / Rhazes (865–925 CE, Medicine, Rayy & Baghdad)*
+    - *Muhammad ibn Jabir al-Battani / Albatenius (858–929 CE, Astronomy, al-Raqqa)*
+    - *Abu Nasr al-Farabi / Alpharabius (872–950 CE, Political Philosophy & Logic)*
+    - *al-Hasan Ibn al-Haytham / Alhazen (965–1040 CE, Experimental Optics, Cairo)*
+  - Updated database seed runner [`src/lib/db/seed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/seed.ts) to populate `monuments` and `scholars`.
+  - Implemented REST API route handlers:
+    - `GET /api/monuments`: Filter by `monumentType`, `polityId`, `foundingYear`, `cityName`.
+    - `GET /api/monuments/[id]`: Returns single monument with patron polity and academic source citation.
+    - `GET /api/scholars`: Filter by `fieldsOfStudy`, `patronizedByPolityId`, `activeYear`, `primaryCity`.
+    - `GET /api/scholars/[id]`: Returns single scholar record with patronage and works.
+  - Upgraded Leaflet map in [`HistoricalMap.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/map/HistoricalMap.tsx) with distinctive circular markers for historical monuments with type-based colors (Purple for academies, Emerald for mosques, Amber for palaces, Blue for observatories).
+  - Built interactive [`MonumentDetailPanel.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/MonumentDetailPanel.tsx) modal dialog with architectural innovations and citations.
+  - Enhanced [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with dynamic monument filtering by founding year and toggle controls.
+  - Built dedicated directory pages:
+    - [`src/app/monuments/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/monuments/page.tsx) with category filters and map navigation.
+    - [`src/app/scholars/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/scholars/page.tsx) with search bar, discipline filters, and era map exploration links.
+  - Added "Monuments" and "Scholars" navigation links in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added 14 new automated unit tests in [`tests/unit/monuments.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/monuments.test.ts) and [`tests/unit/scholars.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/scholars.test.ts) (62 total tests passing).
+- **Files changed:**
+  - `src/lib/db/schema/monuments.ts`
+  - `src/lib/db/schema/scholars.ts`
+  - `src/lib/db/schema/index.ts`
+  - `src/lib/data/historicalSeed.ts`
+  - `src/lib/db/seed.ts`
+  - `src/lib/api/validators.ts`
+  - `src/app/api/monuments/route.ts`
+  - `src/app/api/monuments/[id]/route.ts`
+  - `src/app/api/scholars/route.ts`
+  - `src/app/api/scholars/[id]/route.ts`
+  - `src/components/atlas/MonumentDetailPanel.tsx`
+  - `src/components/map/HistoricalMap.tsx`
+  - `src/components/atlas/AtlasExplorer.tsx`
+  - `src/app/monuments/page.tsx`
+  - `src/app/scholars/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `src/lib/utils.ts`
+  - `tests/unit/monuments.test.ts`
+  - `tests/unit/scholars.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (62 passed across 11 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 34 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Monument locations use standard Point GeoJSON `[lng, lat]`, dynamically mapped to Leaflet coordinates.
+  - Polymath directory includes both Arabic canonical names and Latinized equivalents (*Alkindus*, *Rhazes*, *Albatenius*, *Alpharabius*, *Alhazen*) to support broad research discovery.
+  - Direct links on monument and scholar cards automatically jump the user to the interactive atlas configured to the relevant historical year.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Commit `feature/monuments-and-scholars`, merge into `develop`, and promote release tag `v0.5.0` to `main`.
 
 ### Update format
 For each milestone, record:

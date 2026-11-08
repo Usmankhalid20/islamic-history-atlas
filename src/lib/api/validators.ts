@@ -81,6 +81,39 @@ export const routesQuerySchema = z.object({
   name: z.string().optional(),
 });
 
+/**
+ * Validation schema for GET /api/monuments?monumentType=...&polityId=...&foundingYear=...
+ */
+export const monumentsQuerySchema = z.object({
+  monumentType: z.string().optional(),
+  polityId: z.string().optional(),
+  foundingYear: z.coerce
+    .number()
+    .int("Founding year must be an integer")
+    .min(500)
+    .max(2000)
+    .optional(),
+  cityName: z.string().optional(),
+  name: z.string().optional(),
+});
+
+/**
+ * Validation schema for GET /api/scholars?fieldsOfStudy=...&patronizedByPolityId=...&activeYear=...
+ */
+export const scholarsQuerySchema = z.object({
+  fieldsOfStudy: z.string().optional(),
+  patronizedByPolityId: z.string().optional(),
+  activeYear: z.coerce
+    .number()
+    .int("Active year must be an integer")
+    .min(500)
+    .max(2000)
+    .optional(),
+  primaryCity: z.string().optional(),
+  name: z.string().optional(),
+});
+
+
 
 
 
