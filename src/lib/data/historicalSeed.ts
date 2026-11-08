@@ -4,6 +4,7 @@ import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { NewRulerRecord } from "@/lib/db/schema/rulers";
 import type { NewReignRecord } from "@/lib/db/schema/reigns";
+import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 
 export const initialSources: NewSourceRecord[] = [
   {
@@ -624,5 +625,142 @@ export const initialReigns: NewReignRecord[] = [
     reviewStatus: "published",
   },
 ];
+
+export const initialTradeRoutes: (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date })[] = [
+  {
+    id: "route_darb_zubaydah",
+    name: "Darb Zubaydah (Kufa–Mecca Pilgrim Highway)",
+    routeType: "pilgrim_road",
+    description: "The premier imperial Abbasid pilgrimage highway engineered under the patronage of Empress Zubaydah bint Ja'far (wife of Harun al-Rashid). Spanning over 1,400 km across the Arabian desert, it featured monumental stone-walled water reservoirs (birak), lined wells, fortified caravanserais, and fire guidance beacons.",
+    primaryCommodities: "Pilgrims, Caliphal Mail (Barid), Luxury Goods, Textiles",
+    activeFromYear: 750,
+    activeToYear: 1258,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [44.38, 32.03], // Kufa
+        [43.60, 30.80], // al-Qadisiyya
+        [42.50, 28.00], // al-Tha'labiyya
+        [42.18, 27.12], // Fayd
+        [41.30, 24.63], // al-Rabadha
+        [40.40, 22.80], // al-Dhariba
+        [39.82, 21.42], // Mecca
+      ],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "route_silk_road_khurasan",
+    name: "Great Khurasan Road (Silk Road Western Trunk)",
+    routeType: "caravan_route",
+    description: "The major arterial overland trunk of the Silk Road connecting Baghdad to Central Asia and China. Documented extensively by postal geographers Ibn Khordadbeh and al-Muqaddasi, passing through the Zagros gates, the Iranian plateau, Merv oasis, and Transoxiana.",
+    primaryCommodities: "Chinese Silk, Samarkand Rag Paper, Fergana Horses, Lapis Lazuli, Spices, Ceramics",
+    activeFromYear: 632,
+    activeToYear: 1500,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [44.36, 33.31], // Baghdad
+        [45.85, 34.46], // Hulwan (Zagros Pass)
+        [48.51, 34.79], // Hamadan
+        [51.43, 35.59], // Rayy (Tehran)
+        [58.79, 36.21], // Nishapur
+        [62.19, 37.60], // Merv Oasis
+        [64.42, 39.77], // Bukhara
+        [66.97, 39.65], // Samarkand
+      ],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "route_darb_al_hajj_shami",
+    name: "Darb al-Hajj al-Shami (Syrian Pilgrimage Road)",
+    routeType: "pilgrim_road",
+    description: "The ancient pilgrimage highway connecting Damascus, the Umayyad capital, to the holy sanctuaries of Medina and Mecca. Tracing the historic King's Highway through the desert frontier of the Hawran, Jordan, and the northern Hijaz.",
+    primaryCommodities: "Pilgrims, Syrian Olive Oil, Glassware, Damascus Steel, Parchment",
+    activeFromYear: 632,
+    activeToYear: 1914,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [36.29, 33.51], // Damascus
+        [36.48, 32.52], // Bosra
+        [35.93, 31.95], // Amman
+        [35.73, 30.19], // Ma'an
+        [36.56, 28.38], // Tabuk
+        [37.92, 26.61], // al-Ula (Mada'in Salih)
+        [39.61, 24.47], // Medina
+        [39.82, 21.42], // Mecca
+      ],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "route_maritime_spice_incense",
+    name: "Indian Ocean & Red Sea Maritime Spice Route",
+    routeType: "maritime_lane",
+    description: "The maritime monsoon trading network connecting Persian Gulf and Red Sea ports to India and Southeast Asia. Muslim dhows navigated between Siraf, Basra, Sohar, Aden, and Jeddah, trading in frankincense, spices, and porcelain.",
+    primaryCommodities: "Frankincense, Myrrh, Black Pepper, Cinnamon, Pearls, Chinese Porcelain",
+    activeFromYear: 632,
+    activeToYear: 1600,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [47.81, 30.50], // Basra
+        [52.34, 27.67], // Siraf
+        [56.74, 24.36], // Sohar (Oman)
+        [58.59, 23.61], // Muscat
+        [45.03, 12.78], // Aden
+        [42.95, 14.80], // al-Hudaydah
+        [39.19, 21.54], // Jeddah
+        [32.55, 29.96], // al-Qulzum (Suez)
+      ],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "route_trans_saharan_gold",
+    name: "Trans-Saharan Western Gold & Salt Route",
+    routeType: "caravan_route",
+    description: "The hazardous desert caravan trail connecting the Maghrib and Al-Andalus to West African Sahel kingdoms. Berber caravans navigated camel routes between oasis entrepôts, trading Mediterranean manufactures and Saharan rock salt for sub-Saharan gold and ivory.",
+    primaryCommodities: "Bambuk/Bure Gold, Taghaza Rock Salt, Saharan Dates, Books, Textiles",
+    activeFromYear: 700,
+    activeToYear: 1600,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [-4.99, 34.03], // Fez
+        [-4.27, 31.28], // Sijilmasa
+        [-4.98, 23.57], // Taghaza Salt Mines
+        [-3.98, 22.67], // Taoudenni
+        [-7.02, 17.30], // Walata / Awdaghost
+        [-7.97, 15.75], // Koumbi Saleh (Ancient Ghana)
+      ],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "route_andalusi_via_cordoba",
+    name: "The Caliphal Highway of Al-Andalus",
+    routeType: "caravan_route",
+    description: "The primary internal Roman-Islamic trunk road linking the Umayyad capital of Córdoba northwards through the Meseta Central to the Upper March (al-Thaghr al-A'la) at Zaragoza and Narbonne.",
+    primaryCommodities: "Andalusi Olive Oil, Paper, Toledo Swords, Saffron, Leather",
+    activeFromYear: 756,
+    activeToYear: 1031,
+    pathGeojson: {
+      type: "LineString",
+      coordinates: [
+        [-4.78, 37.88], // Córdoba
+        [-3.92, 38.98], // Calatrava
+        [-4.02, 39.86], // Toledo
+        [-3.16, 40.63], // Guadalajara
+        [-2.43, 41.17], // Medinaceli
+        [-0.88, 41.65], // Zaragoza
+      ],
+    },
+    reviewStatus: "published",
+  },
+];
+
 
 
