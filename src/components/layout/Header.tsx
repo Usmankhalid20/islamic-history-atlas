@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, BookOpen, Clock, Landmark } from "lucide-react";
+import { Compass, BookOpen, Clock, Landmark, Swords } from "lucide-react";
 
 export function Header() {
   return (
@@ -22,6 +22,13 @@ export function Header() {
             <span>Explore Map</span>
           </Link>
           <Link
+            href="/events"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
+          >
+            <Swords className="w-4 h-4" aria-hidden="true" />
+            <span>Events</span>
+          </Link>
+          <Link
             href="/polities"
             className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1"
           >
@@ -40,3 +47,4 @@ export function Header() {
     </header>
   );
 }
+

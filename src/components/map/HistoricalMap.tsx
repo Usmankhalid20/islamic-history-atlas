@@ -1,13 +1,17 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON } from "leaflet";
+import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, LayerGroup } from "leaflet";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
+import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
+  events?: HistoricalEventRecord[];
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
+  onSelectEvent?: (event: HistoricalEventRecord) => void;
   selectedTerritoryId?: string | null;
+  selectedEventId?: string | null;
 }
 
 const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
@@ -18,16 +22,26 @@ const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
   pol_fatimid: { fill: "#2563EB", stroke: "#1D4ED8" }, // Lapis / Royal Blue
 };
 
+const EVENT_COLORS: Record<string, { fill: string; stroke: string }> = {
+  battle: { fill: "#DC2626", stroke: "#991B1B" }, // Crimson
+  conquest: { fill: "#EA580C", stroke: "#C2410C" }, // Terracotta
+  founding: { fill: "#059669", stroke: "#047857" }, // Emerald
+};
+
 const DEFAULT_STYLE = { fill: "#64748B", stroke: "#475569" };
 
 export function HistoricalMap({
   territories,
+  events = [],
   onSelectTerritory,
+  onSelectEvent,
   selectedTerritoryId,
+  selectedEventId,
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
   const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
+  const eventsLayerRef = useRef<LayerGroup | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,7 +87,7 @@ export function HistoricalMap({
     };
   }, []);
 
-  // Update GeoJSON layer whenever territories or selection changes
+  // Update GeoJSON territory layer
   useEffect(() => {
     async function updateLayers() {
       const map = mapInstanceRef.current;
@@ -81,7 +95,7 @@ export function HistoricalMap({
 
       const L = await import("leaflet");
 
-      // Remove existing layer
+      // Remove existing territory layer
       if (geoJsonLayerRef.current) {
         map.removeLayer(geoJsonLayerRef.current);
         geoJsonLayerRef.current = null;
@@ -116,13 +130,11 @@ export function HistoricalMap({
         onEachFeature: (feature, featureLayer) => {
           const t = feature.properties as TerritoryPeriodRecord;
 
-          // Tooltip on hover
           featureLayer.bindTooltip(
             `<strong>${t.regionName}</strong><br/>${t.controlType} control (${t.validFromYear}–${t.validToYear} CE)`,
             { sticky: true, className: "font-sans text-xs" }
           );
 
-          // Click handler
           featureLayer.on({
             click: () => {
               if (onSelectTerritory) {
@@ -154,6 +166,63 @@ export function HistoricalMap({
     updateLayers();
   }, [territories, selectedTerritoryId, onSelectTerritory]);
 
+  // Update Event markers layer
+  useEffect(() => {
+    async function updateEventMarkers() {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (eventsLayerRef.current) {
+        map.removeLayer(eventsLayerRef.current);
+        eventsLayerRef.current = null;
+      }
+
+      if (events.length === 0) return;
+
+      const markers = events.map((event) => {
+        const geojson = event.locationGeojson as { coordinates: [number, number] } | null;
+        if (!geojson || !geojson.coordinates) return null;
+
+        // Leaflet takes [lat, lng]; GeoJSON is [lng, lat]
+        const lat = geojson.coordinates[1];
+        const lng = geojson.coordinates[0];
+
+        const colors = EVENT_COLORS[event.eventType] || { fill: "#B45309", stroke: "#78350F" };
+        const isSelected = event.id === selectedEventId;
+
+        const circleMarker = L.circleMarker([lat, lng], {
+          radius: isSelected ? 9 : 7,
+          fillColor: colors.fill,
+          color: isSelected ? "#000000" : colors.stroke,
+          weight: isSelected ? 3 : 2,
+          opacity: 1,
+          fillOpacity: 0.9,
+        });
+
+        circleMarker.bindTooltip(
+          `<strong>${event.title} (${event.eventYear} CE)</strong><br/><span class="capitalize text-gray-500">${event.eventType}</span> • ${event.locationName || ""}`,
+          { direction: "top", offset: [0, -6], className: "font-sans text-xs" }
+        );
+
+        circleMarker.on("click", () => {
+          if (onSelectEvent) {
+            onSelectEvent(event);
+          }
+        });
+
+        return circleMarker;
+      }).filter(Boolean);
+
+      const group = L.layerGroup(markers as any[]);
+      group.addTo(map);
+      eventsLayerRef.current = group;
+    }
+
+    updateEventMarkers();
+  }, [events, selectedEventId, onSelectEvent]);
+
   return (
     <div
       ref={mapContainerRef}
@@ -163,4 +232,3 @@ export function HistoricalMap({
     />
   );
 }
-

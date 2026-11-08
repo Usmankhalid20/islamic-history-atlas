@@ -1,7 +1,7 @@
 import type { NewSourceRecord } from "@/lib/db/schema/sources";
 import type { NewPolityRecord } from "@/lib/db/schema/polities";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
-import type { NewHistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
+import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 
 export const initialSources: NewSourceRecord[] = [
   {
@@ -191,7 +191,7 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
   },
 ];
 
-export const initialHistoricalEvents: NewHistoricalEventRecord[] = [
+export const initialHistoricalEvents: HistoricalEventRecord[] = [
   {
     id: "evt_conquest_damascus_635",
     title: "Conquest of Damascus",
@@ -202,6 +202,45 @@ export const initialHistoricalEvents: NewHistoricalEventRecord[] = [
     locationGeojson: {
       type: "Point",
       coordinates: [36.2765, 33.5138],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "evt_battle_of_yarmouk_636",
+    title: "Battle of Yarmouk",
+    eventYear: 636,
+    summary: "Decisive confrontation between the Muslim forces and the Byzantine Empire that ended Byzantine rule in Syria.",
+    eventType: "battle",
+    locationName: "Yarmouk River, Jordan/Syria border",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [35.8, 32.8],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "evt_founding_fustat_641",
+    title: "Founding of Fustat",
+    eventYear: 641,
+    summary: "The first capital of Islamic Egypt founded by Amr ibn al-As following the conquest of Alexandria and Babylon fortress.",
+    eventType: "founding",
+    locationName: "Fustat (Old Cairo), Egypt",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [31.23, 30.0],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "evt_landing_gibraltar_711",
+    title: "Tariq ibn Ziyad Crosses the Strait",
+    eventYear: 711,
+    summary: "Umayyad Berber commander Tariq ibn Ziyad landed near Gibraltar, beginning the Islamic era in the Iberian Peninsula.",
+    eventType: "conquest",
+    locationName: "Gibraltar (Jabal Tariq), Iberia",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [-5.35, 36.14],
     },
     reviewStatus: "published",
   },
@@ -219,6 +258,19 @@ export const initialHistoricalEvents: NewHistoricalEventRecord[] = [
     reviewStatus: "published",
   },
   {
+    id: "evt_founding_cordoba_756",
+    title: "Founding of the Independent Umayyad Emirate of Córdoba",
+    eventYear: 756,
+    summary: "Abd al-Rahman I established an independent Umayyad emirate in Al-Andalus, breaking away from Abbasid authority.",
+    eventType: "founding",
+    locationName: "Córdoba, Al-Andalus",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [-4.78, 37.88],
+    },
+    reviewStatus: "published",
+  },
+  {
     id: "evt_founding_baghdad_762",
     title: "Founding of the Round City of Baghdad",
     eventYear: 762,
@@ -228,6 +280,32 @@ export const initialHistoricalEvents: NewHistoricalEventRecord[] = [
     locationGeojson: {
       type: "Point",
       coordinates: [44.3615, 33.3152],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "evt_proclamation_fatimid_909",
+    title: "Proclamation of the Fatimid Caliphate",
+    eventYear: 909,
+    summary: "Abdallah al-Mahdi Billah was proclaimed caliph in Ifriqiya, establishing the Fatimid counter-caliphate.",
+    eventType: "founding",
+    locationName: "Mahdia, Tunisia",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [11.06, 35.5],
+    },
+    reviewStatus: "published",
+  },
+  {
+    id: "evt_founding_cairo_969",
+    title: "Fatimid Conquest of Egypt & Founding of Cairo",
+    eventYear: 969,
+    summary: "Fatimid general Jawhar al-Siqilli conquered Egypt and laid the foundation stones of the new royal capital al-Qahira (Cairo).",
+    eventType: "conquest",
+    locationName: "Cairo, Egypt",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [31.25, 30.05],
     },
     reviewStatus: "published",
   },
