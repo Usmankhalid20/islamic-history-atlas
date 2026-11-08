@@ -53,4 +53,19 @@ export const aiInquirySchema = z.object({
   model: z.string().optional(),
 });
 
+/**
+ * Validation schema for GET /api/rulers?polityId=...&reignYear=...
+ */
+export const rulersQuerySchema = z.object({
+  polityId: z.string().optional(),
+  reignYear: z.coerce
+    .number()
+    .int("Reign year must be an integer")
+    .min(500)
+    .max(2000)
+    .optional(),
+  name: z.string().optional(),
+});
+
+
 
