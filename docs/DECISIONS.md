@@ -30,13 +30,13 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 **Revisit when:** Schema complexity or team preferences specifically mandate Prisma's abstract modeling.
 
-## ADR-004: Map renderer
+## ADR-004: Map renderer & Basemap Layer
 
-**Status:** Accepted for MVP
+**Status:** Accepted for MVP (Updated in Milestone 18: Basemap migrated to Esri World Light Gray Base)
 
-**Decision:** Use Leaflet (with React-Leaflet or direct imperative wrapper) for the MVP historical map prototype.
+**Decision:** Use Leaflet for the interactive historical map prototype with Esri World Light Gray Base (`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`) as the foundational archival basemap layer.
 
-**Reason:** Leaflet provides a proven, lightweight rendering engine for interactive GeoJSON layers without requiring complex WebGL shaders or vector tile pipeline infrastructure. It supports accessible keyboard navigation, custom SVG polygon styling, straightforward multi-layer control, and works seamlessly across mobile and desktop devices with minimal bundle footprint.
+**Reason:** Leaflet provides a proven, lightweight rendering engine for interactive GeoJSON layers without requiring complex WebGL shaders or vector tile pipeline infrastructure. CARTO Positron tiles were deprecated for unauthenticated requests and enforced disruptive watermarks ("API KEY REQUIRED"); Esri World Light Gray Base provides an identical clean, muted, archival aesthetic specifically designed for thematic overlays and historical GIS, completely watermark-free and requiring zero API key.
 
 **Revisit when:** Vector tile rendering or dynamic 3D cartographic projections are required for later phases.
 

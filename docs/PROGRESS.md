@@ -862,6 +862,42 @@
 - **Next step:**
   - Commit and push `audit/comprehensive-technical-audit`, merge into `develop`, and deliver the Comprehensive Technical Audit Report.
 
+### Milestone Log: 2026-11-09 (Milestone 18: Neon Serverless PostgreSQL Cloud Connection, Watermark-Free Esri Basemap & OpenRouter Gemini 3.7 Flash)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Connected live Neon Serverless PostgreSQL cloud database (`ep-fragrant-shadow-bdwv81l4-pooler.c-8.us-east-2.aws.neon.tech`).
+  - Executed `npm run db:push` to apply all Drizzle schema tables to Neon PostgreSQL.
+  - Executed `npm run db:seed` to populate Neon with all historical records (sources, polities, territory periods, events, rulers, reigns, routes, monuments, scholars, campaigns).
+  - Resolved CARTO "API KEY REQUIRED" watermark issue on interactive map: migrated Leaflet basemap layer in `src/components/map/HistoricalMap.tsx` from CARTO Positron to Esri World Light Gray Base (`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`), providing a clean, muted, archival cartography canvas without watermarks or API key requirements.
+  - Upgraded OpenRouter AI integration in `src/lib/ai/openrouter.ts` to active model `google/gemini-3.7-flash` and verified live AI inquiry end-to-end with the provided OpenRouter API key.
+  - Enhanced `src/lib/db/index.ts`, `src/lib/db/seed.ts`, and `drizzle.config.ts` with robust dotenv initialization ensuring CLI and test scripts reliably load environment variables.
+  - Adjusted Vitest timeout to 25000ms in `vitest.config.ts` to accommodate cloud TLS handshake latencies during parallel test execution.
+- **Files changed:**
+  - `src/components/map/HistoricalMap.tsx` (updated)
+  - `src/lib/ai/openrouter.ts` (updated)
+  - `src/lib/db/index.ts` (updated)
+  - `src/lib/db/seed.ts` (updated)
+  - `drizzle.config.ts` (updated)
+  - `vitest.config.ts` (updated)
+  - `docs/DECISIONS.md` (updated)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npx tsx (SELECT 1 test)` -> Exit code 0 (`Neon connected successfully: [{ connected: 1 }]`)
+  - `npm.cmd run db:push` -> Exit code 0 (`Changes applied`)
+  - `npm.cmd run db:seed` -> Exit code 0 (`Seeded sources, polities, territory periods, events, rulers, reigns, routes, monuments, scholars, campaigns`)
+  - `npm.cmd test` -> Exit code 0 (118/118 tests passed across 21 test suites against live Neon database)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (zero warnings/errors)
+  - `npm.cmd run build` -> Exit code 0 (37 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Esri World Light Gray Base adopted as the canonical archival basemap layer to eliminate CARTO watermarking and avoid third-party API key overhead.
+  - Live Neon PostgreSQL verified with connection pooling (`ep-fragrant-shadow...pooler`).
+  - Gemini 3.7 Flash selected as primary scholarly inquiry model.
+- **Known issues/blockers:**
+  - None. Both cloud database and live AI inquiry are verified and operational.
+- **Next step:**
+  - Merge `feature/neon-postgresql-live-connection` into `develop` and `main`, then push.
+
 ### Update format
 For each milestone, record:
 - Date
