@@ -40,3 +40,4 @@ pnpm-debug.log*
 # TypeScript build cache
 *.tsbuildinfo
 next-env.d.ts
+

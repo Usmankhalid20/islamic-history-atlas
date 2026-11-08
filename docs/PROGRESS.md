@@ -71,15 +71,36 @@
 - **Next step:**
   - Review and approve initial skill installation (e.g. `digital-accessibility` or `gravitas`), technical architecture evaluations (ORM: Prisma vs Drizzle; Map: MapLibre vs Leaflet), and application scaffolding.
 
+### Milestone Log: 2026-11-08 (Repository Cleanup & Architecture Decisions)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Removed duplicate nested `islamic-history-atlas-documentation/` folder, establishing root `docs/` and `README.md` as the authoritative single source of truth.
+  - Recorded accepted architecture decisions in `docs/DECISIONS.md`:
+    - ADR-001: Next.js App Router modular monolith (Accepted).
+    - ADR-003: Drizzle ORM with PostgreSQL (Accepted).
+    - ADR-004: Leaflet for MVP interactive GeoJSON map prototype (Accepted).
+- **Files changed:**
+  - `islamic-history-atlas-documentation/` (deleted from Git)
+  - `docs/DECISIONS.md` (updated)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `git rm -r islamic-history-atlas-documentation` -> Exit code 0
+  - `node --version; npm.cmd --version` -> Exit code 0 (Node v22.23.2, npm 11.6.2)
+- **Decisions made:**
+  - Architecture decisions ADR-001, ADR-003, and ADR-004 formally accepted.
+- **Next step:**
+  - Create feature branch `feature/project-scaffold` off `develop`.
+  - Install selected agent skills into `.agents/skills/`.
+  - Scaffold Next.js application with TypeScript, Tailwind CSS, and Vitest.
+
 ### Not yet completed
 - Review and approve MVP date range, regions, and initial historical entities.
-- Evaluate ORM and map-renderer choices.
 - Create the Next.js application scaffold.
 - Configure linting, formatting, type checking, and tests.
-- Build a minimal map prototype before committing to a map library.
+- Build a minimal map prototype.
 
 ### Next step
-Review technical evaluations for ORM and Map renderer, install approved agent skills into `.agents/skills/`, then create feature branch for application scaffold (`feature/project-scaffold`).
+Create feature branch `feature/project-scaffold`, install approved agent skills into `.agents/skills/`, and initialize Next.js application scaffold.
 
 ### Update format
 For each milestone, record:

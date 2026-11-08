@@ -4,11 +4,11 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-001: Application architecture
 
-**Status:** Proposed
+**Status:** Accepted
 
-**Decision:** Start as a modular monolith in one Next.js application.
+**Decision:** Build as a modular monolith in a Next.js (App Router) TypeScript application.
 
-**Reason:** The initial scope is small enough for one deployable application. Separate services would add operational complexity without a demonstrated benefit.
+**Reason:** The initial scope is optimal for a unified application. It eliminates cross-service network latency, reduces operational complexity, and allows direct server components to query PostgreSQL with zero API overhead.
 
 **Revisit when:** Measured performance, team size, or independent deployment requirements justify a different structure.
 
@@ -22,19 +22,23 @@ Record important decisions here. Do not treat proposed choices as final until th
 
 ## ADR-003: ORM
 
-**Status:** Open
+**Status:** Accepted
 
-**Candidates:** Prisma and Drizzle.
+**Decision:** Use Drizzle ORM with PostgreSQL.
 
-**Evaluation:** Migration workflow, type safety, SQL transparency, PostgreSQL support, spatial-data needs, maintenance, and developer familiarity.
+**Reason:** Drizzle is a lightweight, zero-overhead TypeScript SQL query builder that provides complete SQL transparency. It does not require a heavy Rust engine binary, compiles to pure SQL, offers first-class support for PostgreSQL types (including JSONB, arrays, and PostGIS geometries), and makes complex temporal filtering (`valid_from <= Y AND valid_to >= Y`) and spatial joins performant and explicit.
+
+**Revisit when:** Schema complexity or team preferences specifically mandate Prisma's abstract modeling.
 
 ## ADR-004: Map renderer
 
-**Status:** Open
+**Status:** Accepted for MVP
 
-**Candidates:** Leaflet and MapLibre.
+**Decision:** Use Leaflet (with React-Leaflet or direct imperative wrapper) for the MVP historical map prototype.
 
-**Evaluation:** Historical polygon rendering, styling, performance, accessibility, mobile behavior, tile/data licensing, and implementation complexity.
+**Reason:** Leaflet provides a proven, lightweight rendering engine for interactive GeoJSON layers without requiring complex WebGL shaders or vector tile pipeline infrastructure. It supports accessible keyboard navigation, custom SVG polygon styling, straightforward multi-layer control, and works seamlessly across mobile and desktop devices with minimal bundle footprint.
+
+**Revisit when:** Vector tile rendering or dynamic 3D cartographic projections are required for later phases.
 
 ## ADR-005: Hosting
 
