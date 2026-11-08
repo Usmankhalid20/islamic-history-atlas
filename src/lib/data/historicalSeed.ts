@@ -1,6 +1,6 @@
 import type { NewSourceRecord } from "@/lib/db/schema/sources";
 import type { NewPolityRecord } from "@/lib/db/schema/polities";
-import type { NewTerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
+import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { NewHistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 
 export const initialSources: NewSourceRecord[] = [
@@ -94,7 +94,7 @@ export const initialPolities: NewPolityRecord[] = [
   },
 ];
 
-export const initialTerritoryPeriods: NewTerritoryPeriodRecord[] = [
+export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
   {
     id: "ter_umayyad_syria_661_750",
     polityId: "pol_umayyad",
