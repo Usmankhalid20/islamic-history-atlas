@@ -452,6 +452,56 @@
 - **Milestone 8:** Rulers & Caliphs Directory, SSG Detail Pages, and Reign Timelines (FR-06).
 - **Milestone 9:** Trade Corridors & Pilgrimage Roads Layer.
 - **Milestone 10:** Intellectual Centers, Scholars, Polymaths, and Monumental Architecture Layer.
+- **Milestone 11:** Military Campaigns & Strategic Expeditions Layer.
+
+### Milestone Log: 2026-11-09 (Milestone 11: Military Campaigns & Strategic Expeditions Layer)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Designed and authored Drizzle ORM schema [`campaigns.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/schema/campaigns.ts).
+  - Seeded 6 major early caliphal military campaigns with verified LineString GeoJSON marches:
+    - *Khalid ibn al-Walid's Syrian March & Battle of Yarmouk (634–636 CE)*
+    - *Sa'd ibn Abi Waqqas' Mesopotamian Campaign & al-Qadisiyyah (636–637 CE)*
+    - *'Amr ibn al-'As' Conquest of Byzantine Egypt (639–642 CE)*
+    - *Tariq ibn Ziyad & Musa ibn Nusayr's Iberian Campaign (711–714 CE)*
+    - *Muhammad ibn al-Qasim's Sind & Indus Campaign (711–712 CE)*
+    - *Abd al-Rahman al-Ghafiqi's Aquitaine & Poitiers Expedition (732 CE)*
+  - Updated database seed runner [`src/lib/db/seed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/seed.ts) to populate the `campaigns` table.
+  - Implemented REST API route handlers:
+    - `GET /api/campaigns`: Query campaigns with filters by `polityId`, `commander`, `activeYear`, and `name`.
+    - `GET /api/campaigns/[id]`: Returns single campaign with commanding polity, ruler, and primary source citation.
+  - Upgraded Leaflet map in [`HistoricalMap.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/map/HistoricalMap.tsx) to render military movement vectors with bold crimson dashed styling and interactive tooltips.
+  - Built interactive [`CampaignDetailPanel.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/CampaignDetailPanel.tsx) modal dialog with march staging points, commanders, strategic outcomes, and citations.
+  - Enhanced [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with dynamic campaign temporal filtering (`startYear <= selectedYear && endYear >= selectedYear`) and layer toggle controls.
+  - Built dedicated directory page [`src/app/campaigns/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/campaigns/page.tsx) with dynasty filters and direct "Explore March on Map" links.
+  - Added "Campaigns" navigation link in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added 7 new automated unit tests in [`tests/unit/campaigns.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/campaigns.test.ts) (69 total tests passing).
+- **Files changed:**
+  - `src/lib/db/schema/campaigns.ts`
+  - `src/lib/db/schema/index.ts`
+  - `src/lib/data/historicalSeed.ts`
+  - `src/lib/db/seed.ts`
+  - `src/lib/api/validators.ts`
+  - `src/app/api/campaigns/route.ts`
+  - `src/app/api/campaigns/[id]/route.ts`
+  - `src/components/atlas/CampaignDetailPanel.tsx`
+  - `src/components/map/HistoricalMap.tsx`
+  - `src/components/atlas/AtlasExplorer.tsx`
+  - `src/app/campaigns/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `tests/unit/campaigns.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (69 passed across 12 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 35 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Military expedition routes are rendered as GeoJSON LineStrings with distinct crimson dashed styling (`#DC2626`) to distinguish operational thrusts from trade corridors and territorial polities.
+  - Campaigns are temporally synchronized with the YearSlider so only expeditions active in the selected year appear on the map.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Commit `feature/military-campaigns`, push to origin, merge into `develop`, bump version to `0.6.0`, merge to `main`, and create release tag `v0.6.0`.
 
 ### Milestone Log: 2026-11-09 (Milestone 10: Intellectual Centers, Scholars & Monuments Layer)
 - **Date:** 2026-11-09

@@ -8,6 +8,7 @@ import { TerritoryDetailPanel } from "@/components/atlas/TerritoryDetailPanel";
 import { EventDetailPanel } from "@/components/atlas/EventDetailPanel";
 import { RouteDetailPanel } from "@/components/atlas/RouteDetailPanel";
 import { MonumentDetailPanel } from "@/components/atlas/MonumentDetailPanel";
+import { CampaignDetailPanel } from "@/components/atlas/CampaignDetailPanel";
 import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
 import {
   initialTerritoryPeriods,
@@ -15,14 +16,16 @@ import {
   initialHistoricalEvents,
   initialTradeRoutes,
   initialMonuments,
+  initialCampaigns,
 } from "@/lib/data/historicalSeed";
 import { filterActiveTerritories } from "@/lib/geo/territoryUtils";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
+import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 import { formatHistoricalYear } from "@/lib/utils";
-import { Layers, MapPin, Info, Swords, Sparkles, Filter, Navigation, Landmark } from "lucide-react";
+import { Layers, MapPin, Info, Swords, Sparkles, Filter, Navigation, Landmark, ShieldAlert } from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
 const HistoricalMap = dynamic(
@@ -63,9 +66,11 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [selectedEvent, setSelectedEvent] = useState<HistoricalEventRecord | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<(Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
   const [selectedMonument, setSelectedMonument] = useState<(Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<(Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) | null>(null);
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
+  const [showCampaigns, setShowCampaigns] = useState<boolean>(true);
   const [showAiInquiry, setShowAiInquiry] = useState<boolean>(false);
 
   // Filter active territories for the current year (pure, deterministic)
@@ -103,6 +108,14 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     if (!showMonuments) return [];
     return initialMonuments.filter((m) => m.foundingYear <= selectedYear);
   }, [selectedYear, showMonuments]);
+
+  // Filter active military campaigns during selected year
+  const activeCampaigns = useMemo(() => {
+    if (!showCampaigns) return [];
+    return initialCampaigns.filter(
+      (c) => c.startYear <= selectedYear && c.endYear >= selectedYear
+    );
+  }, [selectedYear, showCampaigns]);
 
   return (
     <div className="space-y-6 w-full">
@@ -153,7 +166,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           )}
         </div>
 
-        {/* Action Buttons: Routes Toggle, Monuments Toggle, Event Scope Toggle & AI Scholar */}
+        {/* Action Buttons: Routes Toggle, Monuments Toggle, Campaigns Toggle, Event Scope Toggle & AI Scholar */}
         <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-archival-border">
           <button
             type="button"
@@ -181,6 +194,20 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           >
             <Landmark className="w-3 h-3" aria-hidden="true" />
             <span>{showMonuments ? `Monuments (${activeMonuments.length})` : "Monuments Off"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowCampaigns(!showCampaigns)}
+            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+              showCampaigns
+                ? "bg-red-700 text-white border-red-800"
+                : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
+            }`}
+            title="Toggle military expeditions and campaign marches on map"
+          >
+            <ShieldAlert className="w-3 h-3" aria-hidden="true" />
+            <span>{showCampaigns ? `Campaigns (${activeCampaigns.length})` : "Campaigns Off"}</span>
           </button>
 
           <button
@@ -227,33 +254,46 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             events={displayedEvents}
             routes={activeRoutes}
             monuments={activeMonuments}
+            campaigns={activeCampaigns}
             selectedTerritoryId={selectedTerritory?.id}
             selectedEventId={selectedEvent?.id}
             selectedRouteId={selectedRoute?.id}
             selectedMonumentId={selectedMonument?.id}
+            selectedCampaignId={selectedCampaign?.id}
             onSelectTerritory={(t) => {
               setSelectedTerritory(t);
               setSelectedEvent(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
+              setSelectedCampaign(null);
             }}
             onSelectEvent={(e) => {
               setSelectedEvent(e);
               setSelectedTerritory(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
+              setSelectedCampaign(null);
             }}
             onSelectRoute={(r) => {
               setSelectedRoute(r);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedMonument(null);
+              setSelectedCampaign(null);
             }}
             onSelectMonument={(m) => {
               setSelectedMonument(m);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
+              setSelectedCampaign(null);
+            }}
+            onSelectCampaign={(c) => {
+              setSelectedCampaign(c);
+              setSelectedTerritory(null);
+              setSelectedEvent(null);
+              setSelectedRoute(null);
+              setSelectedMonument(null);
             }}
           />
 
@@ -286,12 +326,26 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 </span>
               </>
             )}
+            {showCampaigns && (
+              <>
+                <span className="text-archival-border">•</span>
+                <span className="flex items-center gap-1">
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
+                  <span>Red: Campaign</span>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Territory, Event, Route & Monument Inspection Drawer */}
+        {/* Territory, Event, Route, Monument & Campaign Inspection Drawer */}
         <div className="lg:col-span-1 w-full space-y-4">
-          {selectedMonument ? (
+          {selectedCampaign ? (
+            <CampaignDetailPanel
+              campaign={selectedCampaign}
+              onClose={() => setSelectedCampaign(null)}
+            />
+          ) : selectedMonument ? (
             <MonumentDetailPanel
               monument={selectedMonument}
               onClose={() => setSelectedMonument(null)}
@@ -320,7 +374,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 Historical Inspector
               </h3>
               <p className="text-xs text-archival-muted leading-relaxed">
-                Click any territory polygon, battle marker, monument, or trade route on the map to inspect evidence, architectural features, rulers, and scholarly sources.
+                Click any territory polygon, battle marker, monument, trade route, or military campaign on the map to inspect evidence, commanders, architectural features, and scholarly sources.
               </p>
               <div className="pt-3 border-t border-archival-border/60 text-[11px] text-archival-muted space-y-1.5 text-left">
                 <p>• <strong>Dashed borders:</strong> Approximate / disputed zones.</p>
@@ -328,6 +382,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 <p>• <strong>Event circles:</strong> Decisive battles, conquests, and foundations.</p>
                 <p>• <strong>Caravan lines:</strong> Ancient trade corridors and Hajj highways.</p>
                 <p>• <strong>Purple circles:</strong> Monuments, libraries, and universities.</p>
+                <p>• <strong>Red dashed vectors:</strong> Military campaigns and expedition marches.</p>
               </div>
             </div>
           )}

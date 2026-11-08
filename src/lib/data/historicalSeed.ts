@@ -7,6 +7,7 @@ import type { NewReignRecord } from "@/lib/db/schema/reigns";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { NewScholarRecord } from "@/lib/db/schema/scholars";
+import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 
 export const initialSources: NewSourceRecord[] = [
   {
@@ -931,6 +932,163 @@ export const initialScholars: (Omit<NewScholarRecord, "createdAt"> & { createdAt
     reviewStatus: "published",
   },
 ];
+
+export const initialCampaigns: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[] = [
+  {
+    id: "camp_yarmouk_634_636",
+    name: "Khalid ibn al-Walid's Syrian March & Battle of Yarmouk",
+    startYear: 634,
+    endYear: 636,
+    polityId: "pol_rashidun",
+    commanderName: "Khalid ibn al-Walid (Sayf Allah al-Maslul)",
+    rulerId: "rul_abu_bakr",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [44.35, 31.88], // al-Hira, Iraq
+        [43.48, 32.56], // Ayn al-Tamr
+        [39.0, 31.5],   // Suwa / Quraqir Desert Crossing
+        [38.28, 34.56], // Tadmur (Palmyra)
+        [37.23, 34.23], // al-Qaryatayn
+        [36.31, 33.51], // Damascus
+        [36.48, 32.52], // Bosra
+        [35.68, 32.74], // Yarmouk River Gorge
+      ],
+    },
+    keyLocations: "al-Hira → Suwa Desert Crossing → Palmyra → Damascus → Bosra → Yarmouk Gorge",
+    strategicOutcome: "Decisive Rashidun victory over Theodore Trithyrius and Vahan; complete collapse of Byzantine military power in the southern Levant, securing Syria and Palestine.",
+    description: "Legendary desert flanking maneuver by Khalid ibn al-Walid, crossing the waterless Syrian desert from southern Iraq in five days to reinforce Abu Ubaidah. Culminated in the six-day Battle of Yarmouk along the deep ravines of the Yarmouk River, breaking the imperial Byzantine field army.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_qadisiyyah_636",
+    name: "Sa'd ibn Abi Waqqas' Mesopotamian Campaign & al-Qadisiyyah",
+    startYear: 636,
+    endYear: 637,
+    polityId: "pol_rashidun",
+    commanderName: "Sa'd ibn Abi Waqqas",
+    rulerId: "rul_umar_ibn_al_khattab",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [39.61, 24.47], // Medina
+        [43.15, 27.50], // Zarud oasis
+        [44.20, 29.80], // Sharaf oasis
+        [44.25, 31.60], // al-Udhayb
+        [44.34, 31.58], // al-Qadisiyyah
+        [44.32, 32.00], // Najaf ridge
+        [44.42, 32.54], // Babylon
+        [44.58, 33.09], // Ctesiphon (al-Mada'in)
+      ],
+    },
+    keyLocations: "Medina → Zarud → al-Qadisiyyah → Babylon → Ctesiphon (al-Mada'in)",
+    strategicOutcome: "Decisive Rashidun victory over the Sasanian field army commanded by Rostam Farrokhzad; capture of the Sasanian royal capital Ctesiphon and annexation of lower and central Mesopotamia.",
+    description: "Dispatched by Caliph Umar ibn al-Khattab with an army of 30,000 companions and tribesmen. After four days of savage combat including elephant charges at al-Qadisiyyah, the Sasanian defenses broke. Sa'd subsequently crossed the Tigris and captured the legendary White Palace of Ctesiphon.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_conquest_egypt_639_642",
+    name: "'Amr ibn al-'As' Conquest of Byzantine Egypt",
+    startYear: 639,
+    endYear: 642,
+    polityId: "pol_rashidun",
+    commanderName: "'Amr ibn al-'As",
+    rulerId: "rul_umar_ibn_al_khattab",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [33.80, 31.13], // al-Arish
+        [32.55, 31.05], // Pelusium (al-Farama)
+        [31.56, 30.42], // Bilbeis
+        [31.31, 30.13], // Heliopolis (Ayn Shams)
+        [31.23, 30.00], // Babylon Fortress (Fustat)
+        [30.85, 30.45], // Nikiou
+        [29.91, 31.20], // Alexandria
+      ],
+    },
+    keyLocations: "al-Arish → Pelusium → Bilbeis → Heliopolis → Babylon Fortress → Alexandria",
+    strategicOutcome: "Complete surrender of Roman Egypt negotiated with Patriarch Cyrus; foundation of Fustat (the embryonic nucleus of Cairo) and the Mosque of Amr.",
+    description: "Venturing from Palestine with 4,000 cavalry, reinforced by Zubayr ibn al-Awwam at the siege of the massive Roman Babylon Fortress on the Nile. Following the fall of Babylon, 'Amr captured the imperial metropolis of Alexandria, severing Constantinople from its vital grain basket.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_conquest_andalus_711_714",
+    name: "Tariq ibn Ziyad & Musa ibn Nusayr's Iberian Campaign",
+    startYear: 711,
+    endYear: 714,
+    polityId: "pol_umayyad",
+    commanderName: "Tariq ibn Ziyad & Musa ibn Nusayr",
+    rulerId: "rul_al_walid_i",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [-5.32, 35.89], // Ceuta / Tangier
+        [-5.35, 36.14], // Gibraltar (Jabal Tariq)
+        [-5.45, 36.13], // Algeciras
+        [-5.85, 36.55], // Battle of Guadalete (Rio Barbate)
+        [-5.64, 37.47], // Carmona
+        [-4.78, 37.88], // Córdoba
+        [-4.02, 39.86], // Toledo (Visigothic capital)
+        [-0.88, 41.65], // Zaragoza / Ebro Valley
+      ],
+    },
+    keyLocations: "Ceuta → Gibraltar → Guadalete → Córdoba → Toledo → Zaragoza",
+    strategicOutcome: "Overthrow of the Visigothic Kingdom of King Roderic; establishment of the Umayyad province of al-Andalus stretching to the Pyrenees barrier.",
+    description: "In 711 CE, Berber commander Tariq ibn Ziyad crossed the strait from North Africa, entrenching at the landmark rock thereafter bearing his name (Jabal Tariq / Gibraltar). Routing King Roderic at Guadalete, Tariq and Governor Musa swept across the Iberian peninsula to Toledo and the Ebro valley.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_indus_expedition_711_712",
+    name: "Muhammad ibn al-Qasim's Sind & Indus Campaign",
+    startYear: 711,
+    endYear: 712,
+    polityId: "pol_umayyad",
+    commanderName: "Muhammad ibn al-Qasim al-Thaqafi",
+    rulerId: "rul_al_walid_i",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [52.53, 29.60], // Shiraz
+        [66.30, 26.23], // Armabil / Bela (Makran)
+        [67.45, 24.78], // Port of Debal
+        [68.37, 25.39], // Nirun (Hyderabad)
+        [68.78, 25.88], // Brahmanabad / Mansura
+        [68.89, 27.67], // Aror / Rohri
+        [71.47, 30.19], // Multan
+      ],
+    },
+    keyLocations: "Shiraz → Makran Coast → Debal → Nirun → Brahmanabad → Aror → Multan",
+    strategicOutcome: "Defeat of Raja Dahir; annexation of Sind and southern Punjab into the Umayyad Caliphate, establishing Islamic administration in the Indian subcontinent.",
+    description: "The seventeen-year-old general Muhammad ibn al-Qasim led an expedition of 6,000 Syrian horsemen and catapult crews across the arid Makran desert. After taking the fortified port of Debal with the giant mangonel al-Urus, he defeated King Dahir at the Indus River and captured Multan, issuing guarantees of religious toleration documented in the Chach Nama.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_tours_poitiers_732",
+    name: "Abd al-Rahman al-Ghafiqi's Aquitaine & Poitiers Expedition",
+    startYear: 732,
+    endYear: 732,
+    polityId: "pol_umayyad",
+    commanderName: "Abd al-Rahman ibn Abd Allah al-Ghafiqi",
+    rulerId: "rul_hisham",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [-1.64, 42.81], // Pamplona
+        [-1.32, 43.01], // Roncesvalles Pass
+        [-1.05, 43.71], // Dax
+        [-0.58, 44.84], // Bordeaux (Battle of River Garonne)
+        [0.15, 45.65],  // Angoulême
+        [0.34, 46.58],  // Poitiers (Moussais-la-Bataille)
+        [0.68, 47.39],  // Tours Approach
+      ],
+    },
+    keyLocations: "Pamplona → Pyrenees Pass → Bordeaux → Angoulême → Poitiers → Tours",
+    strategicOutcome: "Umayyad northern offensive checked by Charles Martel's Frankish-Aquitainian infantry phalanx; death of Governor al-Ghafiqi; consolidated Pyrenees as northern frontier of al-Andalus.",
+    description: "Governor-General of al-Andalus Abd al-Rahman al-Ghafiqi led a massive cavalry offensive across the Pyrenees into Frankish Gaul, routing Duke Odo at Bordeaux. Marching north along the Roman road towards the rich abbey of St. Martin at Tours, his army collided with the disciplined Frankish forces of Charles Martel between Poitiers and Tours (Ma'rakat Balat al-Shuhada).",
+    reviewStatus: "published",
+  },
+];
+
 
 
 

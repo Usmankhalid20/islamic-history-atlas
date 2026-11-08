@@ -1,5 +1,16 @@
 import Link from "next/link";
-import { Compass, BookOpen, Clock, Landmark, Swords, Crown, Navigation, GraduationCap, Building2 } from "lucide-react";
+import {
+  Compass,
+  BookOpen,
+  Clock,
+  Landmark,
+  Swords,
+  Crown,
+  Navigation,
+  GraduationCap,
+  Building2,
+  ShieldAlert,
+} from "lucide-react";
 
 export function Header() {
   return (
@@ -27,6 +38,13 @@ export function Header() {
           >
             <Swords className="w-4 h-4" aria-hidden="true" />
             <span>Events</span>
+          </Link>
+          <Link
+            href="/campaigns"
+            className="flex items-center gap-1.5 text-sm font-medium text-archival-muted hover:text-archival-ink transition-colors focus-visible:rounded py-1 shrink-0"
+          >
+            <ShieldAlert className="w-4 h-4" aria-hidden="true" />
+            <span>Campaigns</span>
           </Link>
           <Link
             href="/routes"

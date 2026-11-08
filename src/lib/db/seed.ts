@@ -8,6 +8,7 @@ import { reigns } from "./schema/reigns";
 import { tradeRoutes } from "./schema/tradeRoutes";
 import { monuments } from "./schema/monuments";
 import { scholars } from "./schema/scholars";
+import { campaigns } from "./schema/campaigns";
 import {
   initialSources,
   initialPolities,
@@ -18,6 +19,7 @@ import {
   initialTradeRoutes,
   initialMonuments,
   initialScholars,
+  initialCampaigns,
 } from "../data/historicalSeed";
 
 export async function seedDatabase() {
@@ -81,6 +83,12 @@ export async function seedDatabase() {
     await db.insert(scholars).values(sch as any).onConflictDoNothing();
   }
   console.log(`✓ Seeded ${initialScholars.length} scholars`);
+
+  // Seed military campaigns
+  for (const camp of initialCampaigns) {
+    await db.insert(campaigns).values(camp as any).onConflictDoNothing();
+  }
+  console.log(`✓ Seeded ${initialCampaigns.length} military campaigns`);
 
   console.log("Database seeding completed successfully!");
 }
