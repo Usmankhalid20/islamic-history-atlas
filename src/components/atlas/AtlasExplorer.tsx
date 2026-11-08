@@ -11,6 +11,7 @@ import { MonumentDetailPanel } from "@/components/atlas/MonumentDetailPanel";
 import { CampaignDetailPanel } from "@/components/atlas/CampaignDetailPanel";
 import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
 import { ExportModal } from "@/components/atlas/ExportModal";
+import { DiscrepancyInspectorModal } from "@/components/atlas/DiscrepancyInspectorModal";
 import {
   initialTerritoryPeriods,
   initialPolities,
@@ -19,6 +20,10 @@ import {
   initialMonuments,
   initialCampaigns,
 } from "@/lib/data/historicalSeed";
+import {
+  initialHistoricalDiscrepancies,
+  type HistoricalDiscrepancy,
+} from "@/lib/data/discrepanciesSeed";
 import { filterActiveTerritories } from "@/lib/geo/territoryUtils";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
@@ -39,6 +44,8 @@ import {
   Share2,
   Download,
   Check,
+  AlertTriangle,
+  BookOpen,
 } from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
@@ -86,12 +93,16 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [selectedCampaign, setSelectedCampaign] = useState<
     (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) | null
   >(null);
+  const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<HistoricalDiscrepancy | null>(null);
+
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
   const [showCampaigns, setShowCampaigns] = useState<boolean>(true);
+  const [showDiscrepancies, setShowDiscrepancies] = useState<boolean>(true);
   const [showAiInquiry, setShowAiInquiry] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [isDiscrepancyModalOpen, setIsDiscrepancyModalOpen] = useState<boolean>(false);
   const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
 
   // Sync state from URL parameters on initial mount
@@ -111,6 +122,10 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     if (campParam === "0") setShowCampaigns(false);
     else if (campParam === "1") setShowCampaigns(true);
 
+    const discParam = searchParams.get("discrepancies");
+    if (discParam === "0") setShowDiscrepancies(false);
+    else if (discParam === "1") setShowDiscrepancies(true);
+
     const eventsParam = searchParams.get("events");
     if (eventsParam === "all") setShowAllEvents(true);
     else if (eventsParam === "era") setShowAllEvents(false);
@@ -118,7 +133,16 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     // Entity inspection deep link
     const entityParam = searchParams.get("entity");
     const idParam = searchParams.get("id");
-    if (entityParam && idParam) {
+    const discrepancyParam = searchParams.get("discrepancy");
+
+    if (discrepancyParam || (entityParam === "discrepancy" && idParam)) {
+      const targetId = discrepancyParam || idParam;
+      const found = initialHistoricalDiscrepancies.find((d) => d.id === targetId);
+      if (found) {
+        setSelectedDiscrepancy(found);
+        setIsDiscrepancyModalOpen(true);
+      }
+    } else if (entityParam && idParam) {
       if (entityParam === "campaign") {
         const found = initialCampaigns.find((c) => c.id === idParam);
         if (found) setSelectedCampaign(found);
@@ -147,9 +171,13 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     if (!showRoutes) params.set("routes", "0");
     if (!showMonuments) params.set("monuments", "0");
     if (!showCampaigns) params.set("campaigns", "0");
+    if (!showDiscrepancies) params.set("discrepancies", "0");
     if (showAllEvents) params.set("events", "all");
 
-    if (selectedCampaign) {
+    if (selectedDiscrepancy) {
+      params.set("entity", "discrepancy");
+      params.set("id", selectedDiscrepancy.id);
+    } else if (selectedCampaign) {
       params.set("entity", "campaign");
       params.set("id", selectedCampaign.id);
     } else if (selectedMonument) {
@@ -173,7 +201,9 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     showRoutes,
     showMonuments,
     showCampaigns,
+    showDiscrepancies,
     showAllEvents,
+    selectedDiscrepancy,
     selectedCampaign,
     selectedMonument,
     selectedRoute,
@@ -236,6 +266,14 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
       (c) => c.startYear <= selectedYear && c.endYear >= selectedYear
     );
   }, [selectedYear, showCampaigns]);
+
+  // Filter active historical discrepancies during selected year
+  const activeDiscrepancies = useMemo(() => {
+    if (!showDiscrepancies) return [];
+    return initialHistoricalDiscrepancies.filter(
+      (d) => d.activeFromYear <= selectedYear && d.activeToYear >= selectedYear
+    );
+  }, [selectedYear, showDiscrepancies]);
 
   return (
     <div className="space-y-6 w-full">
@@ -333,6 +371,20 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
           <button
             type="button"
+            onClick={() => setShowDiscrepancies(!showDiscrepancies)}
+            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+              showDiscrepancies
+                ? "bg-amber-600 text-white border-amber-700"
+                : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
+            }`}
+            title="Toggle contested borderlands and historiographical uncertainty overlays"
+          >
+            <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+            <span>{showDiscrepancies ? `Contested (${activeDiscrepancies.length})` : "Contested Off"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowAllEvents(!showAllEvents)}
             className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
               showAllEvents
@@ -408,6 +460,16 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
         activePolities={activePolities}
       />
 
+      {/* Discrepancy & Uncertainty Inspector Modal */}
+      <DiscrepancyInspectorModal
+        discrepancy={selectedDiscrepancy}
+        isOpen={isDiscrepancyModalOpen}
+        onClose={() => {
+          setIsDiscrepancyModalOpen(false);
+          setSelectedDiscrepancy(null);
+        }}
+      />
+
       {/* Map and Detail Drawer Layout */}
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Map Canvas (2 cols on large screens) */}
@@ -418,17 +480,20 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             routes={activeRoutes}
             monuments={activeMonuments}
             campaigns={activeCampaigns}
+            discrepancies={activeDiscrepancies}
             selectedTerritoryId={selectedTerritory?.id}
             selectedEventId={selectedEvent?.id}
             selectedRouteId={selectedRoute?.id}
             selectedMonumentId={selectedMonument?.id}
             selectedCampaignId={selectedCampaign?.id}
+            selectedDiscrepancyId={selectedDiscrepancy?.id}
             onSelectTerritory={(t) => {
               setSelectedTerritory(t);
               setSelectedEvent(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
               setSelectedCampaign(null);
+              setSelectedDiscrepancy(null);
             }}
             onSelectEvent={(e) => {
               setSelectedEvent(e);
@@ -436,6 +501,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedRoute(null);
               setSelectedMonument(null);
               setSelectedCampaign(null);
+              setSelectedDiscrepancy(null);
             }}
             onSelectRoute={(r) => {
               setSelectedRoute(r);
@@ -443,6 +509,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedEvent(null);
               setSelectedMonument(null);
               setSelectedCampaign(null);
+              setSelectedDiscrepancy(null);
             }}
             onSelectMonument={(m) => {
               setSelectedMonument(m);
@@ -450,6 +517,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedEvent(null);
               setSelectedRoute(null);
               setSelectedCampaign(null);
+              setSelectedDiscrepancy(null);
             }}
             onSelectCampaign={(c) => {
               setSelectedCampaign(c);
@@ -457,6 +525,16 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedEvent(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
+              setSelectedDiscrepancy(null);
+            }}
+            onSelectDiscrepancy={(d) => {
+              setSelectedDiscrepancy(d);
+              setIsDiscrepancyModalOpen(true);
+              setSelectedTerritory(null);
+              setSelectedEvent(null);
+              setSelectedRoute(null);
+              setSelectedMonument(null);
+              setSelectedCampaign(null);
             }}
           />
 
@@ -498,12 +576,49 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 </span>
               </>
             )}
+            {showDiscrepancies && (
+              <>
+                <span className="text-archival-border">•</span>
+                <span className="flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
+                  <span>Dashed Amber: Contested Frontier</span>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Territory, Event, Route, Monument & Campaign Inspection Drawer */}
+        {/* Territory, Event, Route, Monument, Campaign & Discrepancy Inspection Drawer */}
         <div className="lg:col-span-1 w-full space-y-4">
-          {selectedCampaign ? (
+          {selectedDiscrepancy ? (
+            <div className="bg-archival-surface border border-amber-300 rounded-xl p-5 space-y-3">
+              <div className="flex items-center gap-2 text-amber-800 font-serif font-bold text-sm">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <span>Historiographical Discrepancy</span>
+              </div>
+              <h4 className="font-serif font-bold text-base text-archival-ink">
+                {selectedDiscrepancy.title}
+              </h4>
+              <p className="text-xs text-archival-muted leading-relaxed">
+                {selectedDiscrepancy.historiographicalSummary}
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsDiscrepancyModalOpen(true)}
+                className="w-full py-2 px-3 rounded-lg bg-amber-600 text-white font-medium text-xs hover:bg-amber-700 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Examine Conflicting Sources ({selectedDiscrepancy.perspectives.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedDiscrepancy(null)}
+                className="w-full py-1.5 px-3 rounded-lg border border-archival-border text-archival-muted font-medium text-xs hover:bg-archival-bg transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          ) : selectedCampaign ? (
             <CampaignDetailPanel
               campaign={selectedCampaign}
               onClose={() => setSelectedCampaign(null)}
@@ -537,7 +652,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 Historical Inspector
               </h3>
               <p className="text-xs text-archival-muted leading-relaxed">
-                Click any territory polygon, battle marker, monument, trade route, or military campaign on the map to inspect evidence, commanders, architectural features, and scholarly sources.
+                Click any territory polygon, battle marker, monument, trade route, military campaign, or contested buffer zone on the map to inspect evidence, commanders, architectural features, and conflicting scholarly sources.
               </p>
               <div className="pt-3 border-t border-archival-border/60 text-[11px] text-archival-muted space-y-1.5 text-left">
                 <p>• <strong>Dashed borders:</strong> Approximate / disputed zones.</p>
@@ -546,6 +661,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 <p>• <strong>Caravan lines:</strong> Ancient trade corridors and Hajj highways.</p>
                 <p>• <strong>Purple circles:</strong> Monuments, libraries, and universities.</p>
                 <p>• <strong>Red dashed vectors:</strong> Military campaigns and expedition marches.</p>
+                <p>• <strong>Dashed amber:</strong> Disputed frontier buffer zones and conflicting claims.</p>
               </div>
             </div>
           )}
@@ -573,6 +689,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                       setSelectedRoute(null);
                       setSelectedMonument(null);
                       setSelectedCampaign(null);
+                      setSelectedDiscrepancy(null);
                     }}
                     className={`w-full text-left p-2 rounded text-xs transition-colors border ${
                       selectedEvent?.id === ev.id

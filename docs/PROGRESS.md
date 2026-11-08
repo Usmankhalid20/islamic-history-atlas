@@ -677,6 +677,41 @@
 - **Next step:**
   - Released in `v0.8.0`. Proceed with Milestone 14: Historical Uncertainty & Source Discrepancy Inspector.
 
+### Milestone Log: 2026-11-09 (Milestone 14: Historical Uncertainty & Source Discrepancy Inspector)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Authored historical discrepancies and source ambiguity dataset in [`src/lib/data/discrepanciesSeed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/data/discrepanciesSeed.ts) covering major medieval frontier debates:
+    - *The Al-Awasim / Thaghr Frontier Zone (Cilicia & Taurus Mountains, 750–969 CE)*: al-Baladhuri vs. Theophanes Confessor vs. Haldon & Kennedy.
+    - *Western Maghreb Hegemony Over Fez (920–975 CE)*: Ibn Khaldun vs. al-Bakri vs. Michael Brett.
+    - *The Battle of Tours / Poitiers & the Septimanian Frontier (732–759 CE)*: Mozarabic Chronicle of 754 vs. Ibn Abd al-Hakam vs. David Levering Lewis.
+    - *The Buyid Protectorate over the Abbasid Caliphate in Baghdad (945–1055 CE)*: Miskawayh vs. C.E. Bosworth.
+  - Implemented interactive [`DiscrepancyInspectorModal.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/DiscrepancyInspectorModal.tsx) displaying divergent chronicler traditions (Early Arabic futuh, Byzantine Greek, Latin Mozarabic, Modern peer-reviewed) alongside source excerpts and citations.
+  - Upgraded Leaflet map in [`HistoricalMap.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/map/HistoricalMap.tsx) with dynamic contested borderlands rendering (dashed amber borders, translucent gold fill, tooltips, interactive selection).
+  - Enhanced [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with contested zone layer toggle, deep linking (`?discrepancy=...`), legend indicators, and inspection drawer triggers.
+  - Created dedicated Historiographical Integrity Register page at `/uncertainty` ([`src/app/uncertainty/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/uncertainty/page.tsx)) with category and confidence rating filters.
+  - Added "Uncertainty" link to main navigation in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx).
+  - Added 3 automated unit tests in [`tests/unit/uncertainty.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/uncertainty.test.ts) (82 total unit tests passing across 15 test suites).
+- **Files changed:**
+  - `src/lib/data/discrepanciesSeed.ts` (created)
+  - `src/components/atlas/DiscrepancyInspectorModal.tsx` (created)
+  - `src/components/map/HistoricalMap.tsx` (updated)
+  - `src/components/atlas/AtlasExplorer.tsx` (updated)
+  - `src/app/uncertainty/page.tsx` (created)
+  - `src/components/layout/Header.tsx` (updated)
+  - `tests/unit/uncertainty.test.ts` (created)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (82 passed across 15 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 37 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Disputed boundaries and fluid frontier zones are visually distinguished with amber dashed outlines and dedicated chronicler perspective modals to satisfy FR-09 and prevent false cartographic precision.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Released in `v0.9.0`. Proceed with Milestone 15: Progressive Web App (PWA), Service Worker & Offline Cartography Caching.
+
 ### Update format
 For each milestone, record:
 - Date
