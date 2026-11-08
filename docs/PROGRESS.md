@@ -167,13 +167,64 @@
   - Merge `feature/database-foundation` into `develop`.
   - Begin Milestone 3: Interactive Leaflet Map Prototype with dynamic year slider.
 
+### Milestone Log: 2026-11-08 (Milestone 3: Interactive Historical Map & Timeline Explorer)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Installed `leaflet` and `@types/leaflet` dependencies.
+  - Implemented `src/components/timeline/YearSlider.tsx`:
+    - Full keyboard accessibility and ARIA roles (`aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-valuetext`).
+    - Direct numeric year input and step buttons (-10y, -1y, +1y, +10y).
+    - Play / pause animation timer cycling through years.
+  - Implemented `src/components/map/HistoricalMap.tsx`:
+    - Dynamic SSR-safe Leaflet initialization with CartoDB Positron basemap.
+    - Historical polygon rendering with distinctive polity color codes:
+      - Umayyad: Gold / Amber (`#D97706`)
+      - Abbasid: Historic Black banner standard (`#1C1917`)
+      - Cordoba: Emerald (`#059669`)
+      - Fatimid: Lapis Lazuli / Royal Blue (`#2563EB`)
+      - Rashidun: Terracotta (`#9A3412`)
+    - Dashed border representation for approximate/contested confidence ratings.
+    - Hover tooltips and interactive polygon click selection.
+  - Implemented `src/components/atlas/TerritoryDetailPanel.tsx`:
+    - Accessible dialog detailing polity name, control type, effective date range, confidence status, and peer-reviewed bibliographic citations.
+  - Implemented `src/components/atlas/AtlasExplorer.tsx`:
+    - Synchronizes timeline state with active territory GeoJSON rendering and concurrent polity indicators.
+  - Established client-safe module boundary `src/lib/geo/territoryUtils.ts` separating pure temporal predicates from server database drivers.
+  - Mounted live `AtlasExplorer` on `src/app/page.tsx`.
+  - Added unit test suite `tests/unit/timeline.test.ts` (13 total passing unit tests).
+- **Files changed:**
+  - `package.json`, `package-lock.json`
+  - `next.config.mjs`
+  - `src/app/globals.css`, `src/app/page.tsx`
+  - `src/components/map/HistoricalMap.tsx`
+  - `src/components/timeline/YearSlider.tsx`
+  - `src/components/atlas/AtlasExplorer.tsx`
+  - `src/components/atlas/TerritoryDetailPanel.tsx`
+  - `src/lib/geo/territoryUtils.ts`
+  - `src/lib/db/queries.ts`, `src/lib/data/historicalSeed.ts`
+  - `tests/unit/timeline.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (13 passed in 26ms)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (Compiled successfully, static routes generated)
+- **Decisions made:**
+  - Completed MVP interactive map prototype using Leaflet and GeoJSON.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/map-prototype` into `develop`.
+  - Push branch to GitHub.
+  - Implement full database migrations, API routes (`GET /api/territories?year=...`), and Playwright E2E browser tests.
+
 ### Not yet completed
-- Build a minimal map prototype using Leaflet.
-- Implement timeline / year slider component.
-- Build polity/territory information drawers.
+- Configure automated database migrations via `drizzle-kit migrate`.
+- Build API endpoints for dynamic database queries (`/api/territories`, `/api/polities`).
+- Implement Playwright E2E tests for year scrubbing and polygon inspection.
 
 ### Next step
-Merge `feature/database-foundation` into `develop`, then create `feature/map-prototype` to implement the interactive Leaflet map and year slider.
+Merge `feature/map-prototype` into `develop`, then scaffold API route handlers and Playwright browser tests.
 
 ### Update format
 For each milestone, record:
