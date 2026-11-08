@@ -283,6 +283,34 @@
   - Merge `feature/polity-pages` into `develop`.
   - Push branch to GitHub remote.
 
+### Milestone Log: 2026-11-08 (Milestone 6: Database Migrations, Seeding Script & Environment Configuration)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Generated PostgreSQL Drizzle migrations in `drizzle/` (`0000_bent_wolf_cub.sql`), creating complete schema with relational foreign keys, cascade rules, and compound index `territory_periods_year_range_idx` on `(valid_from_year, valid_to_year)`.
+  - Implemented standalone database seeding script [`src/lib/db/seed.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/db/seed.ts) to populate all peer-reviewed sources, polities, territory periods, and historical events into PostgreSQL.
+  - Added database management scripts in `package.json`:
+    - `npm run db:generate`: Generate migration SQL from Drizzle schemas.
+    - `npm run db:migrate`: Run pending migrations against PostgreSQL.
+    - `npm run db:push`: Push schema changes directly to development database.
+    - `npm run db:seed`: Seed initial historical records.
+  - Created `.env.example` providing clear connection string templates for local and cloud PostgreSQL (Neon, Supabase, Railway).
+- **Files changed:**
+  - `drizzle/*` (SQL migration scripts)
+  - `src/lib/db/seed.ts`
+  - `.env.example`
+  - `package.json`, `package-lock.json`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npx.cmd drizzle-kit generate` -> Exit code 0 (Generated `drizzle/0000_bent_wolf_cub.sql`)
+  - `npm.cmd test` -> Exit code 0 (23 passed in 142ms across 5 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 14 static and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Automated PostgreSQL migrations via Drizzle Kit with standalone seed script.
+- **Known issues/blockers:**
+  - None. Full MVP application architecture and data foundation are complete and verified.
+
 ### Completed Milestones
 - **Milestone 0:** Foundation, Documentation, and Git Setup.
 - **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
@@ -290,6 +318,7 @@
 - **Milestone 3:** Interactive Leaflet Map Prototype, Accessible YearSlider, TerritoryDetailPanel with cited sources, and AtlasExplorer.
 - **Milestone 4:** RESTful API Route Handlers (`/api/territories`, `/api/polities`, `/api/events`) and Zod input validation.
 - **Milestone 5:** Polity Directory, Dynamic Detail Pages, and Sources Register with SSG.
+- **Milestone 6:** Database SQL Migrations, Seeding Pipeline, and Environment Configuration.
 
 ### Next step
 Merge `feature/polity-pages` into `develop` and push to GitHub remote.
