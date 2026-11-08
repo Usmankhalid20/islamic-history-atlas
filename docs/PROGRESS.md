@@ -249,15 +249,50 @@
   - Merge `feature/api-routes` into `develop`.
   - Push branch to GitHub.
 
+### Milestone Log: 2026-11-08 (Milestone 5: Polity Directory, Detail Pages & Sources Register)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Implemented dedicated Polity Directory page ([`src/app/polities/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/polities/page.tsx)):
+    - Responsive card grid displaying each dynasty's canonical name, entity type, lifespan, capital city, overview excerpt, and territory claim count.
+    - Quick navigation to explore each polity directly on the timeline map.
+  - Implemented dynamic Polity Detail pages ([`src/app/polities/[id]/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/polities/[id]/page.tsx)):
+    - Pre-rendered via `generateStaticParams` for all 5 MVP polities (Rashidun, Umayyad, Abbasid, Cordoba, Fatimid).
+    - Detailed breakdown of historical overview, seat of power, dated territorial control records with confidence ratings, and cited literature.
+  - Implemented Sources & Citation Register ([`src/app/sources/page.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/app/sources/page.tsx)):
+    - Evidence hierarchy principles (peer-reviewed scholarship, scholarly encyclopedias, explicit uncertainty).
+    - Full bibliographic citations with external links to publisher catalogs and verified status.
+  - Updated global navigation in [`src/components/layout/Header.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/layout/Header.tsx) to link between `/`, `/polities`, and `/sources`.
+  - Added unit test suite `tests/unit/pages.test.ts` verifying static param generation and fixture integrity.
+- **Files changed:**
+  - `src/app/polities/page.tsx`
+  - `src/app/polities/[id]/page.tsx`
+  - `src/app/sources/page.tsx`
+  - `src/components/layout/Header.tsx`
+  - `tests/unit/pages.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (23 passed in 141ms across 5 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 14 static and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Used Next.js App Router SSG (`generateStaticParams`) for instant loading of historical polity records with zero client-side fetch latency.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/polity-pages` into `develop`.
+  - Push branch to GitHub remote.
+
 ### Completed Milestones
 - **Milestone 0:** Foundation, Documentation, and Git Setup.
 - **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
 - **Milestone 2:** Database Foundation with Drizzle ORM, PostgreSQL Schemas, Pure Predicates, Seed Data.
 - **Milestone 3:** Interactive Leaflet Map Prototype, Accessible YearSlider, TerritoryDetailPanel with cited sources, and AtlasExplorer.
 - **Milestone 4:** RESTful API Route Handlers (`/api/territories`, `/api/polities`, `/api/events`) and Zod input validation.
+- **Milestone 5:** Polity Directory, Dynamic Detail Pages, and Sources Register with SSG.
 
 ### Next step
-Merge `feature/api-routes` into `develop` and push to GitHub remote.
+Merge `feature/polity-pages` into `develop` and push to GitHub remote.
 
 ### Update format
 For each milestone, record:
