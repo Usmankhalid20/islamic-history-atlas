@@ -218,13 +218,46 @@
   - Push branch to GitHub.
   - Implement full database migrations, API routes (`GET /api/territories?year=...`), and Playwright E2E browser tests.
 
-### Not yet completed
-- Configure automated database migrations via `drizzle-kit migrate`.
-- Build API endpoints for dynamic database queries (`/api/territories`, `/api/polities`).
-- Implement Playwright E2E tests for year scrubbing and polygon inspection.
+### Milestone Log: 2026-11-08 (Milestone 4: API Route Handlers & Zod Validation)
+- **Date:** 2026-11-08
+- **What changed:**
+  - Implemented input validation schemas using Zod in `src/lib/api/validators.ts` (`territoriesQuerySchema`, `politiesQuerySchema`, `eventsQuerySchema`).
+  - Implemented RESTful Next.js App Router API endpoints:
+    - `GET /api/territories?year=...`: Validates year bounds (500–2000 CE), returns active territory polygons and polities with fallback to verified seed fixtures.
+    - `GET /api/polities`: Supports `activeYear` and `entityType` filters.
+    - `GET /api/polities/[id]`: Returns single polity details, associated territory periods, and source citations.
+    - `GET /api/events`: Supports `year` and `eventType` filters.
+  - Created unit test suite `tests/unit/api.test.ts` covering validation edge cases (bounds, type conversion, missing params). Total 20/20 tests passing.
+- **Files changed:**
+  - `src/lib/api/validators.ts`
+  - `src/app/api/territories/route.ts`
+  - `src/app/api/polities/route.ts`
+  - `src/app/api/polities/[id]/route.ts`
+  - `src/app/api/events/route.ts`
+  - `tests/unit/api.test.ts`
+  - `docs/PROGRESS.md`
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (20 passed in 77ms across 4 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 7 static and dynamic API routes compiled successfully)
+- **Decisions made:**
+  - Validated API contracts using Zod with consistent JSON error responses (`{ error: string, details?: any }`).
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Merge `feature/api-routes` into `develop`.
+  - Push branch to GitHub.
+
+### Completed Milestones
+- **Milestone 0:** Foundation, Documentation, and Git Setup.
+- **Milestone 1:** Project Scaffolding, Agent Skills (`digital-accessibility`, `gravitas`), Accessible Shell.
+- **Milestone 2:** Database Foundation with Drizzle ORM, PostgreSQL Schemas, Pure Predicates, Seed Data.
+- **Milestone 3:** Interactive Leaflet Map Prototype, Accessible YearSlider, TerritoryDetailPanel with cited sources, and AtlasExplorer.
+- **Milestone 4:** RESTful API Route Handlers (`/api/territories`, `/api/polities`, `/api/events`) and Zod input validation.
 
 ### Next step
-Merge `feature/map-prototype` into `develop`, then scaffold API route handlers and Playwright browser tests.
+Merge `feature/api-routes` into `develop` and push to GitHub remote.
 
 ### Update format
 For each milestone, record:
