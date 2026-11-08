@@ -614,6 +614,33 @@
 - **Next step:**
   - Commit `feature/monuments-and-scholars`, merge into `develop`, and promote release tag `v0.5.0` to `main`.
 
+### Milestone Log: 2026-11-09 (Milestone 12: Cartographic Export & Shareable Deep Links)
+- **Date:** 2026-11-09
+- **What changed:**
+  - Implemented cartographic GeoJSON snapshot engine in [`src/lib/geo/exportUtils.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/lib/geo/exportUtils.ts) conforming to RFC 7946 GeoJSON standard, integrating territorial boundaries, trade routes, military campaigns, intellectual monuments, and historical events.
+  - Implemented academic citation generator formatting Chicago Manual of Style (17th ed.) and BibTeX records for historical atlas views.
+  - Created accessible [`ExportModal.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/ExportModal.tsx) dialog with live feature metrics, direct GeoJSON download, JSON metadata bundle download, and one-click citation clipboard copy.
+  - Enhanced [`AtlasExplorer.tsx`](file:///c:/Users/usman/Documents/Islamic-history-atlas/src/components/atlas/AtlasExplorer.tsx) with state synchronization via URL parameters (`year`, `routes`, `monuments`, `campaigns`, `events`, `entity`, `id`), dynamic browser URL updates using `window.history.replaceState`, and a "Share View" button copying deep links to clipboard.
+  - Added 4 automated unit tests in [`tests/unit/export.test.ts`](file:///c:/Users/usman/Documents/Islamic-history-atlas/tests/unit/export.test.ts) (73 total unit tests passing across 13 suites).
+- **Files changed:**
+  - `src/lib/geo/exportUtils.ts` (created)
+  - `src/components/atlas/ExportModal.tsx` (created)
+  - `src/components/atlas/AtlasExplorer.tsx` (updated)
+  - `tests/unit/export.test.ts` (created)
+  - `docs/PROGRESS.md` (updated)
+- **Commands/tests actually run and results:**
+  - `npm.cmd test` -> Exit code 0 (73 passed across 13 test suites)
+  - `npm.cmd run type-check` -> Exit code 0 (zero errors)
+  - `npm.cmd run lint` -> Exit code 0 (No ESLint warnings or errors)
+  - `npm.cmd run build` -> Exit code 0 (All 35 static, SSG, and dynamic routes compiled successfully)
+- **Decisions made:**
+  - Exported GeoJSON FeatureCollections standardize geometry attributes and bundle scholarly metadata with primary source registers (Kennedy, Bosworth, EI2) under ODbL terms.
+  - URL state synchronization leverages `window.history.replaceState` for zero-flicker address bar updates.
+- **Known issues/blockers:**
+  - None.
+- **Next step:**
+  - Released in `v0.7.0`. Proceed with Milestone 13: Historiographical Timeline Comparison Mode.
+
 ### Update format
 For each milestone, record:
 - Date
