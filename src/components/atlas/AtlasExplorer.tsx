@@ -49,6 +49,9 @@ import {
   ChevronDown,
   ChevronUp,
   Compass,
+  Globe,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
@@ -98,6 +101,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   >(null);
   const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<HistoricalDiscrepancy | null>(null);
 
+  const [showTerritories, setShowTerritories] = useState<boolean>(true);
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
@@ -107,13 +111,18 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isDiscrepancyModalOpen, setIsDiscrepancyModalOpen] = useState<boolean>(false);
   const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
-  const [isLegendExpanded, setIsLegendExpanded] = useState<boolean>(true);
+  const [isTheaterMode, setIsTheaterMode] = useState<boolean>(false);
+  const [territoryOpacity, setTerritoryOpacity] = useState<number>(0.5);
 
   // Sync state from URL parameters on initial mount
   useEffect(() => {
     if (!searchParams) return;
 
     // Layers
+    const terParam = searchParams.get("territories");
+    if (terParam === "0") setShowTerritories(false);
+    else if (terParam === "1") setShowTerritories(true);
+
     const routesParam = searchParams.get("routes");
     if (routesParam === "0") setShowRoutes(false);
     else if (routesParam === "1") setShowRoutes(true);
@@ -133,6 +142,9 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     const eventsParam = searchParams.get("events");
     if (eventsParam === "all") setShowAllEvents(true);
     else if (eventsParam === "era") setShowAllEvents(false);
+
+    const theaterParam = searchParams.get("theater");
+    if (theaterParam === "1") setIsTheaterMode(true);
 
     // Entity inspection deep link
     const entityParam = searchParams.get("entity");
@@ -172,11 +184,13 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
     const params = new URLSearchParams();
     params.set("year", selectedYear.toString());
+    if (!showTerritories) params.set("territories", "0");
     if (!showRoutes) params.set("routes", "0");
     if (!showMonuments) params.set("monuments", "0");
     if (!showCampaigns) params.set("campaigns", "0");
     if (!showDiscrepancies) params.set("discrepancies", "0");
     if (showAllEvents) params.set("events", "all");
+    if (isTheaterMode) params.set("theater", "1");
 
     if (selectedDiscrepancy) {
       params.set("entity", "discrepancy");
@@ -202,11 +216,13 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     window.history.replaceState(null, "", newUrl);
   }, [
     selectedYear,
+    showTerritories,
     showRoutes,
     showMonuments,
     showCampaigns,
     showDiscrepancies,
     showAllEvents,
+    isTheaterMode,
     selectedDiscrepancy,
     selectedCampaign,
     selectedMonument,
@@ -349,6 +365,20 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
           <button
             type="button"
+            onClick={() => setShowTerritories(!showTerritories)}
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
+              showTerritories
+                ? "bg-amber-800 text-white border-amber-900 shadow-xs"
+                : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
+            }`}
+            title="Toggle empire territory polygons on map"
+          >
+            <Globe className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>{showTerritories ? `Territories (${activeTerritories.length})` : "Territories Off"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowRoutes(!showRoutes)}
             className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showRoutes
@@ -420,6 +450,29 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
         {/* Right: Analytical Tools & Action Utilities */}
         <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-archival-border">
+          <button
+            type="button"
+            onClick={() => setIsTheaterMode(!isTheaterMode)}
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans font-medium flex items-center gap-1.5 transition-all ${
+              isTheaterMode
+                ? "bg-archival-gold text-white border-archival-gold shadow-xs"
+                : "border-archival-border bg-archival-bg hover:bg-archival-surface text-archival-ink shadow-xs"
+            }`}
+            title={isTheaterMode ? "Exit theater mode (return to side-by-side layout)" : "Expand map canvas to theater mode"}
+          >
+            {isTheaterMode ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Exit Theater</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+                <span>Theater View</span>
+              </>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowAiInquiry(!showAiInquiry)}
@@ -498,9 +551,21 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
       />
 
       {/* Map and Detail Drawer Layout */}
-      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Map Canvas (2 cols on large screens) */}
-        <div className="lg:col-span-2 h-[520px] sm:h-[580px] lg:h-[640px] w-full relative rounded-xl overflow-hidden shadow-sm">
+      <div
+        className={`relative transition-all duration-300 ${
+          isTheaterMode
+            ? "flex flex-col gap-6"
+            : "grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"
+        }`}
+      >
+        {/* Map Canvas */}
+        <div
+          className={`${
+            isTheaterMode
+              ? "w-full h-[76vh] min-h-[580px] max-h-[820px]"
+              : "lg:col-span-2 h-[560px] sm:h-[620px] lg:h-[700px] xl:h-[740px] w-full"
+          } relative rounded-xl overflow-hidden shadow-sm transition-all duration-300`}
+        >
           <HistoricalMap
             territories={activeTerritories}
             events={displayedEvents}
@@ -563,70 +628,33 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedMonument(null);
               setSelectedCampaign(null);
             }}
+            showTerritories={showTerritories}
+            setShowTerritories={setShowTerritories}
+            showEvents={true}
+            setShowEvents={() => {}}
+            showRoutes={showRoutes}
+            setShowRoutes={setShowRoutes}
+            showMonuments={showMonuments}
+            setShowMonuments={setShowMonuments}
+            showCampaigns={showCampaigns}
+            setShowCampaigns={setShowCampaigns}
+            showDiscrepancies={showDiscrepancies}
+            setShowDiscrepancies={setShowDiscrepancies}
+            isTheaterMode={isTheaterMode}
+            onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
+            territoryOpacity={territoryOpacity}
+            setTerritoryOpacity={setTerritoryOpacity}
           />
-
-          {/* Map Overlay Prompt & Collapsible Legend */}
-          {isLegendExpanded ? (
-            <div className="absolute bottom-3 left-3 z-[400] max-w-xs sm:max-w-md bg-archival-surface/95 backdrop-blur-md border border-archival-border px-3 py-2 rounded-xl text-[11px] text-archival-muted flex flex-wrap items-center gap-x-3 gap-y-1.5 shadow-md pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setIsLegendExpanded(false)}
-                className="flex items-center gap-1 font-serif font-semibold text-archival-ink hover:text-archival-gold transition-colors pr-2 mr-1 border-r border-archival-border"
-                title="Collapse Map Legend"
-              >
-                <Info className="w-3.5 h-3.5 text-archival-gold" />
-                <span>Legend</span>
-                <ChevronDown className="w-3 h-3 text-archival-muted ml-0.5" />
-              </button>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-xs bg-orange-700/60 border border-orange-800" />
-                <span>Territory</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-600 border border-red-800" />
-                <span>Event</span>
-              </span>
-              {showRoutes && (
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 border-t-2 border-dashed border-amber-600" />
-                  <span>Trade Route</span>
-                </span>
-              )}
-              {showMonuments && (
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-2 h-2 rounded-full bg-purple-600 border border-purple-800" />
-                  <span>Monument</span>
-                </span>
-              )}
-              {showCampaigns && (
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-3 border-t-2 border-dashed border-red-600" />
-                  <span>Campaign</span>
-                </span>
-              )}
-              {showDiscrepancies && (
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-2.5 h-2.5 rounded-xs bg-amber-200 border border-dashed border-amber-600" />
-                  <span>Contested Frontier</span>
-                </span>
-              )}
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsLegendExpanded(true)}
-              className="absolute bottom-3 left-3 z-[400] bg-archival-surface/95 backdrop-blur-md border border-archival-border px-3 py-1.5 rounded-lg text-xs font-serif text-archival-ink shadow-md flex items-center gap-1.5 hover:bg-archival-bg transition-colors pointer-events-auto"
-              title="Expand Map Legend"
-            >
-              <Info className="w-3.5 h-3.5 text-archival-gold" />
-              <span className="font-medium text-[11px]">Legend</span>
-              <ChevronUp className="w-3 h-3 text-archival-muted" />
-            </button>
-          )}
         </div>
 
         {/* Territory, Event, Route, Monument, Campaign & Discrepancy Inspection Drawer */}
-        <div className="lg:col-span-1 w-full space-y-4">
+        <div
+          className={`${
+            isTheaterMode
+              ? "grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
+              : "lg:col-span-1 w-full space-y-4"
+          }`}
+        >
           {selectedDiscrepancy ? (
             <div className="bg-archival-surface border border-amber-300 rounded-xl p-5 space-y-3 shadow-sm">
               <div className="flex items-center gap-2 text-amber-800 font-serif font-bold text-sm">

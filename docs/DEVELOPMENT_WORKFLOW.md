@@ -1,12 +1,30 @@
 # Development Workflow
 
-## 1. Working principle
+## 1. Working Principle
 
-For each stage, follow:
+For each phase of development, adhere strictly to the **6-Step Incremental Workflow**:
 
-**Inspect → Plan → Implement → Test → Review → Document → Commit → Push**
-
-Do not generate the entire application from one large prompt. Complete one small, verifiable milestone at a time.
+1. **Step 1: Inspect & Plan**:
+   - Inspect existing directories and architecture.
+   - Review documentation and reusable components.
+   - Author a clear, scoped implementation plan.
+2. **Step 2: Create a Dedicated Git Feature Branch**:
+   - Branch name pattern: `feature/<phase-name>` (e.g. `feature/map-foundation`, `feature/empire-territories`).
+   - Never implement directly on `main`.
+3. **Step 3: Implement One Feature at a Time**:
+   - Follow existing patterns, keep components reusable and separated from static historical data.
+4. **Step 4: Test & Review**:
+   - TypeScript check (`npm run type-check`).
+   - ESLint check (`npm run lint`).
+   - Unit tests (`npm test`).
+   - Production build verification (`npm run build`).
+5. **Step 5: Update Documentation**:
+   - Keep all 7 core documentation files up to date after every phase.
+6. **Step 6: Commit, Push, and Merge**:
+   - Commit on feature branch with structured conventional messages.
+   - Push feature branch to GitHub.
+   - Fast-forward / merge cleanly into `main`.
+   - Verify `main` build integrity before proceeding to the next phase.
 
 ## 2. Repository and branch strategy
 
