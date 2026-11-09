@@ -46,6 +46,9 @@ import {
   Check,
   AlertTriangle,
   BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Compass,
 } from "lucide-react";
 
 // Dynamically import Leaflet Map to ensure SSR compatibility
@@ -104,6 +107,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isDiscrepancyModalOpen, setIsDiscrepancyModalOpen] = useState<boolean>(false);
   const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
+  const [isLegendExpanded, setIsLegendExpanded] = useState<boolean>(true);
 
   // Sync state from URL parameters on initial mount
   useEffect(() => {
@@ -294,134 +298,157 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
         }}
       />
 
-      {/* Concurrent Polities & Layer Controls */}
+      {/* Dynastic Context Banner */}
       <div
-        className="bg-archival-surface border border-archival-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+        className="bg-archival-surface/90 border border-archival-border rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm"
         role="status"
         aria-live="polite"
       >
-        <div className="flex items-center gap-2 text-archival-ink font-serif font-semibold">
-          <Layers className="w-4 h-4 text-archival-gold" aria-hidden="true" />
-          <span>Active Polities in {formatHistoricalYear(selectedYear)}:</span>
-        </div>
-
         <div className="flex flex-wrap items-center gap-2">
-          {activePolities.length === 0 ? (
-            <span className="text-archival-muted italic">
-              No recorded territorial claims in database for this specific year.
-            </span>
-          ) : (
-            activePolities.map((polity) => (
-              <span
-                key={polity.id}
-                className={`px-2.5 py-1 rounded-full border text-[11px] font-medium font-sans ${
-                  POLITY_BADGE_COLORS[polity.id] || "bg-gray-100 text-gray-800 border-gray-300"
-                }`}
-              >
-                {polity.canonicalName} ({formatHistoricalYear(polity.startYear)}–
-                {polity.endYear ? formatHistoricalYear(polity.endYear) : "present"})
+          <div className="flex items-center gap-2 text-archival-ink font-serif font-semibold">
+            <Layers className="w-4 h-4 text-archival-gold" aria-hidden="true" />
+            <span>Active Polities in {formatHistoricalYear(selectedYear)}:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {activePolities.length === 0 ? (
+              <span className="text-archival-muted italic text-[11px]">
+                No recorded territorial claims in database for this specific year.
               </span>
-            ))
-          )}
+            ) : (
+              activePolities.map((polity) => (
+                <span
+                  key={polity.id}
+                  className={`px-2.5 py-0.5 rounded-full border text-[11px] font-medium font-sans ${
+                    POLITY_BADGE_COLORS[polity.id] || "bg-gray-100 text-gray-800 border-gray-300"
+                  }`}
+                >
+                  {polity.canonicalName} ({formatHistoricalYear(polity.startYear)}–
+                  {polity.endYear ? formatHistoricalYear(polity.endYear) : "present"})
+                </span>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Action Buttons: Layers, Citations, Share & Export */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-archival-border">
+        <div className="text-[11px] text-archival-muted font-sans hidden md:flex items-center gap-1.5 shrink-0">
+          <span>Temporal Anchor:</span>
+          <span className="font-mono font-semibold text-archival-gold bg-archival-bg px-2 py-0.5 rounded border border-archival-border">
+            {formatHistoricalYear(selectedYear)}
+          </span>
+        </div>
+      </div>
+
+      {/* Cartographic Controls & Action Toolbar */}
+      <div className="bg-archival-surface border border-archival-border rounded-xl p-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-xs shadow-sm">
+        {/* Left: Cartographic Layer Switches */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-archival-muted mr-1 hidden sm:inline">
+            Layers:
+          </span>
+
           <button
             type="button"
             onClick={() => setShowRoutes(!showRoutes)}
-            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showRoutes
-                ? "bg-archival-gold text-white border-archival-gold"
+                ? "bg-archival-gold text-white border-archival-gold shadow-xs"
                 : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
             }`}
             title="Toggle trade and pilgrimage routes on map"
           >
-            <Navigation className="w-3 h-3" aria-hidden="true" />
+            <Navigation className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{showRoutes ? `Routes (${activeRoutes.length})` : "Routes Off"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowMonuments(!showMonuments)}
-            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showMonuments
-                ? "bg-purple-700 text-white border-purple-800"
+                ? "bg-purple-700 text-white border-purple-800 shadow-xs"
                 : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
             }`}
             title="Toggle monuments and intellectual centers on map"
           >
-            <Landmark className="w-3 h-3" aria-hidden="true" />
+            <Landmark className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{showMonuments ? `Monuments (${activeMonuments.length})` : "Monuments Off"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowCampaigns(!showCampaigns)}
-            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showCampaigns
-                ? "bg-red-700 text-white border-red-800"
+                ? "bg-red-700 text-white border-red-800 shadow-xs"
                 : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
             }`}
             title="Toggle military expeditions and campaign marches on map"
           >
-            <ShieldAlert className="w-3 h-3" aria-hidden="true" />
+            <ShieldAlert className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{showCampaigns ? `Campaigns (${activeCampaigns.length})` : "Campaigns Off"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowDiscrepancies(!showDiscrepancies)}
-            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showDiscrepancies
-                ? "bg-amber-600 text-white border-amber-700"
+                ? "bg-amber-600 text-white border-amber-700 shadow-xs"
                 : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
             }`}
             title="Toggle contested borderlands and historiographical uncertainty overlays"
           >
-            <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+            <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{showDiscrepancies ? `Contested (${activeDiscrepancies.length})` : "Contested Off"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowAllEvents(!showAllEvents)}
-            className={`px-2.5 py-1 rounded border text-[11px] font-sans flex items-center gap-1.5 transition-colors ${
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showAllEvents
-                ? "bg-archival-gold text-white border-archival-gold"
+                ? "bg-archival-gold text-white border-archival-gold shadow-xs"
                 : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
             }`}
             title="Toggle between all historical events or events within ±25 years of the selected date"
           >
-            <Filter className="w-3 h-3" aria-hidden="true" />
+            <Filter className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{showAllEvents ? "All Events" : `Era Events (${displayedEvents.length})`}</span>
           </button>
+        </div>
 
+        {/* Right: Analytical Tools & Action Utilities */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-archival-border">
           <button
             type="button"
             onClick={() => setShowAiInquiry(!showAiInquiry)}
-            className="px-2.5 py-1 rounded border border-archival-gold text-[11px] font-sans font-medium text-archival-gold hover:bg-archival-gold/10 flex items-center gap-1.5 transition-colors"
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans font-medium flex items-center gap-1.5 transition-all ${
+              showAiInquiry
+                ? "bg-archival-gold text-white border-archival-gold shadow-xs"
+                : "border-archival-gold text-archival-gold hover:bg-archival-gold/10"
+            }`}
             title="Open Historical AI Inquiry Scholar"
           >
-            <Sparkles className="w-3 h-3 text-archival-gold" aria-hidden="true" />
+            <Sparkles className="w-3.5 h-3.5 text-current" aria-hidden="true" />
             <span>AI Scholar</span>
           </button>
 
           <button
             type="button"
             onClick={handleShareView}
-            className="px-2.5 py-1 rounded border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 rounded-lg border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors shadow-xs"
             title="Copy shareable deep link with current year and active layers"
           >
             {copiedShareLink ? (
               <>
-                <Check className="w-3 h-3 text-emerald-600" aria-hidden="true" />
-                <span className="text-emerald-700">Link Copied!</span>
+                <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
+                <span className="text-emerald-700">Copied!</span>
               </>
             ) : (
               <>
-                <Share2 className="w-3 h-3 text-archival-gold" aria-hidden="true" />
-                <span>Share View</span>
+                <Share2 className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+                <span>Share</span>
               </>
             )}
           </button>
@@ -429,11 +456,11 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           <button
             type="button"
             onClick={() => setIsExportModalOpen(true)}
-            className="px-2.5 py-1 rounded border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 rounded-lg border border-archival-border bg-archival-bg hover:bg-archival-surface text-[11px] font-sans font-medium text-archival-ink flex items-center gap-1.5 transition-colors shadow-xs"
             title="Export cartographic snapshot as GeoJSON and academic citations"
           >
-            <Download className="w-3 h-3 text-archival-gold" aria-hidden="true" />
-            <span>Export Data</span>
+            <Download className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+            <span>Export</span>
           </button>
         </div>
       </div>
@@ -473,7 +500,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
       {/* Map and Detail Drawer Layout */}
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Map Canvas (2 cols on large screens) */}
-        <div className="lg:col-span-2 h-[480px] sm:h-[540px] w-full relative">
+        <div className="lg:col-span-2 h-[520px] sm:h-[580px] lg:h-[640px] w-full relative rounded-xl overflow-hidden shadow-sm">
           <HistoricalMap
             territories={activeTerritories}
             events={displayedEvents}
@@ -538,60 +565,70 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
           />
 
-          {/* Map Overlay Prompt & Legend */}
-          <div className="absolute bottom-3 left-3 z-[400] bg-archival-surface/90 backdrop-blur-sm border border-archival-border/80 px-3 py-1.5 rounded-lg text-xs text-archival-muted flex flex-wrap items-center gap-3 shadow-sm">
-            <span className="flex items-center gap-1">
-              <Info className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
-              <span>Polygon: Territory</span>
-            </span>
-            <span className="text-archival-border">•</span>
-            <span className="flex items-center gap-1">
-              <Swords className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
-              <span>Circle: Event</span>
-            </span>
-            {showRoutes && (
-              <>
-                <span className="text-archival-border">•</span>
-                <span className="flex items-center gap-1">
-                  <Navigation className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
-                  <span>Dashed: Trade Route</span>
+          {/* Map Overlay Prompt & Collapsible Legend */}
+          {isLegendExpanded ? (
+            <div className="absolute bottom-3 left-3 z-[400] max-w-xs sm:max-w-md bg-archival-surface/95 backdrop-blur-md border border-archival-border px-3 py-2 rounded-xl text-[11px] text-archival-muted flex flex-wrap items-center gap-x-3 gap-y-1.5 shadow-md pointer-events-auto">
+              <button
+                type="button"
+                onClick={() => setIsLegendExpanded(false)}
+                className="flex items-center gap-1 font-serif font-semibold text-archival-ink hover:text-archival-gold transition-colors pr-2 mr-1 border-r border-archival-border"
+                title="Collapse Map Legend"
+              >
+                <Info className="w-3.5 h-3.5 text-archival-gold" />
+                <span>Legend</span>
+                <ChevronDown className="w-3 h-3 text-archival-muted ml-0.5" />
+              </button>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-xs bg-orange-700/60 border border-orange-800" />
+                <span>Territory</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-600 border border-red-800" />
+                <span>Event</span>
+              </span>
+              {showRoutes && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 border-t-2 border-dashed border-amber-600" />
+                  <span>Trade Route</span>
                 </span>
-              </>
-            )}
-            {showMonuments && (
-              <>
-                <span className="text-archival-border">•</span>
-                <span className="flex items-center gap-1">
-                  <Landmark className="w-3.5 h-3.5 text-purple-600" aria-hidden="true" />
-                  <span>Purple: Monument</span>
+              )}
+              {showMonuments && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-2 h-2 rounded-full bg-purple-600 border border-purple-800" />
+                  <span>Monument</span>
                 </span>
-              </>
-            )}
-            {showCampaigns && (
-              <>
-                <span className="text-archival-border">•</span>
-                <span className="flex items-center gap-1">
-                  <ShieldAlert className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
-                  <span>Red: Campaign</span>
+              )}
+              {showCampaigns && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 border-t-2 border-dashed border-red-600" />
+                  <span>Campaign</span>
                 </span>
-              </>
-            )}
-            {showDiscrepancies && (
-              <>
-                <span className="text-archival-border">•</span>
-                <span className="flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
-                  <span>Dashed Amber: Contested Frontier</span>
+              )}
+              {showDiscrepancies && (
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-2.5 h-2.5 rounded-xs bg-amber-200 border border-dashed border-amber-600" />
+                  <span>Contested Frontier</span>
                 </span>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsLegendExpanded(true)}
+              className="absolute bottom-3 left-3 z-[400] bg-archival-surface/95 backdrop-blur-md border border-archival-border px-3 py-1.5 rounded-lg text-xs font-serif text-archival-ink shadow-md flex items-center gap-1.5 hover:bg-archival-bg transition-colors pointer-events-auto"
+              title="Expand Map Legend"
+            >
+              <Info className="w-3.5 h-3.5 text-archival-gold" />
+              <span className="font-medium text-[11px]">Legend</span>
+              <ChevronUp className="w-3 h-3 text-archival-muted" />
+            </button>
+          )}
         </div>
 
         {/* Territory, Event, Route, Monument, Campaign & Discrepancy Inspection Drawer */}
         <div className="lg:col-span-1 w-full space-y-4">
           {selectedDiscrepancy ? (
-            <div className="bg-archival-surface border border-amber-300 rounded-xl p-5 space-y-3">
+            <div className="bg-archival-surface border border-amber-300 rounded-xl p-5 space-y-3 shadow-sm">
               <div className="flex items-center gap-2 text-amber-800 font-serif font-bold text-sm">
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
                 <span>Historiographical Discrepancy</span>
@@ -605,7 +642,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               <button
                 type="button"
                 onClick={() => setIsDiscrepancyModalOpen(true)}
-                className="w-full py-2 px-3 rounded-lg bg-amber-600 text-white font-medium text-xs hover:bg-amber-700 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2 px-3 rounded-lg bg-amber-600 text-white font-medium text-xs hover:bg-amber-700 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Examine Conflicting Sources ({selectedDiscrepancy.perspectives.length})</span>
@@ -644,41 +681,76 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               onClose={() => setSelectedTerritory(null)}
             />
           ) : (
-            <div className="bg-archival-surface border border-archival-border rounded-xl p-6 text-center space-y-3">
-              <div className="w-10 h-10 rounded-full bg-archival-bg border border-archival-border flex items-center justify-center mx-auto text-archival-muted">
-                <MapPin className="w-5 h-5 text-archival-gold" aria-hidden="true" />
+            <div className="bg-archival-surface border border-archival-border rounded-xl p-5 space-y-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-archival-gold/10 border border-archival-gold/30 flex items-center justify-center shrink-0 text-archival-gold">
+                  <MapPin className="w-4 h-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-archival-ink text-base">
+                    Cartographic Inspector
+                  </h3>
+                  <p className="text-[11px] text-archival-muted">
+                    Primary evidence &amp; source citations
+                  </p>
+                </div>
               </div>
-              <h3 className="font-serif font-semibold text-archival-ink text-base">
-                Historical Inspector
-              </h3>
+
               <p className="text-xs text-archival-muted leading-relaxed">
-                Click any territory polygon, battle marker, monument, trade route, military campaign, or contested buffer zone on the map to inspect evidence, commanders, architectural features, and conflicting scholarly sources.
+                Click any territory polygon, battle marker, monument, trade corridor, or military campaign on the map to inspect evidence, commanders, and conflicting scholarly perspectives.
               </p>
-              <div className="pt-3 border-t border-archival-border/60 text-[11px] text-archival-muted space-y-1.5 text-left">
-                <p>• <strong>Dashed borders:</strong> Approximate / disputed zones.</p>
-                <p>• <strong>Solid borders:</strong> Directly administered territories.</p>
-                <p>• <strong>Event circles:</strong> Decisive battles, conquests, and foundations.</p>
-                <p>• <strong>Caravan lines:</strong> Ancient trade corridors and Hajj highways.</p>
-                <p>• <strong>Purple circles:</strong> Monuments, libraries, and universities.</p>
-                <p>• <strong>Red dashed vectors:</strong> Military campaigns and expedition marches.</p>
-                <p>• <strong>Dashed amber:</strong> Disputed frontier buffer zones and conflicting claims.</p>
+
+              {/* Live Era Metrics Grid */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-archival-border/60">
+                <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-archival-muted">
+                    Active Empires
+                  </span>
+                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5">
+                    {activeTerritories.length}
+                  </span>
+                </div>
+                <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-archival-muted">
+                    Era Events
+                  </span>
+                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5">
+                    {displayedEvents.length}
+                  </span>
+                </div>
+                <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-archival-muted">
+                    Trade Corridors
+                  </span>
+                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5">
+                    {activeRoutes.length}
+                  </span>
+                </div>
+                <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-archival-muted">
+                    Campaigns
+                  </span>
+                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5">
+                    {activeCampaigns.length}
+                  </span>
+                </div>
               </div>
             </div>
           )}
 
           {/* Quick Era Events List */}
           {displayedEvents.length > 0 && (
-            <div className="bg-archival-surface border border-archival-border rounded-xl p-4 space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-serif font-semibold text-archival-ink">
+            <div className="bg-archival-surface border border-archival-border rounded-xl p-4 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-archival-border/60 text-xs font-serif font-semibold text-archival-ink">
                 <span className="flex items-center gap-1.5">
                   <Swords className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
                   <span>Era Events ({displayedEvents.length})</span>
                 </span>
-                <span className="text-[10px] text-archival-muted font-sans">
-                  {showAllEvents ? "All 632–1000 CE" : `±25y of ${selectedYear} CE`}
+                <span className="text-[10px] text-archival-muted font-sans font-normal">
+                  {showAllEvents ? "All 632–1000 CE" : `±25y of ${formatHistoricalYear(selectedYear)}`}
                 </span>
               </div>
-              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-60 sm:max-h-72 overflow-y-auto pr-1">
                 {displayedEvents.map((ev) => (
                   <button
                     key={ev.id}
@@ -691,18 +763,21 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                       setSelectedCampaign(null);
                       setSelectedDiscrepancy(null);
                     }}
-                    className={`w-full text-left p-2 rounded text-xs transition-colors border ${
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
                       selectedEvent?.id === ev.id
-                        ? "bg-archival-gold/10 border-archival-gold text-archival-ink"
-                        : "bg-archival-bg hover:bg-archival-border/40 border-archival-border/40 text-archival-muted"
+                        ? "bg-archival-gold/10 border-archival-gold text-archival-ink shadow-xs"
+                        : "bg-archival-bg hover:bg-archival-border/30 border-archival-border/50 text-archival-muted"
                     }`}
                   >
                     <div className="flex items-center justify-between font-mono text-[11px]">
                       <span className="font-semibold text-archival-ink truncate mr-2">{ev.title}</span>
-                      <span className="text-archival-gold shrink-0">{formatHistoricalYear(ev.eventYear)}</span>
+                      <span className="text-archival-gold font-bold shrink-0">{formatHistoricalYear(ev.eventYear)}</span>
                     </div>
-                    <div className="text-[10px] text-archival-muted truncate mt-0.5 capitalize">
-                      {ev.eventType} • {ev.locationName || "Recorded site"}
+                    <div className="text-[10px] text-archival-muted truncate mt-1 capitalize flex items-center gap-1.5">
+                      <span className="inline-block px-1.5 py-0.5 rounded bg-archival-surface border border-archival-border/60 font-sans">
+                        {ev.eventType}
+                      </span>
+                      <span>{ev.locationName || "Recorded site"}</span>
                     </div>
                   </button>
                 ))}

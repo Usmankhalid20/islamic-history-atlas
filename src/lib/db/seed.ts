@@ -48,13 +48,37 @@ export async function seedDatabase() {
 
   // Seed territory periods
   for (const ter of initialTerritoryPeriods) {
-    await db.insert(territoryPeriods).values(ter).onConflictDoNothing();
+    await db
+      .insert(territoryPeriods)
+      .values(ter)
+      .onConflictDoUpdate({
+        target: territoryPeriods.id,
+        set: {
+          regionName: ter.regionName,
+          geometryGeojson: ter.geometryGeojson,
+          explanatoryNote: ter.explanatoryNote,
+          validFromYear: ter.validFromYear,
+          validToYear: ter.validToYear,
+        },
+      });
   }
   console.log(`✓ Seeded ${initialTerritoryPeriods.length} territory periods`);
 
   // Seed historical events
   for (const evt of initialHistoricalEvents) {
-    await db.insert(historicalEvents).values(evt).onConflictDoNothing();
+    await db
+      .insert(historicalEvents)
+      .values(evt)
+      .onConflictDoUpdate({
+        target: historicalEvents.id,
+        set: {
+          title: evt.title,
+          summary: evt.summary,
+          locationGeojson: evt.locationGeojson,
+          locationName: evt.locationName,
+          eventYear: evt.eventYear,
+        },
+      });
   }
   console.log(`✓ Seeded ${initialHistoricalEvents.length} historical events`);
 
@@ -72,7 +96,18 @@ export async function seedDatabase() {
 
   // Seed trade & pilgrimage routes
   for (const tr of initialTradeRoutes) {
-    await db.insert(tradeRoutes).values(tr as any).onConflictDoNothing();
+    await db
+      .insert(tradeRoutes)
+      .values(tr as any)
+      .onConflictDoUpdate({
+        target: tradeRoutes.id,
+        set: {
+          name: tr.name,
+          pathGeojson: tr.pathGeojson,
+          description: tr.description,
+          primaryCommodities: tr.primaryCommodities,
+        },
+      });
   }
   console.log(`✓ Seeded ${initialTradeRoutes.length} trade & pilgrimage routes`);
 

@@ -1,6 +1,24 @@
 // Islamic History Atlas - Service Worker v1.0.0
 const CACHE_NAME = "islamic-history-atlas-v1";
 
+const isDev =
+  self.location.hostname === "localhost" ||
+  self.location.hostname === "127.0.0.1" ||
+  self.location.hostname === "::1";
+
+// In development, automatically unregister and purge caches to avoid interfering with Next.js HMR and compiling chunks
+if (isDev) {
+  self.addEventListener("install", () => self.skipWaiting());
+  self.addEventListener("activate", (event) => {
+    event.waitUntil(
+      caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+        .then(() => self.registration.unregister())
+    );
+  });
+}
+
 const PRECACHE_URLS = [
   "/",
   "/manifest.webmanifest",
@@ -16,8 +34,9 @@ const PRECACHE_URLS = [
   "/sources",
 ];
 
-// Install Event: Precache core application shell
+// Install Event: Precache core application shell (production only)
 self.addEventListener("install", (event) => {
+  if (isDev) return;
   event.waitUntil(
     caches
       .open(CACHE_NAME)
@@ -30,8 +49,9 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate Event: Clean up stale caches
+// Activate Event: Clean up stale caches (production only)
 self.addEventListener("activate", (event) => {
+  if (isDev) return;
   event.waitUntil(
     caches
       .keys()
@@ -50,6 +70,8 @@ self.addEventListener("activate", (event) => {
 
 // Fetch Event: Intelligent offline caching strategy
 self.addEventListener("fetch", (event) => {
+  if (isDev) return; // Do not intercept requests in development mode
+
   const { request } = event;
   const url = new URL(request.url);
 
@@ -73,8 +95,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2. Map Tiles: Stale-While-Revalidate for offline cartography
-  if (url.hostname.includes("cartocdn.com") || url.hostname.includes("openstreetmap.org")) {
+  // 2. Map Tiles: Stale-While-Revalidate for offline cartography (Esri, Carto & OSM)
+  if (
+    url.hostname.includes("arcgisonline.com") ||
+    url.hostname.includes("cartocdn.com") ||
+    url.hostname.includes("openstreetmap.org")
+  ) {
     event.respondWith(
       caches.match(request).then((cached) => {
         const fetchPromise = fetch(request)

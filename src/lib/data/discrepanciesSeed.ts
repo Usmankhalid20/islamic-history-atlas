@@ -32,6 +32,55 @@ export interface HistoricalDiscrepancy {
 
 export const initialHistoricalDiscrepancies: HistoricalDiscrepancy[] = [
   {
+    id: "disc_ghassanid_lakhmid_march_632",
+    title: "The Northern Steppe Frontier & Ghassanid-Lakhmid March Zones",
+    category: "boundary_dispute",
+    confidenceRating: "approximate",
+    activeFromYear: 632,
+    activeToYear: 638,
+    regionName: "Syro-Mesopotamian Steppe & Northern Nafud",
+    geographicScopeDescription:
+      "Desert march corridor bridging the Byzantine Levantine limes and Sasanian defensive ramparts (Khandaq Shapur) in lower Iraq.",
+    historiographicalSummary:
+      "Classical chronicles often portray an abrupt, unified territorial demarcation radiating northward immediately in 632–634 CE. Modern peer-reviewed spatial analysis demonstrates that the northern nomadic federations (Banu Ghassan, Banu Lakhm, Banu Kalb, Taghlib) formed a shifting, permeable march zone whose fiscal client relationships with Byzantium and Ctesiphon evolved over several years of negotiation and military skirmishes before formal caliphal administration was consolidated.",
+    perspectives: [
+      {
+        sourceOrScholar: "al-Tabari (d. 923 CE)",
+        traditionOrSchool: "early_arabic_chronicle",
+        claimSummary:
+          "Records that Abu Bakr ordered general mobilization towards the desert borders of Roman Syria and Sasanian Iraq, offering covenants to tribes accepting Medina's central fiscal and military authority.",
+        sourceTextExcerpt:
+          "Abu Bakr mobilized the battalions for the frontier marches, commanding Khalid to grant terms to those who submitted and to secure the desert wells along the northern perimeter.",
+        citation: "al-Tabari, Tarikh al-Rusul wa'l-Muluk, ed. de Goeje, I, 2015-2028.",
+      },
+      {
+        sourceOrScholar: "Fred M. Donner (1981)",
+        traditionOrSchool: "modern_peer_reviewed",
+        claimSummary:
+          "The northern perimeter was an ecological and political gradient rather than a modern sovereign border line.",
+        sourceTextExcerpt:
+          "The frontier between settled agricultural lands and the desert steppe was occupied by Arab pastoralists whose allegiances were fluid. Caliphal hegemony was established through tribal diplomacy and allegiance to the umma, not fixed territorial delimitation.",
+        citation: "Fred M. Donner, The Early Islamic Conquests (Princeton University Press, 1981), pp. 91-111.",
+      },
+    ],
+    cartographicImpact:
+      "Rendered as a semi-transparent amber buffer zone across the northern Syrian-Iraqi desert march to denote transitional sovereignty during 632–638 CE.",
+    consensusRecommendation:
+      "Display as a transitional contested march rather than direct uniform caliphal provincial administration in early conquest maps.",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [36.0, 31.0],
+          [44.0, 31.0],
+          [43.0, 33.5],
+          [37.0, 33.5],
+          [36.0, 31.0],
+        ],
+      ],
+    },
+  },
+  {
     id: "disc_byzantine_abbasid_awasim",
     title: "The Al-Awasim / Thaghr Frontier Zone",
     category: "boundary_dispute",

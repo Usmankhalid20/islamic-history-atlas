@@ -49,7 +49,7 @@ export function HistoricalInquiryWidget({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to query scholarly engine");
+        throw new Error(data.answer || data.error || "Failed to query scholarly engine");
       }
 
       setResponse(data.answer);

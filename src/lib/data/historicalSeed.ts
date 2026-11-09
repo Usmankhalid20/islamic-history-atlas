@@ -113,17 +113,33 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [34.0, 21.0],
-          [40.0, 20.0],
-          [46.0, 24.0],
-          [44.0, 31.0],
-          [35.0, 32.5],
-          [34.0, 27.0],
-          [34.0, 21.0],
+          [39.15, 21.50], // Jeddah & Red Sea Coast
+          [38.06, 24.08], // Yanbu
+          [36.45, 26.24], // Al-Wajh
+          [35.70, 27.35], // Duba (Northern Hijaz coast)
+          [34.98, 29.53], // Gulf of Aqaba (Ayla)
+          [34.25, 31.30], // Rafah / Gaza border
+          [35.25, 31.78], // Jerusalem / Southern Levant
+          [35.85, 32.75], // Yarmouk / Golan
+          [36.50, 32.55], // Bosra / Hawran
+          [38.20, 30.50], // Wadi Sirhan desert approach
+          [40.20, 29.90], // Sakaka / Dumah
+          [44.20, 31.50], // Kufa & Najaf ridge
+          [47.80, 30.50], // Lower Euphrates & Basra marshlands
+          [49.60, 25.40], // Hajar & Al-Ahsa oasis (Persian Gulf littoral)
+          [51.00, 24.80], // Eastern Arabia march
+          [55.70, 24.20], // Oman oasis frontier
+          [53.00, 22.00], // Northern Rub' al-Khali margin
+          [46.70, 24.10], // Yamama & Najd plateau
+          [44.20, 17.50], // Najran oasis
+          [42.55, 16.90], // Jazan / Tihama coast
+          [41.08, 19.12], // Al-Qunfudhah
+          [40.27, 20.15], // Al-Lith
+          [39.15, 21.50], // Closing to Jeddah
         ],
       ],
     },
-    explanatoryNote: "Core domain of the Rashidun caliphate radiating from Medina across the Hijaz and southern Levant.",
+    explanatoryNote: "Core domain of the Rashidun caliphate radiating from Medina across the Hijaz, Najd, southern Levant, and lower Mesopotamian marches.",
     reviewStatus: "published",
   },
   {
@@ -138,16 +154,30 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [35.0, 31.0],
-          [39.0, 31.0],
-          [40.0, 36.5],
-          [36.0, 37.0],
-          [35.0, 33.0],
-          [35.0, 31.0],
+          [34.25, 31.25], // Gaza & Sinai border
+          [34.75, 32.05], // Jaffa coast
+          [35.07, 32.93], // Acre & Mount Carmel
+          [35.50, 33.89], // Beirut & Phoenician coast
+          [35.85, 34.89], // Tripoli & Tartus
+          [35.78, 35.52], // Latakia
+          [36.16, 36.20], // Antioch (Antakiya)
+          [37.38, 36.80], // Northern Syrian march (Aintab / Mar'ash)
+          [38.10, 36.50], // Manbij & Euphrates crossing
+          [39.01, 35.95], // Raqqa (al-Rafiqa)
+          [38.75, 35.63], // Resafa (Sergiopolis)
+          [38.28, 34.56], // Palmyra (Tadmur)
+          [36.31, 33.51], // Damascus & Ghouta oasis
+          [36.48, 32.52], // Bosra (Jund Dimashq / Hawran)
+          [35.93, 31.95], // Amman & Balqa (Jund al-Urdunn)
+          [35.70, 31.18], // Karak & Dead Sea
+          [35.73, 30.19], // Ma'an
+          [34.98, 29.53], // Gulf of Aqaba (Ayla)
+          [34.79, 31.24], // Beersheba / Negev frontier
+          [34.25, 31.25], // Closing to Gaza
         ],
       ],
     },
-    explanatoryNote: "Core metropolitan territory of the Umayyad caliphs administered directly from Damascus.",
+    explanatoryNote: "Metropolitan heartland of the Umayyad caliphs administered directly from Damascus across the five junds of Bilad al-Sham.",
     reviewStatus: "published",
   },
   {
@@ -162,16 +192,32 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [-8.5, 36.5],
-          [-1.5, 36.5],
-          [1.0, 41.0],
-          [-4.0, 42.0],
-          [-8.5, 39.0],
-          [-8.5, 36.5],
+          [-5.60, 36.01], // Tarifa & Strait of Gibraltar
+          [-6.35, 36.78], // Guadalquivir mouth & Cadiz
+          [-6.95, 37.26], // Huelva / Odiel estuary
+          [-7.93, 37.02], // Faro / Algarve coast
+          [-8.44, 37.19], // Silves
+          [-8.68, 39.23], // Santarém & Lower Tagus
+          [-8.41, 40.21], // Coimbra march
+          [-5.20, 40.35], // Sierra de Gredos pass
+          [-4.00, 40.70], // Guadarrama frontier
+          [-2.43, 41.17], // Medinaceli (Middle March fortress)
+          [-0.88, 41.65], // Zaragoza (Upper March capital)
+          [0.62, 41.62],  // Lerida (Lleida)
+          [0.52, 40.81],  // Tortosa & Ebro delta
+          [-0.37, 39.47], // Valencia littoral
+          [0.10, 38.84],  // Denia / Cape Nao
+          [-0.48, 38.34], // Alicante
+          [-1.13, 37.99], // Murcia / Tudmir
+          [-0.98, 37.60], // Cartagena
+          [-2.46, 36.84], // Almería
+          [-4.42, 36.72], // Málaga coast
+          [-5.45, 36.13], // Algeciras
+          [-5.60, 36.01], // Closing to Tarifa
         ],
       ],
     },
-    explanatoryNote: "Territory under the Umayyad Emirate of Córdoba, excluding northern Christian kingdoms.",
+    explanatoryNote: "Territory under the Umayyad Emirate of Córdoba, spanning the southern and central Iberian Peninsula up to the Upper March at Zaragoza.",
     reviewStatus: "published",
   },
   {
@@ -186,15 +232,28 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [41.5, 31.0],
-          [48.0, 30.0],
-          [47.5, 35.5],
-          [43.0, 36.5],
-          [41.5, 31.0],
+          [47.81, 30.50], // Basra & Shatt al-Arab
+          [48.30, 30.00], // Abadan & marsh margin
+          [48.67, 31.32], // Ahvaz / Khuzestan border
+          [45.83, 32.51], // Wasit on the Tigris
+          [44.58, 33.09], // Ctesiphon (al-Mada'in)
+          [44.36, 33.31], // Baghdad (Round City of Peace)
+          [44.64, 33.75], // Diyala River basin
+          [43.88, 34.20], // Samarra (Abbasid capital 836–892)
+          [43.68, 34.60], // Tikrit
+          [43.13, 36.34], // Mosul on the Upper Tigris
+          [43.40, 35.90], // Great Zab River confluence
+          [41.86, 36.32], // Sinjar plain
+          [43.48, 33.35], // Anbar on the Euphrates
+          [44.38, 32.03], // Kufa & Najaf ridge
+          [44.34, 31.58], // al-Qadisiyyah
+          [45.28, 31.31], // Samawah & western desert edge
+          [46.26, 31.05], // Nasiriyah (Ur)
+          [47.81, 30.50], // Closing to Basra
         ],
       ],
     },
-    explanatoryNote: "The central crown province of the Abbasid Caliphate, housing the Round City of Baghdad.",
+    explanatoryNote: "The central crown province of the Abbasid Caliphate, housing the imperial round city of Baghdad and the agricultural Sawad.",
     reviewStatus: "published",
   },
   {
@@ -209,11 +268,21 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [5.0, 32.0],
-          [12.0, 32.0],
-          [11.5, 37.5],
-          [6.0, 37.0],
-          [5.0, 32.0],
+          [5.50, 36.50],  // Ikjan / Little Kabylia (Kutama core)
+          [6.61, 36.36],  // Constantine (Qasantina)
+          [10.98, 37.05], // Cap Bon peninsula
+          [10.18, 36.80], // Tunis & Carthage
+          [10.64, 35.83], // Sousse (Hadrumetum)
+          [11.06, 35.50], // Mahdia (Fatimid naval capital)
+          [10.76, 34.74], // Sfax
+          [10.10, 33.88], // Gabes
+          [10.85, 33.81], // Djerba island
+          [13.19, 32.89], // Tripoli (Tarabulus)
+          [12.00, 31.80], // Nafusa Mountains margin
+          [8.78, 34.42],  // Gafsa oasis
+          [10.10, 35.68], // Kairouan (sacred inland city)
+          [8.12, 35.40],  // Tebessa
+          [5.50, 36.50],  // Closing to Little Kabylia
         ],
       ],
     },
@@ -223,6 +292,19 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
 ];
 
 export const initialHistoricalEvents: HistoricalEventRecord[] = [
+  {
+    id: "evt_accession_abu_bakr_632",
+    title: "Accession of Abu Bakr al-Siddiq & Founding of the Caliphate",
+    eventYear: 632,
+    summary: "Following the death of the Prophet Muhammad, Abu Bakr al-Siddiq was pledged allegiance at Saqifah Bani Sa'ida as the first caliph (successor), establishing the Rashidun Caliphate.",
+    eventType: "founding",
+    locationName: "Medina, Hijaz",
+    locationGeojson: {
+      type: "Point",
+      coordinates: [39.6122, 24.4672],
+    },
+    reviewStatus: "published",
+  },
   {
     id: "evt_conquest_damascus_635",
     title: "Conquest of Damascus",
@@ -690,10 +772,14 @@ export const initialTradeRoutes: (Omit<TradeRouteRecord, "createdAt"> & { create
       coordinates: [
         [44.36, 33.31], // Baghdad
         [45.85, 34.46], // Hulwan (Zagros Pass)
+        [47.07, 34.31], // Kermanshah
         [48.51, 34.79], // Hamadan
         [51.43, 35.59], // Rayy (Tehran)
+        [54.34, 36.17], // Damghan
         [58.79, 36.21], // Nishapur
+        [59.60, 36.30], // Tus / Mashhad
         [62.19, 37.60], // Merv Oasis
+        [63.60, 39.10], // Amul (Oxus / Amu Darya crossing)
         [64.42, 39.77], // Bukhara
         [66.97, 39.65], // Samarkand
       ],
@@ -735,13 +821,21 @@ export const initialTradeRoutes: (Omit<TradeRouteRecord, "createdAt"> & { create
       type: "LineString",
       coordinates: [
         [47.81, 30.50], // Basra
-        [52.34, 27.67], // Siraf
+        [50.05, 29.25], // Northern Gulf waters
+        [52.34, 27.67], // Siraf (Persian Gulf entrepôt)
+        [56.27, 26.19], // Strait of Hormuz
         [56.74, 24.36], // Sohar (Oman)
         [58.59, 23.61], // Muscat
-        [45.03, 12.78], // Aden
-        [42.95, 14.80], // al-Hudaydah
-        [39.19, 21.54], // Jeddah
-        [32.55, 29.96], // al-Qulzum (Suez)
+        [59.80, 22.50], // Ras al-Hadd (eastern tip of Arabia)
+        [58.00, 20.60], // Masirah Island channel
+        [54.70, 16.98], // Mirbat / Salalah (Dhofar frankincense coast)
+        [49.15, 14.53], // al-Mukalla / al-Shihr (Hadramawt coast)
+        [45.03, 12.78], // Aden (Gulf of Aden port)
+        [43.40, 12.60], // Bab al-Mandab Strait
+        [42.95, 14.80], // al-Hudaydah (Red Sea coast)
+        [39.19, 21.54], // Jeddah (Port of Mecca)
+        [38.05, 24.09], // Yanbu (Port of Medina)
+        [32.55, 29.96], // al-Qulzum (Suez terminal)
       ],
     },
     reviewStatus: "published",
@@ -959,6 +1053,30 @@ export const initialScholars: (Omit<NewScholarRecord, "createdAt"> & { createdAt
 ];
 
 export const initialCampaigns: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[] = [
+  {
+    id: "camp_ridda_632_633",
+    name: "Abu Bakr's Ridda Consolidation Campaigns",
+    startYear: 632,
+    endYear: 633,
+    polityId: "pol_rashidun",
+    commanderName: "Khalid ibn al-Walid & Ikrima ibn Abi Jahl",
+    rulerId: "rul_abu_bakr",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [39.61, 24.47], // Medina
+        [41.80, 26.20], // Buzakha (defeat of Tulayha)
+        [42.20, 27.10], // Zafar
+        [46.70, 24.10], // Yamama / Battle of Aqraba
+        [49.60, 25.40], // Hajar (al-Ahsa & Gulf coast)
+        [54.37, 24.45], // Dibba (Oman march)
+      ],
+    },
+    keyLocations: "Medina → Buzakha → Yamama (Aqraba) → Hajar → Dibba",
+    strategicOutcome: "Decisive Rashidun victory over secessionist tribal coalitions; total political and military unification of the Arabian Peninsula under the Medina Caliphate.",
+    description: "Dispatched in eleven corps by Caliph Abu Bakr in 632 CE to suppress widespread tribal insurrections following the Prophet's death. Khalid ibn al-Walid defeated Tulayha at Buzakha and Musaylima at the fateful Battle of the Garden of Death in Yamama, solidifying central governance and mobilizing Arab armies for outward expansion.",
+    reviewStatus: "published",
+  },
   {
     id: "camp_yarmouk_634_636",
     name: "Khalid ibn al-Walid's Syrian March & Battle of Yarmouk",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, LayerGroup } from "leaflet";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import type { HistoricalEventRecord } from "@/lib/db/schema/historicalEvents";
@@ -8,6 +8,7 @@ import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 import type { HistoricalDiscrepancy } from "@/lib/data/discrepanciesSeed";
+import { Compass, RotateCcw } from "lucide-react";
 
 interface HistoricalMapProps {
   territories: TerritoryPeriodRecord[];
@@ -75,6 +76,7 @@ export function HistoricalMap({
 }: HistoricalMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
+  const [mapInstance, setMapInstance] = useState<LeafletMap | null>(null);
   const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
   const eventsLayerRef = useRef<LayerGroup | null>(null);
   const routesLayerRef = useRef<LayerGroup | null>(null);
@@ -92,14 +94,39 @@ export function HistoricalMap({
 
       if (!isMounted || !mapContainerRef.current) return;
 
-      // Initialize Leaflet map centered on historical heartland
+      // Initialize Leaflet map centered on historical heartland (Arabia, Levant, Iraq, Egypt)
       const map = L.map(mapContainerRef.current, {
-        center: [33.0, 30.0],
+        center: [28.0, 38.0],
         zoom: 4,
         minZoom: 3,
         maxZoom: 9,
         scrollWheelZoom: true,
       });
+
+      // Create dedicated panes with deterministic stacking order to prevent SVG/marker click hijacking
+      map.createPane("territoriesPane");
+      const terPane = map.getPane("territoriesPane");
+      if (terPane) terPane.style.zIndex = "410";
+
+      map.createPane("discrepanciesPane");
+      const discPane = map.getPane("discrepanciesPane");
+      if (discPane) discPane.style.zIndex = "420";
+
+      map.createPane("routesPane");
+      const routesPane = map.getPane("routesPane");
+      if (routesPane) routesPane.style.zIndex = "430";
+
+      map.createPane("campaignsPane");
+      const campPane = map.getPane("campaignsPane");
+      if (campPane) campPane.style.zIndex = "440";
+
+      map.createPane("monumentsPane");
+      const monPane = map.getPane("monumentsPane");
+      if (monPane) monPane.style.zIndex = "450";
+
+      map.createPane("eventsPane");
+      const eventsPane = map.getPane("eventsPane");
+      if (eventsPane) eventsPane.style.zIndex = "460";
 
       // Add archival light gray canvas basemap (neutral, watermark-free, zero API key required)
       L.tileLayer(
@@ -112,6 +139,15 @@ export function HistoricalMap({
       ).addTo(map);
 
       mapInstanceRef.current = map;
+      if (isMounted) {
+        setMapInstance(map);
+        // Force dimension recalculation in case container layout completed asynchronously
+        setTimeout(() => {
+          if (isMounted) {
+            map.invalidateSize();
+          }
+        }, 150);
+      }
     }
 
     initMap();
@@ -122,13 +158,14 @@ export function HistoricalMap({
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+      setMapInstance(null);
     };
   }, []);
 
   // Update GeoJSON territory layer
   useEffect(() => {
     async function updateLayers() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -152,6 +189,7 @@ export function HistoricalMap({
       };
 
       const layer = L.geoJSON(geoJsonData, {
+        pane: "territoriesPane",
         style: (feature) => {
           const t = feature?.properties as TerritoryPeriodRecord;
           const colors = POLITY_COLORS[t.polityId] || DEFAULT_STYLE;
@@ -171,6 +209,16 @@ export function HistoricalMap({
           featureLayer.bindTooltip(
             `<strong>${t.regionName}</strong><br/>${t.controlType} control (${t.validFromYear}–${t.validToYear} CE)`,
             { sticky: true, className: "font-sans text-xs" }
+          );
+
+          featureLayer.bindPopup(
+            `<div class="p-1 font-sans">
+              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${t.regionName}</div>
+              <div class="text-[11px] text-stone-600 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${t.controlType} control • ${t.validFromYear}–${t.validToYear} CE</div>
+              ${t.explanatoryNote ? `<p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${t.explanatoryNote}</p>` : ""}
+              <div class="text-[11px] text-stone-500 italic">Confidence: ${t.confidence}</div>
+            </div>`,
+            { maxWidth: 280 }
           );
 
           featureLayer.on({
@@ -202,12 +250,12 @@ export function HistoricalMap({
     }
 
     updateLayers();
-  }, [territories, selectedTerritoryId, onSelectTerritory]);
+  }, [mapInstance, territories, selectedTerritoryId, onSelectTerritory]);
 
   // Update Event markers layer
   useEffect(() => {
     async function updateEventMarkers() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -231,6 +279,7 @@ export function HistoricalMap({
         const isSelected = event.id === selectedEventId;
 
         const circleMarker = L.circleMarker([lat, lng], {
+          pane: "eventsPane",
           radius: isSelected ? 9 : 7,
           fillColor: colors.fill,
           color: isSelected ? "#000000" : colors.stroke,
@@ -242,6 +291,16 @@ export function HistoricalMap({
         circleMarker.bindTooltip(
           `<strong>${event.title} (${event.eventYear} CE)</strong><br/><span class="capitalize text-gray-500">${event.eventType}</span> • ${event.locationName || ""}`,
           { direction: "top", offset: [0, -6], className: "font-sans text-xs" }
+        );
+
+        circleMarker.bindPopup(
+          `<div class="p-1 font-sans">
+            <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${event.title}</div>
+            <div class="text-[11px] text-red-700 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${event.eventType} • ${event.eventYear} CE</div>
+            <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${event.summary}</p>
+            ${event.locationName ? `<div class="text-[11px] text-stone-500 italic border-t border-stone-200 pt-1">📍 ${event.locationName}</div>` : ""}
+          </div>`,
+          { maxWidth: 280 }
         );
 
         circleMarker.on("click", () => {
@@ -259,12 +318,12 @@ export function HistoricalMap({
     }
 
     updateEventMarkers();
-  }, [events, selectedEventId, onSelectEvent]);
+  }, [mapInstance, events, selectedEventId, onSelectEvent]);
 
   // Update Trade & Pilgrimage Routes Layer
   useEffect(() => {
     async function updateRoutes() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -294,6 +353,7 @@ export function HistoricalMap({
         }
 
         const layer = L.geoJSON(geojson, {
+          pane: "routesPane",
           style: {
             color: isSelected ? "#000000" : strokeColor,
             weight: isSelected ? 4.5 : 2.5,
@@ -305,6 +365,16 @@ export function HistoricalMap({
         layer.bindTooltip(
           `<strong>${route.name}</strong><br/><span class="capitalize text-gray-500">${route.routeType.replace("_", " ")}</span>${route.primaryCommodities ? `<br/><span class="text-[11px]">${route.primaryCommodities}</span>` : ""}`,
           { sticky: true, className: "font-sans text-xs" }
+        );
+
+        layer.bindPopup(
+          `<div class="p-1 font-sans">
+            <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${route.name}</div>
+            <div class="text-[11px] text-amber-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${route.routeType.replace("_", " ")} • Active ${route.activeFromYear}–${route.activeToYear ?? "present"} CE</div>
+            <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${route.description || ""}</p>
+            ${route.primaryCommodities ? `<div class="text-[11px] text-stone-600 bg-amber-50 p-1.5 rounded border border-amber-200"><strong class="text-amber-900">Primary Goods:</strong> ${route.primaryCommodities}</div>` : ""}
+          </div>`,
+          { maxWidth: 280 }
         );
 
         layer.on("click", () => {
@@ -322,12 +392,12 @@ export function HistoricalMap({
     }
 
     updateRoutes();
-  }, [routes, selectedRouteId, onSelectRoute]);
+  }, [mapInstance, routes, selectedRouteId, onSelectRoute]);
 
   // Update Monument markers layer
   useEffect(() => {
     async function updateMonumentMarkers() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -355,6 +425,7 @@ export function HistoricalMap({
           const isSelected = monument.id === selectedMonumentId;
 
           const circleMarker = L.circleMarker([lat, lng], {
+            pane: "monumentsPane",
             radius: isSelected ? 9.5 : 7.5,
             fillColor: colors.fill,
             color: isSelected ? "#000000" : colors.stroke,
@@ -366,6 +437,17 @@ export function HistoricalMap({
           circleMarker.bindTooltip(
             `<strong>${monument.name} (${monument.foundingYear} CE)</strong><br/><span class="capitalize text-purple-700 font-medium">${monument.monumentType.replace("_", " ")}</span> • ${monument.cityName}`,
             { direction: "top", offset: [0, -6], className: "font-sans text-xs" }
+          );
+
+          circleMarker.bindPopup(
+            `<div class="p-1 font-sans">
+              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${monument.name}</div>
+              <div class="text-[11px] text-purple-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${monument.monumentType.replace("_", " ")} • Founded ${monument.foundingYear} CE</div>
+              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${monument.description || ""}</p>
+              ${monument.architecturalFeatures ? `<div class="text-[11px] text-stone-600 bg-purple-50 p-1.5 rounded border border-purple-200"><strong class="text-purple-900">Architecture:</strong> ${monument.architecturalFeatures}</div>` : ""}
+              <div class="text-[11px] text-stone-500 italic mt-1">📍 ${monument.cityName}</div>
+            </div>`,
+            { maxWidth: 280 }
           );
 
           circleMarker.on("click", () => {
@@ -384,12 +466,12 @@ export function HistoricalMap({
     }
 
     updateMonumentMarkers();
-  }, [monuments, selectedMonumentId, onSelectMonument]);
+  }, [mapInstance, monuments, selectedMonumentId, onSelectMonument]);
 
   // Update Military Campaigns Layer
   useEffect(() => {
     async function updateCampaigns() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -409,6 +491,7 @@ export function HistoricalMap({
           const isSelected = campaign.id === selectedCampaignId;
 
           const layer = L.geoJSON(geojson, {
+            pane: "campaignsPane",
             style: {
               color: isSelected ? "#000000" : "#DC2626", // Bold Crimson
               weight: isSelected ? 4.5 : 2.75,
@@ -427,6 +510,17 @@ export function HistoricalMap({
             { sticky: true, className: "font-sans text-xs" }
           );
 
+          layer.bindPopup(
+            `<div class="p-1 font-sans">
+              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${campaign.name}</div>
+              <div class="text-[11px] text-red-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">Commander: ${campaign.commanderName} (${yearLabel})</div>
+              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${campaign.description || ""}</p>
+              <div class="text-[11px] text-stone-600 bg-red-50 p-1.5 rounded border border-red-200 mb-1"><strong class="text-red-900">Strategic Outcome:</strong> ${campaign.strategicOutcome}</div>
+              <div class="text-[11px] text-stone-500 italic">Route: ${campaign.keyLocations}</div>
+            </div>`,
+            { maxWidth: 290 }
+          );
+
           layer.on("click", () => {
             if (onSelectCampaign) {
               onSelectCampaign(campaign);
@@ -443,12 +537,12 @@ export function HistoricalMap({
     }
 
     updateCampaigns();
-  }, [campaigns, selectedCampaignId, onSelectCampaign]);
+  }, [mapInstance, campaigns, selectedCampaignId, onSelectCampaign]);
 
   // Update Historical Discrepancies & Contested Boundaries Layer
   useEffect(() => {
     async function updateDiscrepancies() {
-      const map = mapInstanceRef.current;
+      const map = mapInstance;
       if (!map) return;
 
       const L = await import("leaflet");
@@ -468,6 +562,7 @@ export function HistoricalMap({
           const isSelected = discrepancy.id === selectedDiscrepancyId;
 
           const layer = L.geoJSON(geojson, {
+            pane: "discrepanciesPane",
             style: {
               color: isSelected ? "#B45309" : "#D97706",
               weight: isSelected ? 3.5 : 2,
@@ -480,6 +575,16 @@ export function HistoricalMap({
           layer.bindTooltip(
             `<strong>${discrepancy.title}</strong><br/><span class="text-amber-800 font-medium">Status: ${discrepancy.confidenceRating}</span><br/><span class="text-[11px]">${discrepancy.regionName}</span>`,
             { sticky: true, className: "font-sans text-xs" }
+          );
+
+          layer.bindPopup(
+            `<div class="p-1 font-sans">
+              <div class="font-serif font-bold text-sm text-amber-950 leading-tight">${discrepancy.title}</div>
+              <div class="text-[11px] text-amber-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">Rating: ${discrepancy.confidenceRating} (${discrepancy.activeFromYear}–${discrepancy.activeToYear} CE)</div>
+              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${discrepancy.historiographicalSummary}</p>
+              <div class="text-[11px] text-amber-900 bg-amber-50 p-1.5 rounded border border-amber-200"><strong>Region:</strong> ${discrepancy.regionName}</div>
+            </div>`,
+            { maxWidth: 280 }
           );
 
           layer.on("click", () => {
@@ -498,14 +603,33 @@ export function HistoricalMap({
     }
 
     updateDiscrepancies();
-  }, [discrepancies, selectedDiscrepancyId, onSelectDiscrepancy]);
+  }, [mapInstance, discrepancies, selectedDiscrepancyId, onSelectDiscrepancy]);
+
+  const handleResetHeartland = () => {
+    if (mapInstance) {
+      mapInstance.setView([28.0, 38.0], 4);
+    }
+  };
 
   return (
-    <div
-      ref={mapContainerRef}
-      role="application"
-      aria-label="Interactive Historical Atlas Map"
-      className="w-full h-full min-h-[420px] rounded-lg overflow-hidden border border-archival-border bg-archival-surface z-0"
-    />
+    <div className="relative w-full h-full min-h-[420px]">
+      <div
+        ref={mapContainerRef}
+        role="application"
+        aria-label="Interactive Historical Atlas Map"
+        className="w-full h-full min-h-[420px] rounded-xl overflow-hidden border border-archival-border bg-archival-surface z-0"
+      />
+      {mapInstance && (
+        <button
+          type="button"
+          onClick={handleResetHeartland}
+          className="absolute top-3 right-3 z-[400] bg-archival-surface/90 hover:bg-archival-surface border border-archival-border/80 px-2.5 py-1.5 rounded-md text-xs font-serif text-archival-ink shadow-sm flex items-center gap-1.5 transition-colors backdrop-blur-sm"
+          title="Reset map center to historical heartland"
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+          <span>Reset Heartland</span>
+        </button>
+      )}
+    </div>
   );
 }

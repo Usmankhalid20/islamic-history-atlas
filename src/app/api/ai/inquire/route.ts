@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
       model,
     });
 
+    const statusCode = result.status || (result.error ? 502 : 200);
+
     return NextResponse.json(result, {
+      status: statusCode,
       headers: {
         "Cache-Control": getCacheControlHeader("dynamic"),
       },
