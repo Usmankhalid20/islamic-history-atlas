@@ -83,3 +83,4 @@ Markers are rendered using inline SVG icons styled with archival colors:
 - Touch-friendly controls with min 40x40px touch targets.
 - Responsive layout switching between standard grid and full-width theater mode.
 - Tested across mobile (<640px), tablet (640px–1024px), and desktop (1024px+).
+

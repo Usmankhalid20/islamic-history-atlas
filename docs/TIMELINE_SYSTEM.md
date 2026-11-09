@@ -33,3 +33,4 @@ When `selectedYear` updates:
 3. **Trade Routes**: Routes where `activeFromYear <= selectedYear <= (activeToYear ?? 9999)` are displayed.
 4. **Campaigns**: Military expeditions active during the specified year window are displayed.
 5. **Polity Active Status**: Concurrently existing sovereign dynasties for that specific year are computed and displayed as colored badges in Tier 1 of the cartographic toolbar.
+

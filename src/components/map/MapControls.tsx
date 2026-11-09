@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Plus,
   Minus,
@@ -91,9 +91,36 @@ export function MapControls({
 }: MapControlsProps) {
   const [isRegionMenuOpen, setIsRegionMenuOpen] = useState(false);
   const [isBasemapMenuOpen, setIsBasemapMenuOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsRegionMenuOpen(false);
+        setIsBasemapMenuOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsRegionMenuOpen(false);
+        setIsBasemapMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
-    <div className="absolute top-3 right-3 z-[400] flex flex-col items-end gap-2 pointer-events-auto">
+    <div
+      ref={containerRef}
+      className="absolute top-3 right-3 z-[400] flex flex-col items-end gap-2 pointer-events-auto"
+    >
       {/* Top Action Row: Reset, Region Jumper, Basemap & Theater Toggle */}
       <div className="flex items-center gap-1.5 bg-archival-surface/95 backdrop-blur-md border border-archival-border p-1 rounded-xl shadow-md">
         {/* Reset Heartland Button */}
@@ -267,3 +294,4 @@ export function MapControls({
     </div>
   );
 }
+

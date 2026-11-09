@@ -43,3 +43,4 @@ Each major empire has a consistent, accessible color scheme utilized across poly
 - **Pilgrim Roads**: Darb Zubaydah, Syrian Hajj Road, North African Coastal Road.
 - **Caravan Highways**: Trans-Saharan trade routes, Silk Road northern and southern branches.
 - **Maritime Corridors**: Red Sea spice route, Persian Gulf trade, Indian Ocean dhow routes.
+

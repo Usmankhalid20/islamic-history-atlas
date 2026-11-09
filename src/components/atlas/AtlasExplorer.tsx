@@ -102,6 +102,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<HistoricalDiscrepancy | null>(null);
 
   const [showTerritories, setShowTerritories] = useState<boolean>(true);
+  const [showEvents, setShowEvents] = useState<boolean>(true);
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
@@ -138,6 +139,10 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     const discParam = searchParams.get("discrepancies");
     if (discParam === "0") setShowDiscrepancies(false);
     else if (discParam === "1") setShowDiscrepancies(true);
+
+    const showEventsParam = searchParams.get("showEvents");
+    if (showEventsParam === "0") setShowEvents(false);
+    else if (showEventsParam === "1") setShowEvents(true);
 
     const eventsParam = searchParams.get("events");
     if (eventsParam === "all") setShowAllEvents(true);
@@ -185,6 +190,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     const params = new URLSearchParams();
     params.set("year", selectedYear.toString());
     if (!showTerritories) params.set("territories", "0");
+    if (!showEvents) params.set("showEvents", "0");
     if (!showRoutes) params.set("routes", "0");
     if (!showMonuments) params.set("monuments", "0");
     if (!showCampaigns) params.set("campaigns", "0");
@@ -217,6 +223,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   }, [
     selectedYear,
     showTerritories,
+    showEvents,
     showRoutes,
     showMonuments,
     showCampaigns,
@@ -630,8 +637,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             showTerritories={showTerritories}
             setShowTerritories={setShowTerritories}
-            showEvents={true}
-            setShowEvents={() => {}}
+            showEvents={showEvents}
+            setShowEvents={setShowEvents}
             showRoutes={showRoutes}
             setShowRoutes={setShowRoutes}
             showMonuments={showMonuments}

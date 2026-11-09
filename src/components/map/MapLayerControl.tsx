@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Layers, Sliders, ChevronDown, Check } from "lucide-react";
 
 export interface MapLayerControlProps {
@@ -46,9 +46,34 @@ export function MapLayerControl({
   counts = {},
 }: MapLayerControlProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
-    <div className="absolute top-3 left-3 z-[400] pointer-events-auto">
+    <div
+      ref={containerRef}
+      className="absolute top-3 left-3 z-[400] pointer-events-auto"
+    >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -58,7 +83,7 @@ export function MapLayerControl({
         aria-label="Toggle map cartographic layers"
       >
         <Layers className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
-        <span className="font-medium text-[11px]">Cartographic Layers</span>
+        <span className="font-medium text-[11px]"><span className="hidden sm:inline">Cartographic </span>Layers</span>
         <ChevronDown
           className={`w-3 h-3 text-archival-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
           aria-hidden="true"
@@ -201,3 +226,4 @@ export function MapLayerControl({
     </div>
   );
 }
+

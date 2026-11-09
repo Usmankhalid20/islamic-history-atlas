@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Info, ChevronDown, ChevronUp, Layers, Eye, EyeOff } from "lucide-react";
 
 export interface MapLegendProps {
@@ -25,9 +25,32 @@ export function MapLegend({
   className = "",
 }: MapLegendProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsExpanded(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div
+      ref={containerRef}
       className={`absolute bottom-3 left-3 z-[400] transition-all duration-200 pointer-events-auto ${className}`}
       role="region"
       aria-label="Map Cartographic Legend"
@@ -215,3 +238,4 @@ export function MapLegend({
     </div>
   );
 }
+

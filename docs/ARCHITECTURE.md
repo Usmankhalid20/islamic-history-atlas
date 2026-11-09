@@ -59,3 +59,4 @@ The **Islamic Historical Atlas** is architected as an evidence-grounded full-sta
 - **Temporal Synchronization**: When the timeline slider or year selector changes, `AtlasExplorer` computes active entities matching the year via `filterActiveTerritories`, `activeEvents`, `activeRoutes`, `activeMonuments`, and `activeCampaigns`.
 - **Zero Heavy Reloads**: Changing layers or years dynamically updates Leaflet `LayerGroup`s without re-mounting the underlying Leaflet map instance.
 - **URL Deep Linking**: State changes (`year`, `territories`, `routes`, `campaigns`, `monuments`, `events`, `theater`, `entity`, `id`) are continuously serialized to query parameters using `window.history.replaceState`.
+

@@ -83,7 +83,7 @@ const BASEMAP_CONFIGS: Record<BasemapStyle, { url: string; attribution: string; 
 function createBattleIconSvg(isSelected: boolean): string {
   const size = isSelected ? 30 : 24;
   return `
-    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; items-center; justify-content: center;">
+    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; align-items: center; justify-content: center;">
       ${isSelected ? `<div style="position: absolute; inset: -4px; border-radius: 9999px; border: 2px solid #DC2626; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.75;"></div>` : ""}
       <div style="width: 100%; height: 100%; border-radius: 9999px; background: #DC2626; border: 2px solid ${isSelected ? "#000000" : "#991B1B"}; box-shadow: 0 2px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center;">
         <svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.58}" height="${size * 0.58}" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -111,7 +111,7 @@ function createMonumentIconSvg(type: string, isSelected: boolean): string {
   const stroke = isAcademy ? "#5B21B6" : "#047857";
 
   return `
-    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; items-center; justify-content: center;">
+    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; align-items: center; justify-content: center;">
       ${isSelected ? `<div style="position: absolute; inset: -4px; border-radius: 9999px; border: 2px solid ${bg}; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.75;"></div>` : ""}
       <div style="width: 100%; height: 100%; border-radius: 9999px; background: ${bg}; border: 2px solid ${isSelected ? "#000000" : stroke}; box-shadow: 0 2px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center;">
         <svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.58}" height="${size * 0.58}" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
