@@ -2,6 +2,7 @@ import React from "react";
 import { X, BookOpen, ShieldAlert, CheckCircle2, Globe } from "lucide-react";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 import { initialPolities, initialSources } from "@/lib/data/historicalSeed";
+import { POLITY_COLORS } from "@/components/map/HistoricalMap";
 import { formatHistoricalYear } from "@/lib/utils";
 
 interface TerritoryDetailPanelProps {
@@ -15,6 +16,7 @@ export function TerritoryDetailPanel({
 }: TerritoryDetailPanelProps) {
   const polity = initialPolities.find((p) => p.id === territory.polityId);
   const relevantSources = initialSources; // In MVP seed, all claims cite our baseline peer-reviewed works
+  const polityColor = POLITY_COLORS[territory.polityId] || { fill: "#64748B", stroke: "#475569" };
 
   return (
     <div
@@ -25,9 +27,19 @@ export function TerritoryDetailPanel({
       {/* Header */}
       <div className="flex items-start justify-between gap-3 pb-3 border-b border-archival-border">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-archival-gold">
-            {polity?.canonicalName || "Polity Record"}
-          </span>
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className="w-3 h-3 rounded-full border shadow-2xs inline-block"
+              style={{
+                backgroundColor: polityColor.fill,
+                borderColor: polityColor.stroke,
+              }}
+              aria-hidden="true"
+            />
+            <span className="text-xs font-mono uppercase tracking-wider text-archival-gold">
+              {polity?.canonicalName || "Polity Record"}
+            </span>
+          </div>
           <h3 id="territory-title" className="text-xl font-serif font-bold text-archival-ink">
             {territory.regionName}
           </h3>
@@ -56,6 +68,14 @@ export function TerritoryDetailPanel({
             {territory.controlType} control
           </span>
         </div>
+        {polity?.capitalCity && (
+          <div className="col-span-2 bg-archival-bg p-2.5 rounded border border-archival-border/60">
+            <span className="text-archival-muted block mb-0.5">Imperial Capital</span>
+            <span className="font-serif font-semibold text-archival-ink">
+              📍 {polity.capitalCity}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Evidence & Confidence Badge (FR-08) */}

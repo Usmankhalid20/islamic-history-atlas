@@ -39,12 +39,12 @@ describe("Historical Map Cartographic Integrity & Coordinate Verification", () =
       exteriorRing.forEach(([lng, lat]) => {
         expect(typeof lng).toBe("number");
         expect(typeof lat).toBe("number");
-        // Latitude valid range (-90 to 90), Islamic world: 10°N to 50°N
+        // Latitude valid range (-90 to 90), Islamic world: 10°N to 55°N
         expect(lat).toBeGreaterThanOrEqual(10);
         expect(lat).toBeLessThanOrEqual(55);
-        // Longitude valid range (-180 to 180), Islamic world: -15°W to 75°E
+        // Longitude valid range (-180 to 180), Islamic world: -15°W (Al-Andalus/Morocco) to 95°E (Bengal/Mughal/Delhi)
         expect(lng).toBeGreaterThanOrEqual(-15);
-        expect(lng).toBeLessThanOrEqual(75);
+        expect(lng).toBeLessThanOrEqual(95);
       });
     });
   });

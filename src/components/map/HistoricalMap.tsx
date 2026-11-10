@@ -49,12 +49,26 @@ export interface HistoricalMapProps {
   setTerritoryOpacity?: (val: number) => void;
 }
 
-const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
-  pol_rashidun: { fill: "#9A3412", stroke: "#7C2D12" }, // Terracotta
-  pol_umayyad: { fill: "#D97706", stroke: "#B45309" }, // Gold / Amber
-  pol_abbasid_early: { fill: "#1C1917", stroke: "#000000" }, // Black
+export const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
+  pol_rashidun: { fill: "#16A34A", stroke: "#15803D" }, // Green
+  pol_umayyad: { fill: "#14532D", stroke: "#052E16" }, // Deep green
+  pol_abbasid_early: { fill: "#D97706", stroke: "#B45309" }, // Gold
   pol_cordoba_emirate: { fill: "#059669", stroke: "#047857" }, // Emerald
-  pol_fatimid: { fill: "#2563EB", stroke: "#1D4ED8" }, // Lapis / Royal Blue
+  pol_cordoba_caliphate: { fill: "#047857", stroke: "#064E3B" }, // Caliphal Emerald
+  pol_fatimid: { fill: "#9333EA", stroke: "#7E22CE" }, // Purple
+  pol_samanid: { fill: "#0284C7", stroke: "#0369A1" }, // Transoxian Cobalt Blue
+  pol_buyid: { fill: "#701A75", stroke: "#4A044E" }, // Plum Amethyst
+  pol_ghaznavid: { fill: "#78350F", stroke: "#451A03" }, // Earth Brown
+  pol_seljuk: { fill: "#2563EB", stroke: "#1D4ED8" }, // Seljuk Turquoise / Royal Blue
+  pol_almoravid: { fill: "#854D0E", stroke: "#713F12" }, // Saharan Ochre
+  pol_almohad: { fill: "#C2410C", stroke: "#9A3412" }, // Maghrebi Terracotta
+  pol_ayyubid: { fill: "#0D9488", stroke: "#0F766E" }, // Saladinic Teal
+  pol_mamluk: { fill: "#DC2626", stroke: "#991B1B" }, // Crimson Red
+  pol_delhi_sultanate: { fill: "#E11D48", stroke: "#BE123C" }, // Hindustani Rose Crimson
+  pol_timurid: { fill: "#7C3AED", stroke: "#6D28D9" }, // Imperial Violet
+  pol_ottoman: { fill: "#991B1B", stroke: "#7F1D1D" }, // Ottoman Imperial Dark Red
+  pol_safavid: { fill: "#4338CA", stroke: "#3730A3" }, // Persian Indigo Sapphire
+  pol_mughal: { fill: "#EA580C", stroke: "#C2410C" }, // Baburid Saffron Orange
 };
 
 const DEFAULT_STYLE = { fill: "#64748B", stroke: "#475569" };

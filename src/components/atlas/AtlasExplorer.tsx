@@ -68,11 +68,25 @@ const HistoricalMap = dynamic(
 );
 
 const POLITY_BADGE_COLORS: Record<string, string> = {
-  pol_rashidun: "bg-orange-100 text-orange-900 border-orange-300",
-  pol_umayyad: "bg-amber-100 text-amber-900 border-amber-300",
-  pol_abbasid_early: "bg-stone-200 text-stone-900 border-stone-400",
-  pol_cordoba_emirate: "bg-emerald-100 text-emerald-900 border-emerald-300",
-  pol_fatimid: "bg-blue-100 text-blue-900 border-blue-300",
+  pol_rashidun: "bg-emerald-100 text-emerald-900 border-emerald-300",
+  pol_umayyad: "bg-green-100 text-green-950 border-green-300",
+  pol_abbasid_early: "bg-amber-100 text-amber-900 border-amber-300",
+  pol_cordoba_emirate: "bg-teal-100 text-teal-900 border-teal-300",
+  pol_cordoba_caliphate: "bg-emerald-100 text-emerald-950 border-emerald-400",
+  pol_fatimid: "bg-purple-100 text-purple-900 border-purple-300",
+  pol_samanid: "bg-sky-100 text-sky-900 border-sky-300",
+  pol_buyid: "bg-fuchsia-100 text-fuchsia-900 border-fuchsia-300",
+  pol_ghaznavid: "bg-amber-950/10 text-amber-950 border-amber-800/30",
+  pol_seljuk: "bg-blue-100 text-blue-900 border-blue-300",
+  pol_almoravid: "bg-yellow-100 text-yellow-950 border-yellow-400",
+  pol_almohad: "bg-orange-100 text-orange-950 border-orange-400",
+  pol_ayyubid: "bg-teal-100 text-teal-950 border-teal-400",
+  pol_mamluk: "bg-rose-100 text-rose-900 border-rose-300",
+  pol_delhi_sultanate: "bg-pink-100 text-pink-900 border-pink-300",
+  pol_timurid: "bg-violet-100 text-violet-900 border-violet-300",
+  pol_ottoman: "bg-red-100 text-red-950 border-red-400",
+  pol_safavid: "bg-indigo-100 text-indigo-950 border-indigo-300",
+  pol_mughal: "bg-orange-100 text-orange-900 border-orange-300",
 };
 
 interface AtlasExplorerProps {

@@ -84,3 +84,40 @@ Markers are rendered using inline SVG icons styled with archival colors:
 - Responsive layout switching between standard grid and full-width theater mode.
 - Tested across mobile (<640px), tablet (640px–1024px), and desktop (1024px+).
 
+---
+
+## 7. Empire Territories & Multi-Polity GeoJSON Rendering (Phase 2)
+
+### Dynastic Color Palette (`POLITY_COLORS`)
+Every empire is assigned an accessible, academically appropriate, and distinct color scheme:
+
+| Dynasty | Fill Color | Stroke Color | Visual Theme |
+| :--- | :--- | :--- | :--- |
+| **Rashidun Caliphate** | `#16A34A` | `#15803D` | Olive Green |
+| **Umayyad Caliphate** | `#14532D` | `#052E16` | Deep Umayyad Green |
+| **Abbasid Caliphate** | `#D97706` | `#B45309` | Imperial Gold |
+| **Emirate of Córdoba** | `#059669` | `#047857` | Andalusian Emerald |
+| **Caliphate of Córdoba** | `#047857` | `#064E3B` | Caliphal Emerald |
+| **Fatimid Caliphate** | `#9333EA` | `#7E22CE` | Royal Purple |
+| **Samanid Dynasty** | `#0284C7` | `#0369A1` | Transoxian Cobalt Blue |
+| **Buyid Dynasty** | `#701A75` | `#4A044E` | Plum Amethyst |
+| **Ghaznavid Empire** | `#78350F` | `#451A03` | Earth Brown |
+| **Great Seljuk Empire** | `#2563EB` | `#1D4ED8` | Seljuk Turquoise / Royal Blue |
+| **Almoravid Dynasty** | `#854D0E` | `#713F12` | Saharan Ochre |
+| **Almohad Caliphate** | `#C2410C` | `#9A3412` | Maghrebi Terracotta |
+| **Ayyubid Sultanate** | `#0D9488` | `#0F766E` | Saladinic Teal |
+| **Mamluk Sultanate** | `#DC2626` | `#991B1B` | Crimson Red |
+| **Delhi Sultanate** | `#E11D48` | `#BE123C` | Hindustani Rose Crimson |
+| **Timurid Empire** | `#7C3AED` | `#6D28D9` | Imperial Violet |
+| **Ottoman Empire** | `#991B1B` | `#7F1D1D` | Ottoman Imperial Dark Red |
+| **Safavid Empire** | `#4338CA` | `#3730A3` | Persian Indigo Sapphire |
+| **Mughal Empire** | `#EA580C` | `#C2410C` | Baburid Saffron Orange |
+
+### GeoJSON Territory Styling & Interactions
+- **Default State**: Fill with the dynasty's designated palette color using the user-controlled opacity (`territoryOpacity`, default 50%). Border stroke width `1.75px`.
+- **Hover State**: Highlights boundaries dynamically on cursor hover (`fillOpacity + 0.25`, stroke `weight: 2.75px`).
+- **Selection State**: High-contrast red accent boundary (`color: #DC2626`, `weight: 3.5px`, fill opacity up to 85%).
+- **Confidence Visualization**: Polygons with `confidence: "approximate"` render with dashed boundary strokes (`dashArray: "4, 4"`).
+- **Detail Drawer Linking**: Clicking any territory polygon opens `TerritoryDetailPanel`, highlighting the empire's overview, capital city, control period, confidence rating, and academic citations.
+
+

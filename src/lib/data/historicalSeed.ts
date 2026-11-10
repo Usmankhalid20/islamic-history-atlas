@@ -98,6 +98,160 @@ export const initialPolities: NewPolityRecord[] = [
     capitalCity: "Mahdia (later Cairo)",
     reviewStatus: "published",
   },
+  {
+    id: "pol_cordoba_caliphate",
+    canonicalName: "Caliphate of Córdoba",
+    entityType: "caliphate",
+    startYear: 929,
+    endYear: 1031,
+    precision: "well-attested",
+    overview: "Umayyad caliphate in the Iberian Peninsula proclaimed by Abd al-Rahman III, representing the zenith of Andalusian science, arts, and architectural monumentality.",
+    capitalCity: "Córdoba (Madinat al-Zahra)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_samanid",
+    canonicalName: "Samanid Dynasty",
+    entityType: "dynasty",
+    startYear: 819,
+    endYear: 999,
+    precision: "well-attested",
+    overview: "Persian dynastic realm centered in Transoxiana and Greater Khorasan that fostered the Persian literary renaissance and produced scholars such as Ibn Sina and al-Farabi.",
+    capitalCity: "Bukhara (secondary: Samarkand)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_buyid",
+    canonicalName: "Buyid Dynasty",
+    entityType: "dynasty",
+    startYear: 934,
+    endYear: 1062,
+    precision: "well-attested",
+    overview: "Daylamite Shi'i dynasty originating from northern Iran that established suzerainty over western Iran and assumed de facto military regency over the Abbasid caliphs in Baghdad.",
+    capitalCity: "Shiraz (regional: Rayy, Baghdad)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_ghaznavid",
+    canonicalName: "Ghaznavid Empire",
+    entityType: "empire",
+    startYear: 977,
+    endYear: 1186,
+    precision: "well-attested",
+    overview: "Persianate Turco-Muslim imperial dynasty founded by Sabuktigin and expanded by Mahmud of Ghazna across Khorasan, Afghanistan, and the northwestern Indian subcontinent.",
+    capitalCity: "Ghazna (later Lahore)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_seljuk",
+    canonicalName: "Great Seljuk Empire",
+    entityType: "empire",
+    startYear: 1037,
+    endYear: 1194,
+    precision: "well-attested",
+    overview: "Turco-Persian Sunnite empire founded by Tughril Beg and consolidated under Alp Arslan and Malik Shah I, reviving Sunnite political unity from the Hindu Kush to the Anatolian plateau.",
+    capitalCity: "Isfahan (earlier: Nishapur, Rayy)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_almoravid",
+    canonicalName: "Almoravid Dynasty",
+    entityType: "dynasty",
+    startYear: 1040,
+    endYear: 1147,
+    precision: "well-attested",
+    overview: "Saharan Berber imperial dynasty founded by Abdallah ibn Yasin and Yusuf ibn Tashfin that unified the western Maghreb and halted Christian expansion in Al-Andalus at the Battle of Sagrajas.",
+    capitalCity: "Marrakech",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_almohad",
+    canonicalName: "Almohad Caliphate",
+    entityType: "caliphate",
+    startYear: 1121,
+    endYear: 1269,
+    precision: "well-attested",
+    overview: "Masmuda Berber caliphate founded by Ibn Tumart and Abd al-Mu'min that unified the entirety of North Africa (Maghreb and Ifriqiya) and Islamic Iberia under a reformist theological state.",
+    capitalCity: "Marrakech (secondary: Seville)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_ayyubid",
+    canonicalName: "Ayyubid Sultanate",
+    entityType: "sultanate",
+    startYear: 1171,
+    endYear: 1260,
+    precision: "well-attested",
+    overview: "Sunnite Muslim dynasty of Kurdish origin founded by Saladin (Salah al-Din), which unified Egypt, Syria, northern Mesopotamia, and the Hijaz, famously recapturing Jerusalem in 1187 CE.",
+    capitalCity: "Cairo (secondary: Damascus)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_mamluk",
+    canonicalName: "Mamluk Sultanate",
+    entityType: "sultanate",
+    startYear: 1250,
+    endYear: 1517,
+    precision: "well-attested",
+    overview: "Military sultanate governed by military freedmen (Bahri and Burji dynasties) based in Cairo that famously halted the Mongol invasions at Ain Jalut and expelled the Crusader polities from the Levant.",
+    capitalCity: "Cairo",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_delhi_sultanate",
+    canonicalName: "Delhi Sultanate",
+    entityType: "sultanate",
+    startYear: 1206,
+    endYear: 1526,
+    precision: "well-attested",
+    overview: "Principal Islamic realm in the Indian subcontinent spanning five dynasties (Mamluk, Khalji, Tughlaq, Sayyid, Lodi), ruling from Delhi across the northern plains to Bengal.",
+    capitalCity: "Delhi",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_timurid",
+    canonicalName: "Timurid Empire",
+    entityType: "empire",
+    startYear: 1370,
+    endYear: 1507,
+    precision: "well-attested",
+    overview: "Turco-Mongol empire founded by Timur (Tamerlane) centered in Samarkand and Herat, renowned for monumental architecture, cartography, and the Timurid Renaissance.",
+    capitalCity: "Samarkand (later Herat)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_ottoman",
+    canonicalName: "Ottoman Empire",
+    entityType: "empire",
+    startYear: 1299,
+    endYear: 1922,
+    precision: "well-attested",
+    overview: "Transcontinental imperial realm founded by Osman I, spanning southeastern Europe, western Asia, and northern Africa, maintaining the universal caliphate from Constantinople (Istanbul).",
+    capitalCity: "Constantinople / Istanbul (earlier: Söğüt, Bursa, Edirne)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_safavid",
+    canonicalName: "Safavid Empire",
+    entityType: "empire",
+    startYear: 1501,
+    endYear: 1736,
+    precision: "well-attested",
+    overview: "Imperial dynastic state established by Shah Ismail I that established Twelver Shi'ism as the official state religion, ruling from Isfahan as one of the three Islamic Gunpowder Empires.",
+    capitalCity: "Isfahan (earlier: Tabriz, Qazvin)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_mughal",
+    canonicalName: "Mughal Empire",
+    entityType: "empire",
+    startYear: 1526,
+    endYear: 1857,
+    precision: "well-attested",
+    overview: "Early modern gunpowder empire founded by Babur that governed the vast majority of the Indian subcontinent and Afghanistan, famed for administrative sophistication and architectural wonders like the Taj Mahal.",
+    capitalCity: "Agra (also: Delhi, Lahore, Fatehpur Sikri)",
+    reviewStatus: "published",
+  },
 ];
 
 export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
@@ -287,6 +441,474 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       ],
     },
     explanatoryNote: "Initial stronghold and naval capital of the Fatimid Caliphate at Mahdia prior to the conquest of Egypt.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_cordoba_caliphate_929_1031",
+    polityId: "pol_cordoba_caliphate",
+    regionName: "Al-Andalus & Northern Maghreb (Caliphal Realm)",
+    validFromYear: 929,
+    validToYear: 1031,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [-8.90, 37.00], // Sagres & Algarve coast
+          [-8.70, 39.50], // Lower Tagus / Santarém
+          [-6.00, 40.50], // Sierra de Gata march
+          [-3.00, 41.50], // Douro-Ebro borderland
+          [-0.90, 41.70], // Zaragoza (Upper March)
+          [0.60, 41.60],  // Lleida march
+          [0.50, 40.80],  // Tortosa coast
+          [0.10, 38.80],  // Denia
+          [-1.00, 37.50], // Cartagena littoral
+          [-2.50, 36.80], // Almería naval base
+          [-4.50, 36.70], // Málaga
+          [-5.60, 36.00], // Tarifa & Strait
+          [-5.30, 35.50], // Ceuta (Andalusian African bridgehead)
+          [-4.00, 35.20], // Nekor coast
+          [-5.00, 34.00], // Fez protectorate margin
+          [-6.00, 35.00], // Tangier / Asilah
+          [-6.30, 36.70], // Cadiz bay
+          [-8.90, 37.00], // Closing to Algarve
+        ],
+      ],
+    },
+    explanatoryNote: "Apex of the Umayyad Caliphate of Córdoba governing the Iberian Peninsula and holding northern Moroccan protectorates.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_fatimid_egypt_levant_969_1171",
+    polityId: "pol_fatimid",
+    regionName: "Egypt, Southern Levant & Hijaz Littoral",
+    validFromYear: 969,
+    validToYear: 1171,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [29.50, 31.50], // Alexandria & Western Delta
+          [31.20, 31.50], // Damietta
+          [32.50, 31.20], // Port Said / Pelusium
+          [34.50, 31.80], // Ascalon & Gaza
+          [35.50, 32.50], // Tiberias & Jordan Valley
+          [36.00, 31.00], // Transjordan plateau
+          [37.50, 28.00], // Tabuk northern desert
+          [39.60, 24.50], // Medina (Holy Sanctuary)
+          [39.80, 21.40], // Mecca (Sanctuary)
+          [40.50, 19.00], // Tihama southern coast
+          [38.00, 22.00], // Red Sea transit
+          [35.00, 26.00], // Quseir & Upper Egypt eastern desert
+          [33.50, 27.50], // Red Sea littoral
+          [31.20, 29.00], // Faiyum & Middle Egypt
+          [29.50, 31.50], // Closing to Alexandria
+        ],
+      ],
+    },
+    explanatoryNote: "The Fatimid imperial core following Jawhar's conquest of Fustat, establishment of Cairo (al-Qahira), and extension of suzerainty over Mecca and Medina.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_samanid_transoxiana_819_999",
+    polityId: "pol_samanid",
+    regionName: "Transoxiana & Greater Khorasan (Bukhara & Samarkand)",
+    validFromYear: 819,
+    validToYear: 999,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [58.00, 35.50], // Nishapur & Sabzevar
+          [60.00, 37.50], // Sarakhs
+          [62.20, 37.60], // Merv (Marw al-Shahijan)
+          [64.40, 39.80], // Bukhara oasis
+          [66.90, 39.60], // Samarkand
+          [69.00, 41.00], // Tashkent (Shash)
+          [71.50, 40.50], // Fergana Valley (Khujand / Kokand)
+          [72.50, 41.00], // Osh / Eastern Fergana
+          [69.50, 42.50], // Syr Darya middle course
+          [64.00, 42.00], // Kyzylkum desert margin
+          [60.00, 40.00], // Khwarazm border (Urgench)
+          [56.50, 37.00], // Kopet Dag foothills
+          [58.00, 35.50], // Closing to Nishapur
+        ],
+      ],
+    },
+    explanatoryNote: "The heartland of the Persian Samanid Renaissance governing Mawara al-Nahr (Transoxiana) and Khorasan with twin intellectual capitals at Bukhara and Samarkand.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_buyid_persia_iraq_934_1062",
+    polityId: "pol_buyid",
+    regionName: "Western Persia, Jibal & Lower Iraq",
+    validFromYear: 934,
+    validToYear: 1062,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [44.00, 33.30], // Baghdad (Abbasid Caliphal seat under Buyid Amirate)
+          [46.50, 34.50], // Kermanshah / Zagros passes
+          [48.50, 35.00], // Hamadan (Ecbatana)
+          [51.40, 35.60], // Rayy (near modern Tehran)
+          [53.00, 34.00], // Qom & Kashan
+          [54.0, 31.50],  // Yazd oasis margin
+          [52.60, 29.60], // Shiraz (Fars capital)
+          [50.80, 28.90], // Bushehr & Persian Gulf coast
+          [48.50, 30.00], // Khuzestan & Ahvaz
+          [46.00, 31.50], // Lower Euphrates & marshes
+          [44.40, 32.00], // Kufa & Wasit
+          [44.00, 33.30], // Closing to Baghdad
+        ],
+      ],
+    },
+    explanatoryNote: "Daylamite confederation domain holding Fars, Jibal, and Rayy while exercising direct protectorate over the Abbasid caliphs in Baghdad.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ghaznavid_realm_977_1186",
+    polityId: "pol_ghaznavid",
+    regionName: "Eastern Iran, Zabulistan & Punjab (Ghazna & Lahore)",
+    validFromYear: 977,
+    validToYear: 1186,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [60.00, 34.00], // Herat eastern approaches
+          [62.20, 35.00], // Murghab river basin
+          [65.00, 34.50], // Ghor mountains margin
+          [68.40, 33.50], // Ghazna (imperial fortress capital)
+          [71.50, 34.00], // Peshawar & Khyber Pass
+          [74.30, 31.50], // Lahore (winter capital of Mahmud)
+          [73.00, 29.50], // Multan & southern Punjab
+          [69.00, 29.00], // Sibi & Bolan Pass
+          [64.00, 30.50], // Helmand valley & Bust
+          [61.00, 31.50], // Sistan lake basin (Zaranj)
+          [60.00, 34.00], // Closing to Herat
+        ],
+      ],
+    },
+    explanatoryNote: "Ghaznavid imperial domains under Mahmud of Ghazna linking the Iranian plateau through the Afghan Hindu Kush into northern India.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_seljuk_empire_1037_1194",
+    polityId: "pol_seljuk",
+    regionName: "Greater Seljuk Domain (Persia, Mesopotamia & Khorasan)",
+    validFromYear: 1037,
+    validToYear: 1194,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [36.50, 36.00], // Aleppo & Syrian borders
+          [38.50, 37.50], // Edessa / Urfa
+          [42.00, 38.00], // Lake Van & Armenian plateau
+          [46.00, 38.50], // Tabriz / Azerbaijan
+          [50.00, 37.50], // Caspian southern shore (Gilan)
+          [54.00, 37.00], // Gurgan & Gorgan plain
+          [60.00, 37.00], // Nishapur & Tus
+          [63.00, 35.00], // Herat valley
+          [60.00, 31.50], // Sistan march
+          [54.00, 30.00], // Isfahan imperial capital & central plateau
+          [48.50, 30.50], // Khuzestan & Basra
+          [44.00, 32.50], // Baghdad (Sultanate seat)
+          [40.00, 34.00], // Syrian desert crossing
+          [36.50, 36.00], // Closing to Aleppo
+        ],
+      ],
+    },
+    explanatoryNote: "The Great Seljuk Empire at its zenith under Alp Arslan and Malik Shah I, governed administratively by vizier Nizam al-Mulk.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_almoravid_maghreb_andalus_1040_1147",
+    polityId: "pol_almoravid",
+    regionName: "Western Maghreb & Southern Al-Andalus",
+    validFromYear: 1040,
+    validToYear: 1147,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [-9.50, 30.50], // Souss valley & Agadir
+          [-8.00, 31.60], // Marrakech (Almoravid founded capital)
+          [-5.00, 34.00], // Fez & Meknes
+          [-3.00, 35.00], // Rif coast & Melilla
+          [-1.00, 37.00], // Almería
+          [-0.50, 39.50], // Valencia (reconquered from El Cid)
+          [-3.50, 40.00], // Toledo southern frontier
+          [-6.00, 37.50], // Seville & Guadalquivir
+          [-9.00, 37.00], // Algarve / Silves
+          [-6.00, 35.00], // Tangier Strait
+          [-8.50, 32.00], // Western plains
+          [-10.00, 29.00], // Anti-Atlas Saharan gateways
+          [-9.50, 30.50], // Closing to Souss
+        ],
+      ],
+    },
+    explanatoryNote: "Saharan Sanhaja Berber realm founded by Yusuf ibn Tashfin uniting Morocco and the Taifa kingdoms of Al-Andalus.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_almohad_caliphate_1121_1269",
+    polityId: "pol_almohad",
+    regionName: "Pan-Maghreb & Islamic Iberia",
+    validFromYear: 1121,
+    validToYear: 1269,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [-9.80, 30.00], // Tinmel / High Atlas sanctuary
+          [-7.00, 33.50], // Casablanca / Rabat (Ribat al-Fath)
+          [-5.50, 36.00], // Strait of Gibraltar
+          [-6.00, 38.00], // Badajoz & Alentejo
+          [-3.00, 39.50], // Tagus river frontier
+          [-0.50, 38.50], // Denia & Balearic Sea
+          [2.00, 36.50],  // Algiers (al-Jaza'ir)
+          [10.20, 36.80], // Tunis (Hafsid province)
+          [10.50, 34.00], // Sfax & Gabes
+          [5.00, 33.00],  // Ziban & Biskra oasis
+          [-2.00, 31.50], // Figuig oasis
+          [-8.00, 30.50], // Taroudant
+          [-9.80, 30.00], // Closing to Tinmel
+        ],
+      ],
+    },
+    explanatoryNote: "Unitarian (Muwahhidun) caliphate of Abd al-Mu'min establishing political hegemony across Morocco, Algeria, Tunisia, and southern Spain.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ayyubid_sultanate_1171_1260",
+    polityId: "pol_ayyubid",
+    regionName: "Egypt, Syria, Diyar Bakr & Western Arabia",
+    validFromYear: 1171,
+    validToYear: 1260,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [29.80, 31.20], // Alexandria & Nile Delta
+          [32.30, 31.20], // Damietta naval defense
+          [35.00, 33.00], // Acre & Galilee
+          [36.20, 35.00], // Hama & Homs
+          [37.20, 36.50], // Aleppo (Halab citadel)
+          [40.00, 37.50], // Mayyafariqin & Diyar Bakr
+          [41.50, 36.50], // Sinjar & Upper Jazira
+          [38.50, 34.00], // Palmyra desert route
+          [36.30, 31.00], // Karak & Transjordan
+          [39.60, 24.50], // Medina
+          [39.80, 21.40], // Mecca
+          [34.90, 27.50], // Sinai Peninsula
+          [31.20, 28.50], // Middle Egypt
+          [29.80, 31.20], // Closing to Alexandria
+        ],
+      ],
+    },
+    explanatoryNote: "Sultanate founded by Salah al-Din (Saladin) unifying Egypt and Bilad al-Sham, victor at Hattin and liberator of Jerusalem (1187 CE).",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_mamluk_sultanate_1250_1517",
+    polityId: "pol_mamluk",
+    regionName: "Egypt, Bilad al-Sham & Holy Sanctuaries",
+    validFromYear: 1250,
+    validToYear: 1517,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [29.00, 31.50], // Rosetta & Alexandria
+          [32.00, 31.50], // Port Said
+          [35.50, 33.00], // Tyre & Sidon
+          [36.00, 36.00], // Antioch / Cilician Gates border
+          [37.00, 37.00], // Aintab (Gaziantep) northern march
+          [38.50, 36.50], // Birecik on the Euphrates
+          [38.00, 34.50], // Tadmur (Palmyra)
+          [36.00, 31.50], // Jordan valley & Dead Sea
+          [39.60, 24.50], // Medina sanctuary
+          [39.80, 21.40], // Mecca sanctuary
+          [35.00, 27.50], // Gulf of Suez & Sinai
+          [31.50, 27.00], // Asyut & Upper Egypt
+          [29.00, 31.50], // Closing to Rosetta
+        ],
+      ],
+    },
+    explanatoryNote: "Imperial Sultanate of Cairo governing the Nile Valley, Syria, and the Hijaz, defenders of Sunnism against the Ilkhanate and Crusaders.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_delhi_sultanate_1206_1526",
+    polityId: "pol_delhi_sultanate",
+    regionName: "Indo-Gangetic Plain & Northern Subcontinent",
+    validFromYear: 1206,
+    validToYear: 1526,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [71.50, 32.00], // Salt Range / Indus confluence
+          [74.50, 32.50], // Sialkot & Lahore
+          [77.20, 28.60], // Delhi imperial seat (Qutb complex)
+          [82.00, 26.50], // Awadh / Ayodhya
+          [88.00, 25.00], // Gaur / Lakhnauti (Bengal)
+          [88.50, 22.50], // Ganges Delta
+          [82.50, 23.00], // Central provinces
+          [77.50, 24.50], // Malwa / Gwalior frontier
+          [72.50, 25.50], // Rajasthan borderland
+          [70.00, 28.00], // Thar desert boundary
+          [71.50, 32.00], // Closing to Salt Range
+        ],
+      ],
+    },
+    explanatoryNote: "Dominant Islamic sultanate of Northern India governing the fertile plains from Punjab to the Bay of Bengal through five successive dynasties.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_timurid_empire_1370_1507",
+    polityId: "pol_timurid",
+    regionName: "Central Asian Heartland & Greater Iran",
+    validFromYear: 1370,
+    validToYear: 1507,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [46.50, 38.00], // Tabriz & Azerbaijan
+          [50.00, 37.50], // Southern Caspian shore
+          [55.00, 38.00], // Asterabad / Gurgan
+          [64.50, 41.50], // Kyzylkum margin
+          [69.00, 42.00], // Tashkent
+          [72.00, 40.00], // Fergana & Tian Shan passes
+          [69.00, 34.50], // Kabul
+          [62.20, 34.30], // Herat (Timurid cultural metropolis)
+          [57.00, 30.00], // Kerman
+          [50.00, 30.00], // Shiraz & Fars
+          [46.50, 34.00], // Zagros foothills
+          [46.50, 38.00], // Closing to Tabriz
+        ],
+      ],
+    },
+    explanatoryNote: "The Turco-Mongol empire of Timur and Shah Rukh with monumental architectural centers in Samarkand (Registan) and Herat.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ottoman_empire_1299_1922",
+    polityId: "pol_ottoman",
+    regionName: "Anatolia, Southeastern Europe & Metropolitan Near East",
+    validFromYear: 1299,
+    validToYear: 1922,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [18.00, 42.50], // Dubrovnik / Bosnia march
+          [24.00, 45.00], // Wallachia / Danubian border
+          [28.50, 45.00], // Black Sea Dobruja coast
+          [35.00, 42.00], // Sinop & Pontic coast
+          [42.00, 41.50], // Trabzon & Batumi
+          [45.00, 38.00], // Van & Chaldiran frontier with Safavids
+          [48.00, 31.00], // Basra & Shatt al-Arab
+          [44.00, 32.00], // Baghdad vilayet
+          [37.00, 34.00], // Syrian desert & Damascus
+          [35.00, 31.50], // Jerusalem mutasarrifate
+          [31.00, 30.00], // Cairo & Nile Valley
+          [29.00, 31.50], // Alexandria
+          [23.00, 38.00], // Morea / Greece
+          [20.50, 40.00], // Epirus / Albania
+          [18.00, 42.50], // Closing to Bosnia
+        ],
+      ],
+    },
+    explanatoryNote: "Universal Ottoman Caliphate under the House of Osman, ruling across three continents from the imperial capital of Konstantiniyye (Istanbul).",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_safavid_empire_1501_1736",
+    polityId: "pol_safavid",
+    regionName: "Iranian Plateau, Azerbaijan & Khorasan",
+    validFromYear: 1501,
+    validToYear: 1736,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [46.00, 39.00], // Nakhchivan & Araxes River
+          [49.50, 37.50], // Rasht & Gilan coast
+          [54.00, 37.00], // Astarabad & Turkmen steppe border
+          [60.00, 37.00], // Mashhad & Khorasan shrine city
+          [62.50, 35.00], // Hari River & Herat approaches
+          [63.00, 31.50], // Sistan
+          [60.00, 27.00], // Makran northern border
+          [54.00, 27.00], // Bandar Abbas & Strait of Hormuz
+          [49.00, 30.00], // Khuzestan / Persian Gulf
+          [46.00, 33.50], // Luristan / Ottoman frontier
+          [44.50, 36.00], // Kurdistan mountains
+          [46.00, 39.00], // Closing to Araxes River
+        ],
+      ],
+    },
+    explanatoryNote: "The Twelver Shi'i empire of Shah Ismail I and Shah Abbas the Great with monumental imperial court at Isfahan (Naqsh-e Jahan).",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_mughal_empire_1526_1857",
+    polityId: "pol_mughal",
+    regionName: "Indian Subcontinent & Kabul Corridors",
+    validFromYear: 1526,
+    validToYear: 1857,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [69.20, 34.50], // Kabul subah (Babur's gateway)
+          [74.30, 33.50], // Kashmir valley & Srinagar
+          [77.20, 28.60], // Delhi & Agra imperial centers
+          [85.00, 26.00], // Bihar / Patna
+          [90.40, 23.70], // Dhaka & Bengal subah (Paradise of Nations)
+          [88.00, 21.50], // Bay of Bengal littoral
+          [80.00, 16.00], // Deccan / Golconda campaigns
+          [76.00, 15.00], // Bijapur southern frontier
+          [73.00, 20.00], // Surat & Gujarat trade hub
+          [68.50, 25.00], // Sindh & Indus delta (Thatta)
+          [66.00, 30.00], // Kandahar borderland
+          [69.20, 34.50], // Closing to Kabul
+        ],
+      ],
+    },
+    explanatoryNote: "The Mughal Empire during the reigns of Akbar, Jahangir, Shah Jahan, and Aurangzeb, governing one of the wealthiest early modern world empires.",
     reviewStatus: "published",
   },
 ];

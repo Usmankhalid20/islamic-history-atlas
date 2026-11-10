@@ -45,15 +45,16 @@ describe("Historical Temporal Predicate and Filtering Logic", () => {
     expect(regionNames).not.toContain("Ifriqiya (Tunisia & Eastern Algeria)"); // starts 909
   });
 
-  it("correctly identifies three concurrent polities in year 920 CE", () => {
-    // In 920 CE: Abbasid (750-945), Cordoba (756-929), and Fatimid (909-969) are all active
+  it("correctly identifies concurrent polities in year 920 CE", () => {
+    // In 920 CE: Abbasid (750-945), Cordoba (756-929), Fatimid (909-969), and Samanid (819-999) are all active
     const active920 = filterActiveTerritories(initialTerritoryPeriods, 920);
-    expect(active920.length).toBe(3);
+    expect(active920.length).toBe(4);
 
     const polityIds = active920.map((p) => p.polityId);
     expect(polityIds).toContain("pol_abbasid_early");
     expect(polityIds).toContain("pol_cordoba_emirate");
     expect(polityIds).toContain("pol_fatimid");
+    expect(polityIds).toContain("pol_samanid");
   });
 
   it("transforms territory records into valid GeoJSON FeatureCollection", () => {

@@ -10,7 +10,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | Phase | Feature Name | Git Branch | Status | Verification |
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 1** | **Historical Map Foundation** | `feature/map-foundation` | **COMPLETE** | 149/149 Tests Passed, Type-Check 0 errors, Build 37/37 pages |
-| **Phase 2** | **Empire Territories & Boundaries** | `feature/empire-territories` | *Planned* | - |
+| **Phase 2** | **Empire Territories & Boundaries** | `feature/empire-territories` | **COMPLETE** | 154/154 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | *Planned* | - |
 | **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | *Planned* | - |
 | **Phase 5** | **Empire Information Panel** | `feature/empire-information` | *Planned* | - |
@@ -54,4 +54,29 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm test`: 24 test suites, 149 tests passed.
   - `npm run lint`: 0 errors, 0 warnings.
   - `npm run build`: 37/37 pages compiled successfully.
+
+---
+
+### Phase 2: Empire Territories and Boundaries
+- **Branch**: `feature/empire-territories`
+- **Goal**: Expand historical dataset to 19 major Islamic polities (500 CE to 1980 CE), establish a consistent dynastic color palette matching scholarly and user guidelines, provide high-precision closed GeoJSON boundary polygons, support multi-polity co-existence across historical eras, and provide interactive territory inspection.
+- **Implemented Features**:
+  1. `src/lib/data/historicalSeed.ts`:
+     - Added 14 new major historical polities (Caliphate of Córdoba, Samanids, Buyids, Ghaznavids, Great Seljuks, Almoravids, Almohads, Ayyubids, Mamluks, Delhi Sultanate, Timurids, Ottomans, Safavids, Mughals).
+     - Defined 15 new historical territory periods with accurate, closed GeoJSON boundary polygons covering North Africa, the Levant, Mesopotamia, Central Asia, Iran, Anatolia, and the Indian Subcontinent.
+  2. `src/components/map/HistoricalMap.tsx`:
+     - Exported and updated `POLITY_COLORS` mapping every dynasty to an accessible, consistent color (Rashidun Green, Umayyad Deep Green, Abbasid Gold, Fatimid Purple, Seljuk Blue, Ghaznavid Brown, Ayyubid Teal, Mamluk Red, Ottoman Dark Red, Mughal Orange, Safavid Indigo, Córdoba Emerald, etc.).
+     - Enhanced territory polygon interactions: dynamic fill opacity (+0.25) on hover, stroke weight boost (2.75), and selected red accent boundary (3.5).
+  3. `src/components/atlas/AtlasExplorer.tsx`:
+     - Synchronized `POLITY_BADGE_COLORS` with the dynastic color palette across all 19 dynasties.
+  4. `src/components/atlas/TerritoryDetailPanel.tsx`:
+     - Added dynamic polity color swatch indicator in the panel header.
+     - Added Imperial Capital badge to the metadata grid.
+  5. `tests/unit/empireTerritories.test.ts`:
+     - Comprehensive unit test suite covering polity metadata, color palette verification, GeoJSON polygon coordinate closure and range bounds, multi-polity temporal co-existence benchmarks (632, 756, 985, 1187, 1300, 1550 CE), and FeatureCollection generation.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 25 test suites, 154 tests passed.
+  - `npm run lint`: 0 errors, 0 warnings.
+  - `npm run build`: 51/51 pages compiled successfully.
 

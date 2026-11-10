@@ -14,16 +14,25 @@ Each major empire has a consistent, accessible color scheme utilized across poly
 
 | Dynasty | Fill Color | Stroke Color | Accent / Meaning |
 | :--- | :--- | :--- | :--- |
-| **Rashidun Caliphate** | `#9A3412` (Terracotta) | `#7C2D12` | Early conquest & desert marches |
-| **Umayyad Caliphate** | `#D97706` (Amber / Gold) | `#B45309` | Damascus court & gold coinage |
-| **Abbasid Caliphate** | `#1C1917` (Imperial Black) | `#000000` | Black banners of the Abbasid Revolution |
+| **Rashidun Caliphate** | `#16A34A` (Green) | `#15803D` | Prophet's standard & early pious era |
+| **Umayyad Caliphate** | `#14532D` (Deep Green) | `#052E16` | Syrian Damascus imperial courts |
+| **Abbasid Caliphate** | `#D97706` (Imperial Gold) | `#B45309` | Baghdad Round City & Golden Age scholarship |
 | **Emirate of Córdoba** | `#059669` (Emerald) | `#047857` | Andalusian verdant gardens & architecture |
-| **Fatimid Caliphate** | `#2563EB` (Lapis / Royal Blue) | `#1D4ED8` | Mediterranean naval power & Cairo palaces |
-| **Seljuk Empire** | `#0284C7` (Sky Blue) | `#0369A1` | Turco-Persian imperial authority |
+| **Caliphate of Córdoba** | `#047857` (Caliphal Emerald) | `#064E3B` | Madinat al-Zahra & western caliphal zenith |
+| **Fatimid Caliphate** | `#9333EA` (Royal Purple) | `#7E22CE` | Isma'ili caliphal courts at Mahdia & Cairo |
+| **Samanid Dynasty** | `#0284C7` (Cobalt Blue) | `#0369A1` | Transoxian & Khorasan Persian renaissance |
+| **Buyid Dynasty** | `#701A75` (Plum Amethyst) | `#4A044E` | Daylamite regency over Baghdad & Fars |
+| **Ghaznavid Empire** | `#78350F` (Earth Brown) | `#451A03` | Afghan mountain passes & Punjab expansion |
+| **Great Seljuk Empire** | `#2563EB` (Royal Blue) | `#1D4ED8` | Turco-Persian Sunnite revival & Isfahan courts |
+| **Almoravid Dynasty** | `#854D0E` (Saharan Ochre) | `#713F12` | Veiled Sanhaja reformists of Marrakech |
+| **Almohad Caliphate** | `#C2410C` (Terracotta) | `#9A3412` | Masmuda unitarian pan-Maghreb caliphate |
 | **Ayyubid Sultanate** | `#0D9488` (Teal) | `#0F766E` | Saladin's Levant & Egyptian unification |
-| **Mamluk Sultanate** | `#B91C1C` (Crimson) | `#7F1D1D` | Military chivalry & Cairo citadel |
-| **Ottoman Empire** | `#881337` (Dark Red / Rose) | `#4C0519` | Mediterranean & Balkan imperial expanse |
-| **Mughal Empire** | `#EA580C` (Rich Orange) | `#9A3412` | Subcontinental artistic & military zenith |
+| **Mamluk Sultanate** | `#DC2626` (Crimson Red) | `#991B1B` | Military chivalry, Ain Jalut & Cairo citadel |
+| **Delhi Sultanate** | `#E11D48` (Rose Crimson) | `#BE123C` | Indo-Gangetic sultanic court & Qutb Minar |
+| **Timurid Empire** | `#7C3AED` (Imperial Violet) | `#6D28D9` | Central Asian monumental arts & Samarkand |
+| **Ottoman Empire** | `#991B1B` (Imperial Dark Red) | `#7F1D1D` | Balkan, Anatolian & universal caliphal reach |
+| **Safavid Empire** | `#4338CA` (Persian Indigo) | `#3730A3` | Twelver court & Isfahan tile architecture |
+| **Mughal Empire** | `#EA580C` (Saffron Orange) | `#C2410C` | Subcontinental artistic & military zenith |
 
 ---
 
