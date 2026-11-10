@@ -321,8 +321,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
       {/* Timeline Control */}
       <YearSlider
         year={selectedYear}
-        minYear={632}
-        maxYear={1000}
+        minYear={500}
+        maxYear={1980}
         onChange={(year) => {
           setSelectedYear(year);
           // If selected territory is no longer active in the new year, deselect it

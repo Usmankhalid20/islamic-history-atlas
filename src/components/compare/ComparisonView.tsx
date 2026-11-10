@@ -255,8 +255,8 @@ function ComparisonViewContent() {
 
           <YearSlider
             year={yearA}
-            minYear={632}
-            maxYear={1000}
+            minYear={500}
+            maxYear={1980}
             onChange={(y) => {
               setYearA(y);
               setSelectedPresetId(null);
@@ -314,8 +314,8 @@ function ComparisonViewContent() {
 
           <YearSlider
             year={yearB}
-            minYear={632}
-            maxYear={1000}
+            minYear={500}
+            maxYear={1980}
             onChange={(y) => {
               setYearB(y);
               setSelectedPresetId(null);

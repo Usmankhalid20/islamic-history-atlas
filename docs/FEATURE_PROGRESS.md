@@ -11,7 +11,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 1** | **Historical Map Foundation** | `feature/map-foundation` | **COMPLETE** | 149/149 Tests Passed, Type-Check 0 errors, Build 37/37 pages |
 | **Phase 2** | **Empire Territories & Boundaries** | `feature/empire-territories` | **COMPLETE** | 154/154 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
-| **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | *Planned* | - |
+| **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | **COMPLETE** | 163/163 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | *Planned* | - |
 | **Phase 5** | **Empire Information Panel** | `feature/empire-information` | *Planned* | - |
 | **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | *Planned* | - |
@@ -79,4 +79,28 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm test`: 25 test suites, 154 tests passed.
   - `npm run lint`: 0 errors, 0 warnings.
   - `npm run build`: 51/51 pages compiled successfully.
+
+---
+
+### Phase 3: Historical Timeline (500 AD – 1980 AD)
+- **Branch**: `feature/historical-timeline`
+- **Goal**: Expand temporal range across 500 CE to 1980 CE, integrate automated playback engine with variable speeds, introduce granular steppers (-50y, -10y, -1y, +1y, +10y, +50y), manual numeric input, historical era context banner, and curated turning-point milestone quick jumps.
+- **Implemented Features**:
+  1. `src/components/timeline/YearSlider.tsx`:
+     - Range expanded from 500 to 1980 CE.
+     - Automated playback engine with Play/Pause state and speed toggles (`1x`, `2x`, `5x`, `10x`).
+     - Granular steppers (`-50y`, `-10y`, `-1y`, `+1y`, `+10y`, `+50y`) with boundary clamping.
+     - Direct numeric year input with live validation and `Enter`/`Blur` commit.
+     - `HISTORICAL_ERAS`: 10 distinct historical epochs providing contextual names and descriptions dynamically.
+     - `HISTORICAL_MILESTONES`: 16 civilizational turning point chips (632, 661, 750, 756, 929, 969, 1071, 1187, 1258, 1260, 1453, 1526, 1550, 1683, 1857, 1922).
+  2. `src/components/atlas/AtlasExplorer.tsx` & `src/components/compare/ComparisonView.tsx`:
+     - Integrated `minYear={500}` and `maxYear={1980}`.
+  3. `tests/unit/historicalTimeline.test.ts` & `tests/unit/timeline.test.ts`:
+     - Full suite testing chronological ordering, era resolution, stepping, and bound clamping.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 26 test suites, 163 tests passed.
+  - `npm run lint`: 0 errors, 0 warnings.
+  - `npm run build`: 51/51 pages compiled successfully.
+
 
