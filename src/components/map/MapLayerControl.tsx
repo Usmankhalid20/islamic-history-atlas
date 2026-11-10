@@ -16,6 +16,8 @@ export interface MapLayerControlProps {
   setShowCampaigns: (val: boolean) => void;
   showDiscrepancies: boolean;
   setShowDiscrepancies: (val: boolean) => void;
+  showCities?: boolean;
+  setShowCities?: (val: boolean) => void;
   territoryOpacity: number;
   setTerritoryOpacity: (val: number) => void;
   counts?: {
@@ -25,6 +27,7 @@ export interface MapLayerControlProps {
     monuments?: number;
     campaigns?: number;
     discrepancies?: number;
+    cities?: number;
   };
 }
 
@@ -41,6 +44,8 @@ export function MapLayerControl({
   setShowCampaigns,
   showDiscrepancies,
   setShowDiscrepancies,
+  showCities = true,
+  setShowCities,
   territoryOpacity,
   setTerritoryOpacity,
   counts = {},
@@ -181,6 +186,24 @@ export function MapLayerControl({
                 {counts.campaigns ?? 0}
               </span>
             </label>
+
+            {/* Historical Cities & Capitals */}
+            {setShowCities && (
+              <label className="flex items-center justify-between p-1.5 rounded-lg hover:bg-archival-bg cursor-pointer transition-colors">
+                <span className="flex items-center gap-2 text-archival-ink">
+                  <input
+                    type="checkbox"
+                    checked={showCities}
+                    onChange={(e) => setShowCities(e.target.checked)}
+                    className="rounded text-archival-gold focus:ring-archival-gold"
+                  />
+                  <span className="font-serif">Historical Cities & Capitals</span>
+                </span>
+                <span className="text-[10px] font-mono text-archival-muted">
+                  {counts.cities ?? 0}
+                </span>
+              </label>
+            )}
 
             {/* Contested Frontiers */}
             <label className="flex items-center justify-between p-1.5 rounded-lg hover:bg-archival-bg cursor-pointer transition-colors">

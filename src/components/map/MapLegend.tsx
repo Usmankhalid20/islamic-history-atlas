@@ -10,7 +10,8 @@ export interface MapLegendProps {
   showMonuments?: boolean;
   showCampaigns?: boolean;
   showDiscrepancies?: boolean;
-  onToggleLayer?: (layerKey: "territories" | "events" | "routes" | "monuments" | "campaigns" | "discrepancies") => void;
+  showCities?: boolean;
+  onToggleLayer?: (layerKey: "territories" | "events" | "routes" | "monuments" | "campaigns" | "discrepancies" | "cities") => void;
   className?: string;
 }
 
@@ -21,6 +22,7 @@ export function MapLegend({
   showMonuments = true,
   showCampaigns = true,
   showDiscrepancies = true,
+  showCities = true,
   onToggleLayer,
   className = "",
 }: MapLegendProps) {
@@ -216,6 +218,30 @@ export function MapLegend({
                   title="Toggle campaign marches"
                 >
                   {showCampaigns ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                </button>
+              )}
+            </div>
+
+            {/* Imperial Capitals & Major Cities */}
+            <div
+              className={`flex items-center justify-between p-1.5 rounded-lg border transition-colors ${
+                showCities
+                  ? "bg-archival-bg/70 border-archival-border/60 text-archival-ink"
+                  : "bg-archival-bg/30 border-transparent text-archival-muted opacity-60"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xs">⭐</span>
+                <span className="font-medium">Capitals & Cities</span>
+              </div>
+              {onToggleLayer && (
+                <button
+                  type="button"
+                  onClick={() => onToggleLayer("cities")}
+                  className="text-archival-muted hover:text-archival-gold"
+                  title="Toggle historical cities visibility"
+                >
+                  {showCities ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                 </button>
               )}
             </div>

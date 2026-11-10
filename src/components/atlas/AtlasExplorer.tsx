@@ -9,6 +9,7 @@ import { EventDetailPanel } from "@/components/atlas/EventDetailPanel";
 import { RouteDetailPanel } from "@/components/atlas/RouteDetailPanel";
 import { MonumentDetailPanel } from "@/components/atlas/MonumentDetailPanel";
 import { CampaignDetailPanel } from "@/components/atlas/CampaignDetailPanel";
+import { CityDetailPanel } from "@/components/atlas/CityDetailPanel";
 import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
 import { ExportModal } from "@/components/atlas/ExportModal";
 import { DiscrepancyInspectorModal } from "@/components/atlas/DiscrepancyInspectorModal";
@@ -20,6 +21,7 @@ import {
   initialMonuments,
   initialCampaigns,
 } from "@/lib/data/historicalSeed";
+import { HISTORICAL_CITIES, type HistoricalCity } from "@/lib/data/historicalCitiesSeed";
 import {
   initialHistoricalDiscrepancies,
   type HistoricalDiscrepancy,
@@ -69,19 +71,21 @@ const HistoricalMap = dynamic(
 
 const POLITY_BADGE_COLORS: Record<string, string> = {
   pol_rashidun: "bg-emerald-100 text-emerald-900 border-emerald-300",
-  pol_umayyad: "bg-green-100 text-green-950 border-green-300",
+  pol_umayyad: "bg-teal-100 text-teal-950 border-teal-300",
   pol_abbasid_early: "bg-amber-100 text-amber-900 border-amber-300",
-  pol_cordoba_emirate: "bg-teal-100 text-teal-900 border-teal-300",
+  pol_cordoba_emirate: "bg-emerald-100 text-emerald-900 border-emerald-300",
   pol_cordoba_caliphate: "bg-emerald-100 text-emerald-950 border-emerald-400",
   pol_fatimid: "bg-purple-100 text-purple-900 border-purple-300",
   pol_samanid: "bg-sky-100 text-sky-900 border-sky-300",
   pol_buyid: "bg-fuchsia-100 text-fuchsia-900 border-fuchsia-300",
-  pol_ghaznavid: "bg-amber-950/10 text-amber-950 border-amber-800/30",
+  pol_ghaznavid: "bg-amber-950/15 text-amber-950 border-amber-900/30",
   pol_seljuk: "bg-blue-100 text-blue-900 border-blue-300",
   pol_almoravid: "bg-yellow-100 text-yellow-950 border-yellow-400",
   pol_almohad: "bg-orange-100 text-orange-950 border-orange-400",
-  pol_ayyubid: "bg-teal-100 text-teal-950 border-teal-400",
+  pol_ayyubid: "bg-emerald-100 text-emerald-950 border-emerald-400",
+  pol_zengid: "bg-purple-100 text-purple-950 border-purple-300",
   pol_mamluk: "bg-rose-100 text-rose-900 border-rose-300",
+  pol_mongol: "bg-slate-200 text-slate-900 border-slate-400",
   pol_delhi_sultanate: "bg-pink-100 text-pink-900 border-pink-300",
   pol_timurid: "bg-violet-100 text-violet-900 border-violet-300",
   pol_ottoman: "bg-red-100 text-red-950 border-red-400",
@@ -114,6 +118,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) | null
   >(null);
   const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<HistoricalDiscrepancy | null>(null);
+  const [selectedCity, setSelectedCity] = useState<HistoricalCity | null>(null);
 
   const [showTerritories, setShowTerritories] = useState<boolean>(true);
   const [showEvents, setShowEvents] = useState<boolean>(true);
@@ -122,6 +127,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
   const [showCampaigns, setShowCampaigns] = useState<boolean>(true);
   const [showDiscrepancies, setShowDiscrepancies] = useState<boolean>(true);
+  const [showCities, setShowCities] = useState<boolean>(true);
   const [showAiInquiry, setShowAiInquiry] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isDiscrepancyModalOpen, setIsDiscrepancyModalOpen] = useState<boolean>(false);
@@ -442,6 +448,20 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
           <button
             type="button"
+            onClick={() => setShowCities(!showCities)}
+            className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
+              showCities
+                ? "bg-stone-800 text-white border-stone-900 shadow-xs"
+                : "bg-archival-bg text-archival-ink border-archival-border hover:bg-archival-surface"
+            }`}
+            title="Toggle imperial capitals and major historical cities on map"
+          >
+            <Compass className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>{showCities ? `Capitals & Cities (${HISTORICAL_CITIES.length})` : "Cities Off"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowDiscrepancies(!showDiscrepancies)}
             className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-sans flex items-center gap-1.5 transition-all ${
               showDiscrepancies
@@ -600,6 +620,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             selectedMonumentId={selectedMonument?.id}
             selectedCampaignId={selectedCampaign?.id}
             selectedDiscrepancyId={selectedDiscrepancy?.id}
+            selectedCityId={selectedCity?.id}
+            selectedYear={selectedYear}
             onSelectTerritory={(t) => {
               setSelectedTerritory(t);
               setSelectedEvent(null);
@@ -607,6 +629,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedMonument(null);
               setSelectedCampaign(null);
               setSelectedDiscrepancy(null);
+              setSelectedCity(null);
             }}
             onSelectEvent={(e) => {
               setSelectedEvent(e);
@@ -615,6 +638,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedMonument(null);
               setSelectedCampaign(null);
               setSelectedDiscrepancy(null);
+              setSelectedCity(null);
             }}
             onSelectRoute={(r) => {
               setSelectedRoute(r);
@@ -623,6 +647,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedMonument(null);
               setSelectedCampaign(null);
               setSelectedDiscrepancy(null);
+              setSelectedCity(null);
             }}
             onSelectMonument={(m) => {
               setSelectedMonument(m);
@@ -631,6 +656,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedRoute(null);
               setSelectedCampaign(null);
               setSelectedDiscrepancy(null);
+              setSelectedCity(null);
             }}
             onSelectCampaign={(c) => {
               setSelectedCampaign(c);
@@ -639,6 +665,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedRoute(null);
               setSelectedMonument(null);
               setSelectedDiscrepancy(null);
+              setSelectedCity(null);
             }}
             onSelectDiscrepancy={(d) => {
               setSelectedDiscrepancy(d);
@@ -648,6 +675,16 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               setSelectedRoute(null);
               setSelectedMonument(null);
               setSelectedCampaign(null);
+              setSelectedCity(null);
+            }}
+            onSelectCity={(city) => {
+              setSelectedCity(city);
+              setSelectedTerritory(null);
+              setSelectedEvent(null);
+              setSelectedRoute(null);
+              setSelectedMonument(null);
+              setSelectedCampaign(null);
+              setSelectedDiscrepancy(null);
             }}
             showTerritories={showTerritories}
             setShowTerritories={setShowTerritories}
@@ -661,6 +698,8 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             setShowCampaigns={setShowCampaigns}
             showDiscrepancies={showDiscrepancies}
             setShowDiscrepancies={setShowDiscrepancies}
+            showCities={showCities}
+            setShowCities={setShowCities}
             isTheaterMode={isTheaterMode}
             onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
             territoryOpacity={territoryOpacity}
@@ -723,6 +762,12 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             <EventDetailPanel
               event={selectedEvent}
               onClose={() => setSelectedEvent(null)}
+            />
+          ) : selectedCity ? (
+            <CityDetailPanel
+              city={selectedCity}
+              selectedYear={selectedYear}
+              onClose={() => setSelectedCity(null)}
             />
           ) : selectedTerritory ? (
             <TerritoryDetailPanel

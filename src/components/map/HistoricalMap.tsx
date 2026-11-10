@@ -8,6 +8,8 @@ import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 import type { HistoricalDiscrepancy } from "@/lib/data/discrepanciesSeed";
+import type { HistoricalCity } from "@/lib/data/historicalCitiesSeed";
+import { HISTORICAL_CITIES } from "@/lib/data/historicalCitiesSeed";
 import { MapControls, HISTORICAL_REGIONS, HistoricalRegion, BasemapStyle } from "./MapControls";
 import { MapLegend } from "./MapLegend";
 import { MapLayerControl } from "./MapLayerControl";
@@ -19,18 +21,22 @@ export interface HistoricalMapProps {
   monuments?: (Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date })[];
   campaigns?: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[];
   discrepancies?: HistoricalDiscrepancy[];
+  cities?: HistoricalCity[];
+  selectedYear?: number;
   onSelectTerritory?: (territory: TerritoryPeriodRecord) => void;
   onSelectEvent?: (event: HistoricalEventRecord) => void;
   onSelectRoute?: (route: Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date }) => void;
   onSelectMonument?: (monument: Omit<NewMonumentRecord, "createdAt"> & { createdAt?: Date }) => void;
   onSelectCampaign?: (campaign: Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date }) => void;
   onSelectDiscrepancy?: (discrepancy: HistoricalDiscrepancy) => void;
+  onSelectCity?: (city: HistoricalCity) => void;
   selectedTerritoryId?: string | null;
   selectedEventId?: string | null;
   selectedRouteId?: string | null;
   selectedMonumentId?: string | null;
   selectedCampaignId?: string | null;
   selectedDiscrepancyId?: string | null;
+  selectedCityId?: string | null;
   showTerritories?: boolean;
   setShowTerritories?: (val: boolean) => void;
   showEvents?: boolean;
@@ -43,6 +49,8 @@ export interface HistoricalMapProps {
   setShowCampaigns?: (val: boolean) => void;
   showDiscrepancies?: boolean;
   setShowDiscrepancies?: (val: boolean) => void;
+  showCities?: boolean;
+  setShowCities?: (val: boolean) => void;
   isTheaterMode?: boolean;
   onToggleTheaterMode?: () => void;
   territoryOpacity?: number;
@@ -51,19 +59,21 @@ export interface HistoricalMapProps {
 
 export const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
   pol_rashidun: { fill: "#16A34A", stroke: "#15803D" }, // Green
-  pol_umayyad: { fill: "#14532D", stroke: "#052E16" }, // Deep green
-  pol_abbasid_early: { fill: "#D97706", stroke: "#B45309" }, // Gold
+  pol_umayyad: { fill: "#299B9B", stroke: "#1F7878" }, // Umayyad Teal (#299B9B)
+  pol_abbasid_early: { fill: "#D6A642", stroke: "#B3862B" }, // Abbasid Gold (#D6A642)
   pol_cordoba_emirate: { fill: "#059669", stroke: "#047857" }, // Emerald
   pol_cordoba_caliphate: { fill: "#047857", stroke: "#064E3B" }, // Caliphal Emerald
   pol_fatimid: { fill: "#9333EA", stroke: "#7E22CE" }, // Purple
   pol_samanid: { fill: "#0284C7", stroke: "#0369A1" }, // Transoxian Cobalt Blue
   pol_buyid: { fill: "#701A75", stroke: "#4A044E" }, // Plum Amethyst
-  pol_ghaznavid: { fill: "#78350F", stroke: "#451A03" }, // Earth Brown
-  pol_seljuk: { fill: "#2563EB", stroke: "#1D4ED8" }, // Seljuk Turquoise / Royal Blue
+  pol_ghaznavid: { fill: "#94633E", stroke: "#6E4424" }, // Ghaznavid Earth Brown (#94633E)
+  pol_seljuk: { fill: "#3978C5", stroke: "#285894" }, // Seljuk Royal Azure (#3978C5)
   pol_almoravid: { fill: "#854D0E", stroke: "#713F12" }, // Saharan Ochre
   pol_almohad: { fill: "#C2410C", stroke: "#9A3412" }, // Maghrebi Terracotta
-  pol_ayyubid: { fill: "#0D9488", stroke: "#0F766E" }, // Saladinic Teal
-  pol_mamluk: { fill: "#DC2626", stroke: "#991B1B" }, // Crimson Red
+  pol_ayyubid: { fill: "#39966A", stroke: "#297350" }, // Ayyubid Emerald (#39966A)
+  pol_zengid: { fill: "#8656B9", stroke: "#673E92" }, // Zengid Violet (#8656B9)
+  pol_mamluk: { fill: "#D94B45", stroke: "#A8322D" }, // Mamluk Crimson (#D94B45)
+  pol_mongol: { fill: "#626B76", stroke: "#474E56" }, // Mongol Steppe Slate (#626B76)
   pol_delhi_sultanate: { fill: "#E11D48", stroke: "#BE123C" }, // Hindustani Rose Crimson
   pol_timurid: { fill: "#7C3AED", stroke: "#6D28D9" }, // Imperial Violet
   pol_ottoman: { fill: "#991B1B", stroke: "#7F1D1D" }, // Ottoman Imperial Dark Red
@@ -73,9 +83,14 @@ export const POLITY_COLORS: Record<string, { fill: string; stroke: string }> = {
 
 const DEFAULT_STYLE = { fill: "#64748B", stroke: "#475569" };
 
-const BASEMAP_CONFIGS: Record<BasemapStyle, { url: string; attribution: string; maxZoom: number }> = {
+const BASEMAP_CONFIGS: Record<
+  BasemapStyle,
+  { url: string; referenceUrl?: string; attribution: string; maxZoom: number }
+> = {
   light_gray: {
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    referenceUrl:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
     attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
     maxZoom: 16,
   },
@@ -140,6 +155,50 @@ function createMonumentIconSvg(type: string, isSelected: boolean): string {
   `;
 }
 
+/**
+ * Creates custom SVG icon HTML for Imperial Capitals (Star icon)
+ */
+function createCapitalIconSvg(isSelected: boolean): string {
+  const size = isSelected ? 30 : 24;
+  return `
+    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; align-items: center; justify-content: center;">
+      ${isSelected ? `<div style="position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid #D97706; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.8;"></div>` : ""}
+      <div style="width: 100%; height: 100%; border-radius: 9999px; background: #D97706; border: 2px solid ${isSelected ? "#000000" : "#78350F"}; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.58}" height="${size * 0.58}" viewBox="0 0 24 24" fill="#FFFFFF" stroke="#78350F" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Creates custom SVG icon HTML for Major Historical Cities (Circle dot icon)
+ */
+function createCityIconSvg(isSelected: boolean): string {
+  const size = isSelected ? 20 : 16;
+  return `
+    <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 100%; height: 100%; border-radius: 9999px; background: #334155; border: 2px solid ${isSelected ? "#DC2626" : "#F8FAFC"}; box-shadow: 0 1px 4px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 4px; height: 4px; border-radius: 9999px; background: #FFFFFF;"></div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Creates directional arrow SVG along campaign vectors
+ */
+function createCampaignArrowSvg(angleDeg: number): string {
+  return `
+    <div style="width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; transform: rotate(${angleDeg}deg); pointer-events: none;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="#DC2626" stroke="#7F1D1D" stroke-width="1.5">
+        <polygon points="12,2 22,22 12,17 2,22" />
+      </svg>
+    </div>
+  `;
+}
+
 export function HistoricalMap({
   territories,
   events = [],
@@ -147,18 +206,22 @@ export function HistoricalMap({
   monuments = [],
   campaigns = [],
   discrepancies = [],
+  cities = HISTORICAL_CITIES,
+  selectedYear = 750,
   onSelectTerritory,
   onSelectEvent,
   onSelectRoute,
   onSelectMonument,
   onSelectCampaign,
   onSelectDiscrepancy,
+  onSelectCity,
   selectedTerritoryId,
   selectedEventId,
   selectedRouteId,
   selectedMonumentId,
   selectedCampaignId,
   selectedDiscrepancyId,
+  selectedCityId,
   showTerritories = true,
   setShowTerritories,
   showEvents = true,
@@ -171,6 +234,8 @@ export function HistoricalMap({
   setShowCampaigns,
   showDiscrepancies = true,
   setShowDiscrepancies,
+  showCities = true,
+  setShowCities,
   isTheaterMode = false,
   onToggleTheaterMode,
   territoryOpacity: controlledOpacity,
@@ -183,6 +248,7 @@ export function HistoricalMap({
   // Basemap & Layer state
   const [basemapStyle, setBasemapStyle] = useState<BasemapStyle>("light_gray");
   const basemapLayerRef = useRef<TileLayer | null>(null);
+  const basemapReferenceLayerRef = useRef<TileLayer | null>(null);
 
   // Internal territory opacity fallback if uncontrolled
   const [internalOpacity, setInternalOpacity] = useState<number>(0.5);
@@ -196,6 +262,7 @@ export function HistoricalMap({
   const monumentsLayerRef = useRef<LayerGroup | null>(null);
   const campaignsLayerRef = useRef<LayerGroup | null>(null);
   const discrepanciesLayerRef = useRef<LayerGroup | null>(null);
+  const citiesLayerRef = useRef<LayerGroup | null>(null);
 
   // Initialize Map
   useEffect(() => {
@@ -242,6 +309,17 @@ export function HistoricalMap({
       const eventsPane = map.getPane("eventsPane");
       if (eventsPane) eventsPane.style.zIndex = "460";
 
+      map.createPane("citiesPane");
+      const citiesPane = map.getPane("citiesPane");
+      if (citiesPane) citiesPane.style.zIndex = "470";
+
+      map.createPane("labelsPane");
+      const labPane = map.getPane("labelsPane");
+      if (labPane) {
+        labPane.style.zIndex = "500";
+        labPane.style.pointerEvents = "none"; // Non-blocking so clicks pass through to vector features
+      }
+
       // Add archival light gray canvas basemap (neutral, watermark-free, zero API key required)
       const baseConfig = BASEMAP_CONFIGS.light_gray;
       const initialBasemap = L.tileLayer(baseConfig.url, {
@@ -249,6 +327,14 @@ export function HistoricalMap({
         maxZoom: baseConfig.maxZoom,
       }).addTo(map);
       basemapLayerRef.current = initialBasemap;
+
+      if (baseConfig.referenceUrl) {
+        const initialRefLayer = L.tileLayer(baseConfig.referenceUrl, {
+          pane: "labelsPane",
+          maxZoom: baseConfig.maxZoom,
+        }).addTo(map);
+        basemapReferenceLayerRef.current = initialRefLayer;
+      }
 
       // Add Leaflet metric scale control at bottom right
       L.control
@@ -294,6 +380,10 @@ export function HistoricalMap({
         map.removeLayer(basemapLayerRef.current);
         basemapLayerRef.current = null;
       }
+      if (basemapReferenceLayerRef.current) {
+        map.removeLayer(basemapReferenceLayerRef.current);
+        basemapReferenceLayerRef.current = null;
+      }
 
       const cfg = BASEMAP_CONFIGS[basemapStyle] || BASEMAP_CONFIGS.light_gray;
       const newLayer = L.tileLayer(cfg.url, {
@@ -302,10 +392,33 @@ export function HistoricalMap({
       }).addTo(map);
 
       basemapLayerRef.current = newLayer;
+
+      if (cfg.referenceUrl) {
+        const newRefLayer = L.tileLayer(cfg.referenceUrl, {
+          pane: "labelsPane",
+          maxZoom: cfg.maxZoom,
+        }).addTo(map);
+        basemapReferenceLayerRef.current = newRefLayer;
+      }
     }
 
     updateBasemap();
   }, [mapInstance, basemapStyle]);
+
+  // Robust ResizeObserver: Eliminates blank rectangular tiles and seam artifacts during resize or layout shifts
+  useEffect(() => {
+    if (!mapContainerRef.current || !mapInstance) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      mapInstance.invalidateSize();
+    });
+
+    resizeObserver.observe(mapContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [mapInstance]);
 
   // Invalidate size whenever theater mode changes
   useEffect(() => {
@@ -348,27 +461,47 @@ export function HistoricalMap({
           const t = feature?.properties as TerritoryPeriodRecord;
           const colors = POLITY_COLORS[t.polityId] || DEFAULT_STYLE;
           const isSelected = t.id === selectedTerritoryId;
+          const hasSelection = Boolean(selectedTerritoryId);
+
+          // Dim unselected territories when an empire/territory is actively selected
+          const effectiveBaseOpacity = hasSelection
+            ? isSelected
+              ? Math.min(0.85, territoryOpacity + 0.25)
+              : 0.12
+            : territoryOpacity;
+
+          let fillOpacity = effectiveBaseOpacity;
+          let strokeDash: string | undefined = undefined;
+
+          if (t.controlType === "vassal_state" || t.controlType === "tributary") {
+            fillOpacity = effectiveBaseOpacity * 0.65;
+            strokeDash = "2, 4";
+          } else if (t.controlType === "disputed" || t.confidence === "approximate") {
+            strokeDash = "5, 5";
+          } else if (t.controlType === "temporary_occupation") {
+            strokeDash = "6, 3, 2, 3";
+          }
 
           return {
             fillColor: colors.fill,
-            color: isSelected ? "#DC2626" : colors.stroke,
-            weight: isSelected ? 3.5 : 1.75,
-            fillOpacity: isSelected ? Math.min(0.85, territoryOpacity + 0.2) : territoryOpacity,
-            dashArray: t.confidence === "approximate" ? "4, 4" : undefined,
+            color: isSelected ? "#DC2626" : (hasSelection && !isSelected ? "#94A3B8" : colors.stroke),
+            weight: isSelected ? 3.5 : (t.controlType === "direct" ? 1.75 : 1.25),
+            fillOpacity,
+            dashArray: isSelected ? undefined : strokeDash,
           };
         },
         onEachFeature: (feature, featureLayer) => {
           const t = feature.properties as TerritoryPeriodRecord;
 
           featureLayer.bindTooltip(
-            `<strong>${t.regionName}</strong><br/>${t.controlType} control (${t.validFromYear}–${t.validToYear} CE)`,
+            `<strong>${t.regionName}</strong><br/>${t.controlType.replace("_", " ")} control (${t.validFromYear}–${t.validToYear} CE)`,
             { sticky: true, className: "font-sans text-xs" }
           );
 
           featureLayer.bindPopup(
             `<div class="p-1 font-sans">
               <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${t.regionName}</div>
-              <div class="text-[11px] text-stone-600 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${t.controlType} control • ${t.validFromYear}–${t.validToYear} CE</div>
+              <div class="text-[11px] text-stone-600 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${t.controlType.replace("_", " ")} control • ${t.validFromYear}–${t.validToYear} CE</div>
               ${t.explanatoryNote ? `<p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${t.explanatoryNote}</p>` : ""}
               <div class="text-[11px] text-stone-500 italic">Confidence: ${t.confidence}</div>
             </div>`,
@@ -383,16 +516,36 @@ export function HistoricalMap({
             },
             mouseover: (e) => {
               const target = e.target;
-              target.setStyle({ fillOpacity: Math.min(0.9, territoryOpacity + 0.25), weight: 2.75 });
+              target.setStyle({ fillOpacity: Math.min(0.9, territoryOpacity + 0.3), weight: 2.75 });
             },
             mouseout: (e) => {
               const target = e.target;
               const isSelected = t.id === selectedTerritoryId;
+              const hasSelection = Boolean(selectedTerritoryId);
               const colors = POLITY_COLORS[t.polityId] || DEFAULT_STYLE;
+              const effectiveBaseOpacity = hasSelection
+                ? isSelected
+                  ? Math.min(0.85, territoryOpacity + 0.25)
+                  : 0.12
+                : territoryOpacity;
+
+              let fillOpacity = effectiveBaseOpacity;
+              let strokeDash: string | undefined = undefined;
+
+              if (t.controlType === "vassal_state" || t.controlType === "tributary") {
+                fillOpacity = effectiveBaseOpacity * 0.65;
+                strokeDash = "2, 4";
+              } else if (t.controlType === "disputed" || t.confidence === "approximate") {
+                strokeDash = "5, 5";
+              } else if (t.controlType === "temporary_occupation") {
+                strokeDash = "6, 3, 2, 3";
+              }
+
               target.setStyle({
-                fillOpacity: isSelected ? Math.min(0.85, territoryOpacity + 0.2) : territoryOpacity,
-                weight: isSelected ? 3.5 : 1.75,
-                color: isSelected ? "#DC2626" : colors.stroke,
+                fillOpacity,
+                weight: isSelected ? 3.5 : (t.controlType === "direct" ? 1.75 : 1.25),
+                color: isSelected ? "#DC2626" : (hasSelection && !isSelected ? "#94A3B8" : colors.stroke),
+                dashArray: isSelected ? undefined : strokeDash,
               });
             },
           });
@@ -625,7 +778,7 @@ export function HistoricalMap({
     updateMonumentMarkers();
   }, [mapInstance, monuments, selectedMonumentId, onSelectMonument, showMonuments]);
 
-  // Update Military Campaigns Layer
+  // Update Military Campaigns Layer with Directional Vectors
   useEffect(() => {
     async function updateCampaigns() {
       const map = mapInstance;
@@ -640,55 +793,84 @@ export function HistoricalMap({
 
       if (!showCampaigns || campaigns.length === 0) return;
 
-      const campaignLayers = campaigns
-        .map((campaign) => {
-          const geojson = campaign.routeGeojson as any;
-          if (!geojson || !geojson.coordinates) return null;
+      const allElements: any[] = [];
 
-          const isSelected = campaign.id === selectedCampaignId;
+      campaigns.forEach((campaign) => {
+        const geojson = campaign.routeGeojson as any;
+        if (!geojson || !geojson.coordinates) return;
 
-          const layer = L.geoJSON(geojson, {
-            pane: "campaignsPane",
-            style: {
-              color: isSelected ? "#000000" : "#DC2626", // Bold Crimson
-              weight: isSelected ? 4.5 : 2.75,
-              opacity: isSelected ? 1 : 0.9,
-              dashArray: isSelected ? undefined : "6, 4",
-            },
-          });
+        const isSelected = campaign.id === selectedCampaignId;
 
-          const yearLabel =
-            campaign.startYear === campaign.endYear
-              ? `${campaign.startYear} CE`
-              : `${campaign.startYear}–${campaign.endYear} CE`;
+        const layer = L.geoJSON(geojson, {
+          pane: "campaignsPane",
+          style: {
+            color: isSelected ? "#000000" : "#DC2626", // Bold Crimson
+            weight: isSelected ? 4.5 : 2.75,
+            opacity: isSelected ? 1 : 0.9,
+            dashArray: isSelected ? undefined : "6, 4",
+          },
+        });
 
-          layer.bindTooltip(
-            `<strong>${campaign.name} (${yearLabel})</strong><br/><span class="text-red-700 font-medium">Cmdr: ${campaign.commanderName}</span><br/><span class="text-[11px]">${campaign.keyLocations}</span>`,
-            { sticky: true, className: "font-sans text-xs" }
-          );
+        const yearLabel =
+          campaign.startYear === campaign.endYear
+            ? `${campaign.startYear} CE`
+            : `${campaign.startYear}–${campaign.endYear} CE`;
 
-          layer.bindPopup(
-            `<div class="p-1 font-sans">
-              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${campaign.name}</div>
-              <div class="text-[11px] text-red-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">Commander: ${campaign.commanderName} (${yearLabel})</div>
-              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${campaign.description || ""}</p>
-              <div class="text-[11px] text-stone-600 bg-red-50 p-1.5 rounded border border-red-200 mb-1"><strong class="text-red-900">Strategic Outcome:</strong> ${campaign.strategicOutcome}</div>
-              <div class="text-[11px] text-stone-500 italic">Route: ${campaign.keyLocations}</div>
-            </div>`,
-            { maxWidth: 290 }
-          );
+        layer.bindTooltip(
+          `<strong>${campaign.name} (${yearLabel})</strong><br/><span class="text-red-700 font-medium">Cmdr: ${campaign.commanderName}</span><br/><span class="text-[11px]">${campaign.keyLocations}</span>`,
+          { sticky: true, className: "font-sans text-xs" }
+        );
 
-          layer.on("click", () => {
-            if (onSelectCampaign) {
-              onSelectCampaign(campaign);
-            }
-          });
+        layer.bindPopup(
+          `<div class="p-1 font-sans">
+            <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${campaign.name}</div>
+            <div class="text-[11px] text-red-800 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">Commander: ${campaign.commanderName} (${yearLabel})</div>
+            <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${campaign.description || ""}</p>
+            <div class="text-[11px] text-stone-600 bg-red-50 p-1.5 rounded border border-red-200 mb-1"><strong class="text-red-900">Strategic Outcome:</strong> ${campaign.strategicOutcome}</div>
+            <div class="text-[11px] text-stone-500 italic">Route: ${campaign.keyLocations}</div>
+          </div>`,
+          { maxWidth: 290 }
+        );
 
-          return layer;
-        })
-        .filter(Boolean);
+        layer.on("click", () => {
+          if (onSelectCampaign) {
+            onSelectCampaign(campaign);
+          }
+        });
 
-      const group = L.layerGroup(campaignLayers as any[]);
+        allElements.push(layer);
+
+        // Compute and place directional arrows along campaign march segments
+        const coords = geojson.coordinates;
+        if (Array.isArray(coords) && coords.length >= 2) {
+          for (let i = 0; i < coords.length - 1; i++) {
+            const p1 = coords[i]; // [lng, lat]
+            const p2 = coords[i + 1];
+            const midLat = (p1[1] + p2[1]) / 2;
+            const midLng = (p1[0] + p2[0]) / 2;
+            const dLng = p2[0] - p1[0];
+            const dLat = p2[1] - p1[1];
+            const angleDeg = (Math.atan2(dLng, dLat) * 180) / Math.PI;
+
+            const arrowIcon = L.divIcon({
+              html: createCampaignArrowSvg(angleDeg),
+              className: "campaign-arrow-icon",
+              iconSize: [14, 14],
+              iconAnchor: [7, 7],
+            });
+
+            const arrowMarker = L.marker([midLat, midLng], {
+              icon: arrowIcon,
+              pane: "campaignsPane",
+              interactive: false,
+            });
+
+            allElements.push(arrowMarker);
+          }
+        }
+      });
+
+      const group = L.layerGroup(allElements);
       group.addTo(map);
       campaignsLayerRef.current = group;
     }
@@ -762,6 +944,87 @@ export function HistoricalMap({
     updateDiscrepancies();
   }, [mapInstance, discrepancies, selectedDiscrepancyId, onSelectDiscrepancy, showDiscrepancies]);
 
+  // Update Historical Cities & Imperial Capitals Layer
+  useEffect(() => {
+    async function updateCities() {
+      const map = mapInstance;
+      if (!map) return;
+
+      const L = await import("leaflet");
+
+      if (citiesLayerRef.current) {
+        map.removeLayer(citiesLayerRef.current);
+        citiesLayerRef.current = null;
+      }
+
+      if (!showCities || cities.length === 0) return;
+
+      const markers = cities
+        .map((city) => {
+          // Check if city was founded/established by this period
+          if (city.foundingYear && selectedYear < city.foundingYear - 30) {
+            return null;
+          }
+
+          // Check if city was an active imperial capital in selectedYear
+          const activeCapitalEra = city.capitalEras.find(
+            (era) => selectedYear >= era.fromYear && selectedYear <= era.toYear
+          );
+
+          const isCapital = Boolean(activeCapitalEra);
+          const isSelected = city.id === selectedCityId;
+          const lat = city.coordinates[1];
+          const lng = city.coordinates[0];
+
+          const iconHtml = isCapital
+            ? createCapitalIconSvg(isSelected)
+            : createCityIconSvg(isSelected);
+
+          const customIcon = L.divIcon({
+            html: iconHtml,
+            className: isCapital ? "historical-map-capital-icon" : "historical-map-city-icon",
+            iconSize: isCapital ? [isSelected ? 30 : 24, isSelected ? 30 : 24] : [isSelected ? 20 : 16, isSelected ? 20 : 16],
+            iconAnchor: isCapital ? [isSelected ? 15 : 12, isSelected ? 15 : 12] : [isSelected ? 10 : 8, isSelected ? 10 : 8],
+          });
+
+          const marker = L.marker([lat, lng], {
+            icon: customIcon,
+            pane: "citiesPane",
+          });
+
+          marker.bindTooltip(
+            `<strong>${city.name}</strong> ${city.historicalNames.arabic ? `(${city.historicalNames.arabic})` : ""}<br/><span class="${isCapital ? "text-amber-800 font-bold" : "text-gray-600"}">${isCapital ? `👑 ${activeCapitalEra?.capitalTitle}` : "Historical Metropolis"}</span>`,
+            { direction: "top", offset: [0, -10], className: "font-sans text-xs" }
+          );
+
+          marker.bindPopup(
+            `<div class="p-1 font-sans">
+              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${city.name} ${city.historicalNames.arabic ? `<span class="text-xs text-amber-800 font-serif">(${city.historicalNames.arabic})</span>` : ""}</div>
+              <div class="text-[11px] ${isCapital ? "text-amber-700 font-bold" : "text-stone-600 font-semibold"} tracking-wide uppercase mt-0.5 mb-1.5">${isCapital ? `👑 ${activeCapitalEra?.capitalTitle}` : `📍 ${city.region}`}</div>
+              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${city.significance}</p>
+              <div class="text-[11px] text-stone-500 italic border-t border-stone-200 pt-1">📍 ${lat.toFixed(2)}°N, ${lng.toFixed(2)}°E</div>
+            </div>`,
+            { maxWidth: 280 }
+          );
+
+          marker.on("click", () => {
+            if (onSelectCity) {
+              onSelectCity(city);
+            }
+          });
+
+          return marker;
+        })
+        .filter(Boolean);
+
+      const group = L.layerGroup(markers as any[]);
+      group.addTo(map);
+      citiesLayerRef.current = group;
+    }
+
+    updateCities();
+  }, [mapInstance, cities, selectedYear, selectedCityId, onSelectCity, showCities]);
+
   // Navigation callbacks
   const handleZoomIn = useCallback(() => {
     if (mapInstance) {
@@ -828,6 +1091,8 @@ export function HistoricalMap({
               setShowCampaigns={setShowCampaigns}
               showDiscrepancies={showDiscrepancies}
               setShowDiscrepancies={setShowDiscrepancies}
+              showCities={showCities}
+              setShowCities={setShowCities}
               territoryOpacity={territoryOpacity}
               setTerritoryOpacity={setTerritoryOpacity}
               counts={{
@@ -837,6 +1102,7 @@ export function HistoricalMap({
                 monuments: monuments.length,
                 campaigns: campaigns.length,
                 discrepancies: discrepancies.length,
+                cities: cities.length,
               }}
             />
           )}
@@ -849,6 +1115,7 @@ export function HistoricalMap({
             showMonuments={showMonuments}
             showCampaigns={showCampaigns}
             showDiscrepancies={showDiscrepancies}
+            showCities={showCities}
             onToggleLayer={(key) => {
               if (key === "territories" && setShowTerritories) setShowTerritories(!showTerritories);
               else if (key === "events" && setShowEvents) setShowEvents(!showEvents);
@@ -856,6 +1123,7 @@ export function HistoricalMap({
               else if (key === "monuments" && setShowMonuments) setShowMonuments(!showMonuments);
               else if (key === "campaigns" && setShowCampaigns) setShowCampaigns(!showCampaigns);
               else if (key === "discrepancies" && setShowDiscrepancies) setShowDiscrepancies(!showDiscrepancies);
+              else if (key === "cities" && setShowCities) setShowCities(!showCities);
             }}
           />
         </>

@@ -32,6 +32,15 @@ textarea:focus-visible {
 }
 
 /* Custom Leaflet SVG Markers & Cartographic Archival Styling */
+.leaflet-tile-container img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.leaflet-container {
+  background-color: #FAF8F5 !important;
+}
+
 .leaflet-div-icon {
   background: transparent !important;
   border: none !important;

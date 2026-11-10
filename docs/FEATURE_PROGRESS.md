@@ -103,4 +103,36 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm run lint`: 0 errors, 0 warnings.
   - `npm run build`: 51/51 pages compiled successfully.
 
+---
+
+### Master Task: Historical Map Cartographic Reconstruction & Accuracy
+- **Branch**: `feature/historical-map-reconstruction`
+- **Goal**: Transform the interactive map into a scholarly historical atlas with basemap reference labels, seam elimination, ResizeObserver lifecycle management, dynastic color palette alignment, directional campaign arrows, territory control-type styling and dimming, and dedicated Historical Cities & Imperial Capitals layer.
+- **Implemented Features**:
+  1. `src/components/map/HistoricalMap.tsx`:
+     - Added dedicated `labelsPane` (z-index 500, `pointerEvents: "none"`) with Esri Canvas Reference Labels (`World_Light_Gray_Reference`) ensuring geographical names and bodies of water remain visible above territory polygons.
+     - Implemented `ResizeObserver` on `mapContainerRef` ensuring instantaneous `map.invalidateSize()` calls and zero unrendered blank tile blocks or seams.
+     - Updated `POLITY_COLORS` to strictly satisfy scholarly archival palette requirements (`#3978C5`, `#94633E`, `#D94B45`, `#39966A`, `#8656B9`, `#D6A642`, `#626B76`, `#299B9B`).
+     - Enhanced territory styling with control-type visual hierarchy (vassal/tributary dotted outlines and reduced opacity; disputed/approximate dashed boundaries; selected boundary boost; and territory dimming where unselected polities fade to 0.12 opacity).
+     - Added military campaign directional march arrows (`createCampaignArrowSvg`) computed from path segment bearings.
+     - Integrated `HISTORICAL_CITIES` layer with dual cartographic hierarchy: Star icons for active Imperial Capitals and Circle dot icons for Major Metropolises.
+  2. `src/lib/data/historicalCitiesSeed.ts`:
+     - Curated dataset of 18 historical capitals and metropolises (Medina, Kufa, Damascus, Baghdad, Samarra, Córdoba, Cairo, Mahdia, Bukhara, Samarkand, Ghazna, Isfahan, Marrakech, Delhi, Istanbul, Agra, Jerusalem, Mecca).
+  3. `src/components/atlas/CityDetailPanel.tsx`:
+     - Detailed inspection panel rendering city names, Arabic/Persian/Classical variants, active imperial capital titles, ruling powers, and capital historical timeline.
+  4. `src/components/atlas/AtlasExplorer.tsx`:
+     - Integrated `showCities` toggle in cartographic toolbars.
+     - Wired `CityDetailPanel` and selection dismissal.
+     - Synchronized `POLITY_BADGE_COLORS` with the updated dynastic palette.
+  5. `src/app/globals.css`:
+     - Subpixel crisp-edge image rendering on tile containers to prevent 1px hairline seams on Windows high-DPI scaling.
+  6. `tests/unit/historicalMapCartography.test.ts`:
+     - Comprehensive unit tests verifying cities dataset, coordinate bounds, active capital resolution across historical benchmarks (634, 700, 800, 850, 950, 1000, 1080, 1400, 1550, 1600 CE), and dynastic palette adherence.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 27 test suites, 167 tests passed.
+  - `npm run lint`: 0 errors, 0 warnings.
+  - `npm run build`: 51/51 pages compiled successfully.
+
+
 

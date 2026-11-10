@@ -59,15 +59,17 @@ describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
       expect(colors.stroke).toMatch(/^#[0-9A-Fa-f]{6}$/);
     });
 
-    // Check specific user requested colors
+    // Check specific user requested scholarly archival palette
     expect(POLITY_COLORS["pol_rashidun"].fill).toBe("#16A34A"); // Green
-    expect(POLITY_COLORS["pol_umayyad"].fill).toBe("#14532D"); // Deep green
-    expect(POLITY_COLORS["pol_abbasid_early"].fill).toBe("#D97706"); // Gold
+    expect(POLITY_COLORS["pol_umayyad"].fill).toBe("#299B9B"); // Umayyad Teal (#299B9B)
+    expect(POLITY_COLORS["pol_abbasid_early"].fill).toBe("#D6A642"); // Abbasid Gold (#D6A642)
     expect(POLITY_COLORS["pol_fatimid"].fill).toBe("#9333EA"); // Purple
-    expect(POLITY_COLORS["pol_seljuk"].fill).toBe("#2563EB"); // Blue
-    expect(POLITY_COLORS["pol_ghaznavid"].fill).toBe("#78350F"); // Brown
-    expect(POLITY_COLORS["pol_ayyubid"].fill).toBe("#0D9488"); // Teal
-    expect(POLITY_COLORS["pol_mamluk"].fill).toBe("#DC2626"); // Red
+    expect(POLITY_COLORS["pol_seljuk"].fill).toBe("#3978C5"); // Seljuk Azure (#3978C5)
+    expect(POLITY_COLORS["pol_ghaznavid"].fill).toBe("#94633E"); // Ghaznavid Earth Brown (#94633E)
+    expect(POLITY_COLORS["pol_ayyubid"].fill).toBe("#39966A"); // Ayyubid Emerald (#39966A)
+    expect(POLITY_COLORS["pol_zengid"].fill).toBe("#8656B9"); // Zengid Violet (#8656B9)
+    expect(POLITY_COLORS["pol_mamluk"].fill).toBe("#D94B45"); // Mamluk Crimson (#D94B45)
+    expect(POLITY_COLORS["pol_mongol"].fill).toBe("#626B76"); // Mongol Steppe Slate (#626B76)
     expect(POLITY_COLORS["pol_ottoman"].fill).toBe("#991B1B"); // Dark red
     expect(POLITY_COLORS["pol_mughal"].fill).toBe("#EA580C"); // Orange
     expect(POLITY_COLORS["pol_safavid"].fill).toBe("#4338CA"); // Indigo
