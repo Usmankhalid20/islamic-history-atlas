@@ -12,7 +12,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | **Phase 1** | **Historical Map Foundation** | `feature/map-foundation` | **COMPLETE** | 149/149 Tests Passed, Type-Check 0 errors, Build 37/37 pages |
 | **Phase 2** | **Empire Territories & Boundaries** | `feature/empire-territories` | **COMPLETE** | 154/154 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | **COMPLETE** | 163/163 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
-| **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | *Planned* | - |
+| **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | **COMPLETE** | 181/181 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 5** | **Empire Information Panel** | `feature/empire-information` | *Planned* | - |
 | **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | *Planned* | - |
 | **Phase 7** | **Historical Territory Changes** | `feature/territorial-changes` | *Planned* | - |
@@ -133,6 +133,41 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm test`: 27 test suites, 167 tests passed.
   - `npm run lint`: 0 errors, 0 warnings.
   - `npm run build`: 51/51 pages compiled successfully.
+
+---
+
+### Phase 4: Historical Data Architecture & Changing Territorial Boundaries
+- **Branch**: `feature/historical-data`
+- **Goal**: Expand dynamic temporal configurations across testing milestones (900, 977, 1030, 1071, 1092, 1200, 1258, 1260, 1453, 1550, 1683, 1850 CE), support disconnected regions (`MultiPolygon`), control classifications (direct, vassal, tributary, disputed, approximate), RFC 7946 geometry validation, and add missing polities (`pol_zengid`, `pol_mongol`).
+- **Implemented Features**:
+  1. `src/lib/geo/validateGeometry.ts`:
+     - RFC 7946 compliant GeoJSON geometry validator supporting Points, MultiPoints, LineStrings, MultiLineStrings, Polygons, and MultiPolygons.
+     - Coordinate range validation (`[-180..180, -90..90]`), number sanity, linear ring closure detection, and `ensureClosedRing`.
+  2. `src/lib/data/historicalSeed.ts`:
+     - Added `pol_zengid` (Zengid Dynasty, 1127–1250 CE) and `pol_mongol` (Ilkhanate / Mongol realm, 1256–1335 CE) matching the dynastic color palette (`#8656B9` and `#626B76`).
+     - Expanded territory periods from 20 to 30 with dynamic multi-epoch temporal configurations:
+       - Abbasid Caliphate post-945: `ter_abbasid_baghdad_945_1258` (945–1258 CE).
+       - Caliphate of Córdoba: `ter_cordoba_caliphate_929_1031` with true `MultiPolygon` geometry spanning Iberia and northern Moroccan protectorates across the Strait.
+       - Ghaznavid Empire: `ter_ghaznavid_zenith_977_1040` (Mahmud zenith) and `ter_ghaznavid_lahore_1041_1186` (Punjab contraction).
+       - Great Seljuk Empire: `ter_seljuk_early_1037_1071`, `ter_seljuk_zenith_1072_1092` (Malik Shah I apex), and `ter_seljuk_late_1093_1194`.
+       - Zengid Dynasty: `ter_zengid_aleppo_mosul_1127_1174` (Aleppo, Mosul, Jazira).
+       - Ilkhanate: `ter_ilkhanate_realm_1258_1335` (direct control) and `ter_ilkhanate_anatolia_vassal_1260_1335` (Rum Sultanate tributary vassalage).
+       - Ottoman Empire: `ter_ottoman_early_1299_1453` (Bithynia & Rumelia), `ter_ottoman_zenith_1453_1683` (Classical Zenith), and `ter_ottoman_late_1684_1922` (Tanzimat).
+       - Mughal Empire: `ter_mughal_zenith_1526_1707` and `ter_mughal_late_1708_1857`.
+  3. `src/lib/geo/territoryUtils.ts`:
+     - Re-exported geometry validation functions for streamlined imports.
+  4. `tests/unit/historicalDataArchitecture.test.ts`:
+     - 14 automated unit tests verifying geometry validation, temporal milestone slicing (900, 977, 1030, 1071, 1092, 1200, 1258, 1260, 1453, 1550, 1683, 1850 CE), and control classifications.
+  5. `tests/unit/empireTerritories.test.ts` & `tests/unit/map.test.ts`:
+     - Updated to support both `Polygon` and `MultiPolygon` GeoJSON geometries.
+  6. Database Synchronization:
+     - Ran `npm run db:seed` syncing 21 polities and 30 territory periods to live Neon PostgreSQL.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 28 test suites, 181 tests passed.
+  - `npm run lint`: 0 warnings, 0 errors.
+  - `npm run build`: 53/53 static pages compiled successfully.
+
 
 
 

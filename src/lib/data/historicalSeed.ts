@@ -252,6 +252,28 @@ export const initialPolities: NewPolityRecord[] = [
     capitalCity: "Agra (also: Delhi, Lahore, Fatehpur Sikri)",
     reviewStatus: "published",
   },
+  {
+    id: "pol_zengid",
+    canonicalName: "Zengid Dynasty",
+    entityType: "dynasty",
+    startYear: 1127,
+    endYear: 1250,
+    precision: "well-attested",
+    overview: "Oghuz Turkic atabegate founded by Imad al-Din Zengi and expanded under Nur al-Din, unifying Aleppo, Damascus, and Mosul, serving as the foundational spearhead of the Counter-Crusade.",
+    capitalCity: "Aleppo (also: Mosul)",
+    reviewStatus: "published",
+  },
+  {
+    id: "pol_mongol",
+    canonicalName: "Ilkhanate (Mongol Realm in West Asia)",
+    entityType: "empire",
+    startYear: 1256,
+    endYear: 1335,
+    precision: "well-attested",
+    overview: "Southwestern sector of the Mongol Empire founded by Hulagu Khan following the fall of Baghdad (1258). Later converted to Islam under Ghazan Khan, governing Persia, Iraq, and eastern Anatolia with imperial capitals at Maragheh, Tabriz, and Soltaniyeh.",
+    capitalCity: "Tabriz (earlier: Maragheh, later: Soltaniyeh)",
+    reviewStatus: "published",
+  },
 ];
 
 export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
@@ -411,6 +433,34 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     reviewStatus: "published",
   },
   {
+    id: "ter_abbasid_baghdad_945_1258",
+    polityId: "pol_abbasid_early",
+    regionName: "Abbasid Caliphal Domain (Baghdad & Central Sawad)",
+    validFromYear: 945,
+    validToYear: 1258,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [44.00, 33.30], // Baghdad center
+          [44.80, 33.70], // Diyala basin
+          [44.30, 34.20], // Samarra
+          [43.60, 34.00], // Tikrit south margin
+          [43.80, 33.30], // Anbar approach
+          [44.20, 32.50], // Hillah / Babylon
+          [44.60, 32.00], // Kufa northern march
+          [45.30, 32.40], // Wasit border
+          [44.80, 33.00], // Ctesiphon reach
+          [44.00, 33.30], // Closing to Baghdad
+        ],
+      ],
+    },
+    explanatoryNote: "Autonomous Abbasid caliphal metropolitan territory centered on Baghdad and the central Sawad during the Buyid and Seljuk protectorate eras up to the Mongol siege of 1258 CE.",
+    reviewStatus: "published",
+  },
+  {
     id: "ter_fatimid_ifriqiya_909_969",
     polityId: "pol_fatimid",
     regionName: "Ifriqiya (Tunisia & Eastern Algeria)",
@@ -452,31 +502,40 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     controlType: "direct",
     confidence: "well-attested",
     geometryGeojson: {
-      type: "Polygon",
+      type: "MultiPolygon",
       coordinates: [
+        // Polygon 1: Iberian Peninsula (Al-Andalus Core)
         [
-          [-8.90, 37.00], // Sagres & Algarve coast
-          [-8.70, 39.50], // Lower Tagus / Santarém
-          [-6.00, 40.50], // Sierra de Gata march
-          [-3.00, 41.50], // Douro-Ebro borderland
-          [-0.90, 41.70], // Zaragoza (Upper March)
-          [0.60, 41.60],  // Lleida march
-          [0.50, 40.80],  // Tortosa coast
-          [0.10, 38.80],  // Denia
-          [-1.00, 37.50], // Cartagena littoral
-          [-2.50, 36.80], // Almería naval base
-          [-4.50, 36.70], // Málaga
-          [-5.60, 36.00], // Tarifa & Strait
-          [-5.30, 35.50], // Ceuta (Andalusian African bridgehead)
-          [-4.00, 35.20], // Nekor coast
-          [-5.00, 34.00], // Fez protectorate margin
-          [-6.00, 35.00], // Tangier / Asilah
-          [-6.30, 36.70], // Cadiz bay
-          [-8.90, 37.00], // Closing to Algarve
+          [
+            [-8.90, 37.00], // Sagres & Algarve coast
+            [-8.70, 39.50], // Lower Tagus / Santarém
+            [-6.00, 40.50], // Sierra de Gata march
+            [-3.00, 41.50], // Douro-Ebro borderland
+            [-0.90, 41.70], // Zaragoza (Upper March)
+            [0.60, 41.60],  // Lleida march
+            [0.50, 40.80],  // Tortosa coast
+            [0.10, 38.80],  // Denia
+            [-1.00, 37.50], // Cartagena littoral
+            [-2.50, 36.80], // Almería naval base
+            [-4.50, 36.70], // Málaga
+            [-5.60, 36.00], // Tarifa & Strait
+            [-6.30, 36.70], // Cadiz bay
+            [-8.90, 37.00], // Closing to Sagres
+          ],
+        ],
+        // Polygon 2: Northern Moroccan Protectorates (Ceuta & Tangier)
+        [
+          [
+            [-5.30, 35.50], // Ceuta (Andalusian African bridgehead)
+            [-4.00, 35.20], // Nekor coast
+            [-5.00, 34.00], // Fez protectorate margin
+            [-6.00, 35.00], // Tangier / Asilah
+            [-5.30, 35.50], // Closing to Ceuta
+          ],
         ],
       ],
     },
-    explanatoryNote: "Apex of the Umayyad Caliphate of Córdoba governing the Iberian Peninsula and holding northern Moroccan protectorates.",
+    explanatoryNote: "Apex of the Umayyad Caliphate of Córdoba governing the Iberian Peninsula and holding maritime protectorates across the Strait in northern Morocco.",
     reviewStatus: "published",
   },
   {
@@ -574,18 +633,18 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     reviewStatus: "published",
   },
   {
-    id: "ter_ghaznavid_realm_977_1186",
+    id: "ter_ghaznavid_zenith_977_1040",
     polityId: "pol_ghaznavid",
-    regionName: "Eastern Iran, Zabulistan & Punjab (Ghazna & Lahore)",
+    regionName: "Ghaznavid Imperial Zenith (Khorasan, Zabulistan & Punjab)",
     validFromYear: 977,
-    validToYear: 1186,
+    validToYear: 1040,
     controlType: "direct",
     confidence: "well-attested",
     geometryGeojson: {
       type: "Polygon",
       coordinates: [
         [
-          [60.00, 34.00], // Herat eastern approaches
+          [58.50, 36.20], // Nishapur & western Khorasan
           [62.20, 35.00], // Murghab river basin
           [65.00, 34.50], // Ghor mountains margin
           [68.40, 33.50], // Ghazna (imperial fortress capital)
@@ -594,19 +653,111 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
           [73.00, 29.50], // Multan & southern Punjab
           [69.00, 29.00], // Sibi & Bolan Pass
           [64.00, 30.50], // Helmand valley & Bust
-          [61.00, 31.50], // Sistan lake basin (Zaranj)
-          [60.00, 34.00], // Closing to Herat
+          [61.00, 31.50], // Zaranj & Sistan
+          [58.50, 36.20], // Closing to Nishapur
         ],
       ],
     },
-    explanatoryNote: "Ghaznavid imperial domains under Mahmud of Ghazna linking the Iranian plateau through the Afghan Hindu Kush into northern India.",
+    explanatoryNote: "Imperial zenith of the Ghaznavid Empire under Mahmud of Ghazna and Mas'ud I, uniting Greater Khorasan, the Afghan Hindu Kush, and the northern Indian subcontinent.",
     reviewStatus: "published",
   },
   {
-    id: "ter_seljuk_empire_1037_1194",
+    id: "ter_ghaznavid_lahore_1041_1186",
+    polityId: "pol_ghaznavid",
+    regionName: "Ghaznavid Realm (Punjab & Eastern Afghanistan)",
+    validFromYear: 1041,
+    validToYear: 1186,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [67.50, 34.00], // Kabul-Ghazna mountain corridor
+          [68.40, 33.50], // Ghazna fortress
+          [71.50, 34.00], // Peshawar & Khyber Pass
+          [74.30, 32.50], // Sialkot
+          [75.00, 31.50], // Beas River margin
+          [74.34, 31.52], // Lahore (Ghaznavid dynastic capital)
+          [72.50, 29.50], // Multan & southern Punjab
+          [70.00, 29.50], // Dera Ghazi Khan / Indus
+          [68.50, 31.00], // Sulaiman Range
+          [66.50, 32.00], // Zabulistan southern flank
+          [67.50, 34.00], // Closing to Ghazna corridor
+        ],
+      ],
+    },
+    explanatoryNote: "Later Ghaznavid territory after the loss of Khorasan to the Seljuks at Dandanaqan (1040 CE), centered upon the Punjab with the imperial court seated in Lahore.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_seljuk_early_1037_1071",
     polityId: "pol_seljuk",
-    regionName: "Greater Seljuk Domain (Persia, Mesopotamia & Khorasan)",
+    regionName: "Early Seljuk Realm (Khorasan, Jibal & Baghdad)",
     validFromYear: 1037,
+    validToYear: 1071,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [44.00, 33.30], // Baghdad (Tughril Beg recognized as Sultan in 1055)
+          [46.50, 35.00], // Hamadan
+          [51.40, 35.60], // Rayy (early capital)
+          [54.00, 37.00], // Gurgan plain
+          [60.00, 37.00], // Nishapur (first capital 1038)
+          [62.20, 35.00], // Merv / Khorasan frontier
+          [60.00, 32.00], // Kerman march
+          [54.00, 30.00], // Isfahan
+          [48.50, 30.50], // Khuzestan
+          [44.00, 32.50], // Sawad
+          [44.00, 33.30], // Closing to Baghdad
+        ],
+      ],
+    },
+    explanatoryNote: "Initial expansion of the Great Seljuks under Tughril Beg and early Alp Arslan, consolidating Khorasan and Iran and liberating the Abbasid Caliph in Baghdad from Buyid control.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_seljuk_zenith_1072_1092",
+    polityId: "pol_seljuk",
+    regionName: "Great Seljuk Empire (Imperial Apex under Malik Shah I)",
+    validFromYear: 1072,
+    validToYear: 1092,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [32.00, 39.50], // Central Anatolia (post-Manzikert march)
+          [36.50, 36.20], // Aleppo & northern Syria
+          [36.30, 33.50], // Damascus
+          [38.50, 37.50], // Edessa / Urfa
+          [42.00, 38.00], // Lake Van & Armenia
+          [46.00, 38.50], // Tabriz / Azerbaijan
+          [50.00, 37.50], // Gilan / Caspian coast
+          [54.00, 37.00], // Gurgan
+          [62.20, 37.60], // Merv (administrative center)
+          [64.00, 39.50], // Bukhara frontier
+          [63.00, 35.00], // Herat
+          [54.00, 30.00], // Isfahan (imperial capital of Malik Shah)
+          [48.50, 30.50], // Khuzestan & Basra
+          [44.00, 32.50], // Baghdad (seat of the Caliph and Sultan)
+          [38.00, 32.00], // Syrian desert border
+          [32.00, 39.50], // Closing to Anatolia
+        ],
+      ],
+    },
+    explanatoryNote: "Apex of the Great Seljuk Empire under Sultan Malik Shah I and Vizier Nizam al-Mulk, spanning from the Aegean fringes of Anatolia to the borders of China.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_seljuk_late_1093_1194",
+    polityId: "pol_seljuk",
+    regionName: "Later Seljuk Realm (Western Iran & Khorasan)",
+    validFromYear: 1093,
     validToYear: 1194,
     controlType: "direct",
     confidence: "well-attested",
@@ -614,24 +765,19 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [36.50, 36.00], // Aleppo & Syrian borders
-          [38.50, 37.50], // Edessa / Urfa
-          [42.00, 38.00], // Lake Van & Armenian plateau
-          [46.00, 38.50], // Tabriz / Azerbaijan
-          [50.00, 37.50], // Caspian southern shore (Gilan)
-          [54.00, 37.00], // Gurgan & Gorgan plain
-          [60.00, 37.00], // Nishapur & Tus
-          [63.00, 35.00], // Herat valley
-          [60.00, 31.50], // Sistan march
-          [54.00, 30.00], // Isfahan imperial capital & central plateau
-          [48.50, 30.50], // Khuzestan & Basra
-          [44.00, 32.50], // Baghdad (Sultanate seat)
-          [40.00, 34.00], // Syrian desert crossing
-          [36.50, 36.00], // Closing to Aleppo
+          [46.50, 35.00], // Hamadan (Iraqi Seljuk seat)
+          [48.50, 37.50], // Azerbaijan border
+          [54.00, 37.00], // Gurgan
+          [60.00, 37.00], // Nishapur
+          [62.20, 37.60], // Merv (seat of Sultan Sanjar)
+          [60.00, 34.00], // Khorasan south march
+          [54.00, 32.00], // Isfahan
+          [49.00, 32.00], // Zagros passes
+          [46.50, 35.00], // Closing to Hamadan
         ],
       ],
     },
-    explanatoryNote: "The Great Seljuk Empire at its zenith under Alp Arslan and Malik Shah I, governed administratively by vizier Nizam al-Mulk.",
+    explanatoryNote: "Later Seljuk realm during the partition into eastern (Khorasan under Sultan Sanjar) and western (Hamadan/Jibal) sultanates preceding the Khwarazmian conquest.",
     reviewStatus: "published",
   },
   {
@@ -729,6 +875,38 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     reviewStatus: "published",
   },
   {
+    id: "ter_zengid_aleppo_mosul_1127_1174",
+    polityId: "pol_zengid",
+    regionName: "Zengid Atabegate (Aleppo, Mosul & Al-Jazira)",
+    validFromYear: 1127,
+    validToYear: 1174,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [36.20, 36.20], // Antioch march
+          [37.16, 36.20], // Aleppo (capital of Nur al-Din)
+          [38.00, 36.90], // Aintab / Edessa march
+          [38.75, 37.15], // Urfa (captured by Zengi in 1144)
+          [40.00, 37.00], // Upper Khabur basin
+          [42.00, 37.20], // Nisibis (Nusaybin)
+          [43.13, 36.34], // Mosul on the Tigris (Zengid foundation seat)
+          [43.50, 35.80], // Erbil frontier
+          [42.50, 34.50], // Sinjar & middle Euphrates
+          [40.50, 35.00], // Deir ez-Zor
+          [38.50, 34.80], // Palmyra march
+          [36.80, 34.73], // Homs
+          [36.71, 35.13], // Hama (Zengid citadel)
+          [36.20, 36.20], // Closing to Antioch march
+        ],
+      ],
+    },
+    explanatoryNote: "The unified Syrian-Mesopotamian realm of Imad al-Din Zengi and Nur al-Din spanning Aleppo, Mosul, Edessa, Hama, and Homs, spearheading resistance against the Crusader states.",
+    reviewStatus: "published",
+  },
+  {
     id: "ter_mamluk_sultanate_1250_1517",
     polityId: "pol_mamluk",
     regionName: "Egypt, Bilad al-Sham & Holy Sanctuaries",
@@ -757,6 +935,66 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       ],
     },
     explanatoryNote: "Imperial Sultanate of Cairo governing the Nile Valley, Syria, and the Hijaz, defenders of Sunnism against the Ilkhanate and Crusaders.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ilkhanate_realm_1258_1335",
+    polityId: "pol_mongol",
+    regionName: "Ilkhanate of Greater Iran & Mesopotamia",
+    validFromYear: 1258,
+    validToYear: 1335,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [38.00, 38.00], // Eastern Anatolia / Erzurum border
+          [43.00, 39.50], // Kars & Caucasus march
+          [48.00, 41.50], // Derbent / Caspian Gate
+          [50.00, 40.50], // Baku & Shirvan
+          [53.00, 37.50], // Asterabad / Caspian southern shore
+          [60.00, 37.50], // Khorasan / Nishapur & Tus
+          [62.50, 34.50], // Herat border
+          [61.00, 31.00], // Sistan
+          [56.50, 27.50], // Persian Gulf / Hormuz
+          [50.00, 29.50], // Fars / Shiraz
+          [48.00, 31.00], // Khuzestan
+          [44.50, 32.50], // Lower Iraq & Kufa
+          [43.50, 34.50], // Tikrit / Mosul
+          [40.50, 36.50], // Jazira / Diyarbakir
+          [38.00, 38.00], // Closing to Erzurum
+        ],
+      ],
+    },
+    explanatoryNote: "Southwestern sector of the Mongol Empire governed by the Ilkhans from Tabriz and Soltaniyeh, stretching from the Amu Darya to the borders of Mamluk Syria.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ilkhanate_anatolia_vassal_1260_1335",
+    polityId: "pol_mongol",
+    regionName: "Sultanate of Rum (Ilkhanate Vassal Protectorate)",
+    validFromYear: 1260,
+    validToYear: 1335,
+    controlType: "vassal_state",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [30.50, 40.00], // Bithynia margin
+          [32.85, 39.93], // Ankara
+          [35.00, 41.00], // Pontic interior
+          [37.00, 39.75], // Sivas
+          [38.00, 38.00], // Eastern plateau march
+          [35.50, 38.70], // Kayseri
+          [32.50, 37.87], // Konya (Seljuk capital under Mongol suzerainty)
+          [31.00, 38.00], // Lakes region
+          [30.50, 40.00], // Closing to Bithynia
+        ],
+      ],
+    },
+    explanatoryNote: "The Seljuk Sultanate of Rum reduced to tributary vassalage under the Ilkhanate following the Battle of Köse Dağ (1243 CE).",
     reviewStatus: "published",
   },
   {
@@ -819,10 +1057,73 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     reviewStatus: "published",
   },
   {
-    id: "ter_ottoman_empire_1299_1922",
+    id: "ter_ottoman_early_1299_1453",
     polityId: "pol_ottoman",
-    regionName: "Anatolia, Southeastern Europe & Metropolitan Near East",
+    regionName: "Early Ottoman Beylik & Rumelia (Bithynia & Balkans)",
     validFromYear: 1299,
+    validToYear: 1453,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [20.50, 42.50], // Kosovo & Skopje
+          [24.70, 42.15], // Philippopolis (Plovdiv)
+          [26.55, 41.67], // Edirne (Adrianople - Ottoman European capital)
+          [28.00, 41.20], // Eastern Thrace (surrounding Constantinople)
+          [29.00, 40.20], // Bursa (first Ottoman imperial capital 1326)
+          [29.70, 40.40], // Nicaea (Iznik)
+          [30.00, 40.00], // Söğüt & Bilecik (dynastic cradle)
+          [29.00, 39.50], // Phrygia march
+          [26.50, 39.50], // Dardanelles / Gallipoli (first European crossing 1354)
+          [23.00, 40.50], // Salonica marches
+          [21.00, 40.00], // Thessaly
+          [20.50, 42.50], // Closing to Kosovo
+        ],
+      ],
+    },
+    explanatoryNote: "The emerging Ottoman state during the fourteenth and early fifteenth centuries, expanding from the Bithynian frontier at Söğüt and Bursa across Thrace and the Balkans to Edirne.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ottoman_zenith_1453_1683",
+    polityId: "pol_ottoman",
+    regionName: "Ottoman Empire (Classical Imperial Zenith)",
+    validFromYear: 1453,
+    validToYear: 1683,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [16.50, 46.50], // Buda & Hungarian plains frontier
+          [21.00, 48.00], // Upper Hungary / Carpathia
+          [28.50, 45.50], // Moldavia / Black Sea Dobruja
+          [35.00, 42.00], // Sinop & Pontic coast
+          [42.00, 41.50], // Trabzon & Batumi
+          [45.00, 38.00], // Lake Van & Chaldiran frontier
+          [48.00, 31.00], // Basra & Shatt al-Arab
+          [44.00, 32.00], // Baghdad vilayet
+          [37.00, 34.00], // Syrian desert & Damascus
+          [35.00, 31.50], // Jerusalem mutasarrifate
+          [31.00, 30.00], // Cairo & Nile Valley
+          [29.00, 31.50], // Alexandria & Libyan border
+          [23.00, 38.00], // Morea / Peloponnese
+          [18.00, 42.50], // Dubrovnik / Bosnia march
+          [16.50, 46.50], // Closing to Hungary
+        ],
+      ],
+    },
+    explanatoryNote: "The classical zenith of the Ottoman Empire under Mehmed II, Selim I, and Suleiman the Magnificent, holding Constantinople, Cairo, Damascus, Baghdad, and the Balkans up to the gates of Vienna.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_ottoman_late_1684_1922",
+    polityId: "pol_ottoman",
+    regionName: "Late Ottoman Empire (Anatolia, Levant & Western Arabia)",
+    validFromYear: 1684,
     validToYear: 1922,
     controlType: "direct",
     confidence: "well-attested",
@@ -830,25 +1131,25 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
       type: "Polygon",
       coordinates: [
         [
-          [18.00, 42.50], // Dubrovnik / Bosnia march
-          [24.00, 45.00], // Wallachia / Danubian border
-          [28.50, 45.00], // Black Sea Dobruja coast
-          [35.00, 42.00], // Sinop & Pontic coast
-          [42.00, 41.50], // Trabzon & Batumi
-          [45.00, 38.00], // Van & Chaldiran frontier with Safavids
-          [48.00, 31.00], // Basra & Shatt al-Arab
-          [44.00, 32.00], // Baghdad vilayet
-          [37.00, 34.00], // Syrian desert & Damascus
-          [35.00, 31.50], // Jerusalem mutasarrifate
-          [31.00, 30.00], // Cairo & Nile Valley
-          [29.00, 31.50], // Alexandria
-          [23.00, 38.00], // Morea / Greece
-          [20.50, 40.00], // Epirus / Albania
-          [18.00, 42.50], // Closing to Bosnia
+          [26.00, 41.50], // Edirne & Eastern Thrace
+          [28.97, 41.00], // Konstantiniyye (Istanbul)
+          [35.00, 42.00], // Black Sea Anatolian littoral
+          [42.00, 41.50], // Trabzon & Eastern Black Sea
+          [44.00, 38.00], // Lake Van eastern border
+          [44.00, 33.30], // Baghdad vilayet
+          [36.50, 33.50], // Damascus vilayet
+          [35.20, 31.78], // Jerusalem mutasarrifate
+          [39.60, 24.50], // Medina (Hijaz province)
+          [39.82, 21.42], // Mecca sanctuary
+          [35.00, 28.00], // Gulf of Aqaba
+          [32.00, 31.00], // Suez canal frontier
+          [27.00, 37.00], // Aegean Anatolian coast (Izmir)
+          [26.00, 40.00], // Dardanelles
+          [26.00, 41.50], // Closing to Thrace
         ],
       ],
     },
-    explanatoryNote: "Universal Ottoman Caliphate under the House of Osman, ruling across three continents from the imperial capital of Konstantiniyye (Istanbul).",
+    explanatoryNote: "The reformed Tanzimat and constitutional-era Ottoman state following European border retrenchments, retaining Anatolia, Eastern Thrace, Syria, Palestine, and the Hijaz until World War I.",
     reviewStatus: "published",
   },
   {
@@ -882,11 +1183,11 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
     reviewStatus: "published",
   },
   {
-    id: "ter_mughal_empire_1526_1857",
+    id: "ter_mughal_zenith_1526_1707",
     polityId: "pol_mughal",
-    regionName: "Indian Subcontinent & Kabul Corridors",
+    regionName: "Mughal Empire (Imperial Subcontinent Zenith)",
     validFromYear: 1526,
-    validToYear: 1857,
+    validToYear: 1707,
     controlType: "direct",
     confidence: "well-attested",
     geometryGeojson: {
@@ -908,7 +1209,33 @@ export const initialTerritoryPeriods: TerritoryPeriodRecord[] = [
         ],
       ],
     },
-    explanatoryNote: "The Mughal Empire during the reigns of Akbar, Jahangir, Shah Jahan, and Aurangzeb, governing one of the wealthiest early modern world empires.",
+    explanatoryNote: "The Mughal Empire during the reigns of Akbar, Jahangir, Shah Jahan, and Aurangzeb, governing one of the wealthiest early modern world empires spanning from Kabul to the Deccan.",
+    reviewStatus: "published",
+  },
+  {
+    id: "ter_mughal_late_1708_1857",
+    polityId: "pol_mughal",
+    regionName: "Later Mughal Domain (Delhi Crown Enclave & Doab)",
+    validFromYear: 1708,
+    validToYear: 1857,
+    controlType: "direct",
+    confidence: "well-attested",
+    geometryGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [75.50, 29.50], // Haryana northern march
+          [77.20, 28.60], // Shahjahanabad / Red Fort (Delhi)
+          [78.00, 27.20], // Agra / Doab
+          [79.50, 26.50], // Cawnpore borderland
+          [78.50, 25.50], // Gwalior approach
+          [76.50, 26.50], // Rajputana march
+          [75.50, 28.00], // Shekhawati
+          [75.50, 29.50], // Closing to Haryana
+        ],
+      ],
+    },
+    explanatoryNote: "The later Mughal imperial territory contracted to Delhi (Shahjahanabad) and the surrounding Yamuna-Ganges Doab prior to the 1857 uprising and British direct annexation.",
     reviewStatus: "published",
   },
 ];

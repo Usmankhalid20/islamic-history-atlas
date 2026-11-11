@@ -8,11 +8,12 @@ import {
   filterActiveTerritories,
   formatTerritoriesToGeoJson,
   isTerritoryActiveInYear,
+  validateGeoJsonGeometry,
 } from "@/lib/geo/territoryUtils";
 
-describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
+describe("Phase 2 & 4: Empire Territories & Dynastic Boundaries Architecture", () => {
   it("defines comprehensive historical polities with valid metadata and capitals", () => {
-    expect(initialPolities.length).toBeGreaterThanOrEqual(18);
+    expect(initialPolities.length).toBeGreaterThanOrEqual(20);
 
     const requiredDynasties = [
       "pol_rashidun",
@@ -27,8 +28,10 @@ describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
       "pol_seljuk",
       "pol_almoravid",
       "pol_almohad",
+      "pol_zengid",
       "pol_ayyubid",
       "pol_mamluk",
+      "pol_mongol",
       "pol_delhi_sultanate",
       "pol_timurid",
       "pol_ottoman",
@@ -75,8 +78,8 @@ describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
     expect(POLITY_COLORS["pol_safavid"].fill).toBe("#4338CA"); // Indigo
   });
 
-  it("ensures every territory has valid closed GeoJSON polygons and attested boundaries", () => {
-    expect(initialTerritoryPeriods.length).toBeGreaterThanOrEqual(18);
+  it("ensures every territory has valid closed GeoJSON polygons/multipolygons and RFC 7946 compliance", () => {
+    expect(initialTerritoryPeriods.length).toBeGreaterThanOrEqual(25);
 
     const polityIds = new Set(initialPolities.map((p) => p.id));
 
@@ -85,71 +88,133 @@ describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
       expect(ter.validFromYear).toBeLessThanOrEqual(ter.validToYear);
       expect(ter.regionName.length).toBeGreaterThan(0);
 
+      const validation = validateGeoJsonGeometry(ter.geometryGeojson);
+      expect(validation.isValid, `Invalid geometry in territory ${ter.id}: ${validation.error}`).toBe(true);
+
       const geo = ter.geometryGeojson as {
         type: string;
-        coordinates: [number, number][][];
+        coordinates: unknown[];
       };
-      expect(geo.type).toBe("Polygon");
-      expect(geo.coordinates.length).toBeGreaterThanOrEqual(1);
-
-      const ring = geo.coordinates[0];
-      expect(ring.length).toBeGreaterThanOrEqual(4); // Minimum valid polygon (triangle + close)
-
-      // Ring must be closed
-      const firstCoord = ring[0];
-      const lastCoord = ring[ring.length - 1];
-      expect(firstCoord[0]).toBeCloseTo(lastCoord[0], 4);
-      expect(firstCoord[1]).toBeCloseTo(lastCoord[1], 4);
-
-      // Coordinates within standard world geographic bounds [lng, lat]
-      ring.forEach(([lng, lat]) => {
-        expect(lng).toBeGreaterThanOrEqual(-180);
-        expect(lng).toBeLessThanOrEqual(180);
-        expect(lat).toBeGreaterThanOrEqual(-90);
-        expect(lat).toBeLessThanOrEqual(90);
-      });
+      expect(["Polygon", "MultiPolygon"]).toContain(geo.type);
     });
   });
 
-  it("supports multi-polity co-existence across historical benchmark eras", () => {
+  it("supports multi-polity co-existence and changing boundaries across all historical testing milestones", () => {
     // 1. Year 756 CE: Early Abbasids and Emirate of Córdoba
     const active756 = filterActiveTerritories(initialTerritoryPeriods, 756);
     const pols756 = new Set(active756.map((t) => t.polityId));
     expect(pols756.has("pol_abbasid_early")).toBe(true);
     expect(pols756.has("pol_cordoba_emirate")).toBe(true);
 
-    // 2. Year 985 CE: 5 contemporaneous empires (Fatimid, Buyid, Ghaznavid, Samanid, Córdoba Caliphate)
-    const active985 = filterActiveTerritories(initialTerritoryPeriods, 985);
-    const pols985 = new Set(active985.map((t) => t.polityId));
-    expect(pols985.has("pol_fatimid")).toBe(true);
-    expect(pols985.has("pol_buyid")).toBe(true);
-    expect(pols985.has("pol_ghaznavid")).toBe(true);
-    expect(pols985.has("pol_samanid")).toBe(true);
-    expect(pols985.has("pol_cordoba_caliphate")).toBe(true);
+    // 2. Year 900 CE: Abbasid Caliphate, Emirate of Córdoba, Samanid Dynasty
+    const active900 = filterActiveTerritories(initialTerritoryPeriods, 900);
+    const pols900 = new Set(active900.map((t) => t.polityId));
+    expect(pols900.has("pol_abbasid_early")).toBe(true);
+    expect(pols900.has("pol_cordoba_emirate")).toBe(true);
+    expect(pols900.has("pol_samanid")).toBe(true);
 
-    // 3. Year 1187 CE: Ayyubids (Saladin), Seljuks, and Almohads
+    // 3. Year 977 CE: Fatimid, Buyid, Samanid, Córdoba Caliphate, Ghaznavid emergence
+    const active977 = filterActiveTerritories(initialTerritoryPeriods, 977);
+    const pols977 = new Set(active977.map((t) => t.polityId));
+    expect(pols977.has("pol_fatimid")).toBe(true);
+    expect(pols977.has("pol_buyid")).toBe(true);
+    expect(pols977.has("pol_samanid")).toBe(true);
+    expect(pols977.has("pol_cordoba_caliphate")).toBe(true);
+    expect(pols977.has("pol_ghaznavid")).toBe(true);
+
+    // 4. Year 1030 CE: Ghaznavid imperial zenith (Mahmud of Ghazna), Fatimids, Buyids, Córdoba
+    const active1030 = filterActiveTerritories(initialTerritoryPeriods, 1030);
+    const pols1030 = new Set(active1030.map((t) => t.polityId));
+    expect(pols1030.has("pol_ghaznavid")).toBe(true);
+    expect(pols1030.has("pol_fatimid")).toBe(true);
+    expect(pols1030.has("pol_buyid")).toBe(true);
+    expect(pols1030.has("pol_cordoba_caliphate")).toBe(true);
+
+    // 5. Year 1071 CE: Early Great Seljuks (Manzikert), Fatimids, Almoravids, Ghaznavids (Lahore)
+    const active1071 = filterActiveTerritories(initialTerritoryPeriods, 1071);
+    const pols1071 = new Set(active1071.map((t) => t.polityId));
+    expect(pols1071.has("pol_seljuk")).toBe(true);
+    expect(pols1071.has("pol_fatimid")).toBe(true);
+    expect(pols1071.has("pol_almoravid")).toBe(true);
+
+    // 6. Year 1092 CE: Great Seljuk Empire zenith under Malik Shah I
+    const active1092 = filterActiveTerritories(initialTerritoryPeriods, 1092);
+    const pols1092 = new Set(active1092.map((t) => t.polityId));
+    expect(pols1092.has("pol_seljuk")).toBe(true);
+    const seljuk1092 = active1092.find((t) => t.id === "ter_seljuk_zenith_1072_1092");
+    expect(seljuk1092).toBeDefined();
+
+    // 7. Year 1187 CE: Ayyubids (Saladin), Seljuks, and Almohads
     const active1187 = filterActiveTerritories(initialTerritoryPeriods, 1187);
     const pols1187 = new Set(active1187.map((t) => t.polityId));
     expect(pols1187.has("pol_ayyubid")).toBe(true);
     expect(pols1187.has("pol_seljuk")).toBe(true);
     expect(pols1187.has("pol_almohad")).toBe(true);
 
-    // 4. Year 1300 CE: Mamluk Sultanate, Delhi Sultanate, Ottoman Empire
-    const active1300 = filterActiveTerritories(initialTerritoryPeriods, 1300);
-    const pols1300 = new Set(active1300.map((t) => t.polityId));
-    expect(pols1300.has("pol_mamluk")).toBe(true);
-    expect(pols1300.has("pol_delhi_sultanate")).toBe(true);
-    expect(pols1300.has("pol_ottoman")).toBe(true);
+    // 8. Year 1200 CE: Ayyubids, Almohads, Ghurid / Delhi Sultanate transition
+    const active1200 = filterActiveTerritories(initialTerritoryPeriods, 1200);
+    const pols1200 = new Set(active1200.map((t) => t.polityId));
+    expect(pols1200.has("pol_ayyubid")).toBe(true);
+    expect(pols1200.has("pol_almohad")).toBe(true);
 
-    // 5. Year 1550 CE: The Three Gunpowder Empires (Ottoman, Safavid, Mughal)
+    // 9. Year 1258 CE: Mongol sack of Baghdad & Ilkhanate foundation
+    const active1258 = filterActiveTerritories(initialTerritoryPeriods, 1258);
+    const pols1258 = new Set(active1258.map((t) => t.polityId));
+    expect(pols1258.has("pol_mongol")).toBe(true);
+    expect(pols1258.has("pol_mamluk")).toBe(true);
+    expect(pols1258.has("pol_delhi_sultanate")).toBe(true);
+
+    // 10. Year 1260 CE: Battle of Ain Jalut (Mamluk Sultanate vs Ilkhanate)
+    const active1260 = filterActiveTerritories(initialTerritoryPeriods, 1260);
+    const pols1260 = new Set(active1260.map((t) => t.polityId));
+    expect(pols1260.has("pol_mamluk")).toBe(true);
+    expect(pols1260.has("pol_mongol")).toBe(true);
+    const ilkhanateVassal = active1260.find((t) => t.id === "ter_ilkhanate_anatolia_vassal_1260_1335");
+    expect(ilkhanateVassal).toBeDefined();
+    expect(ilkhanateVassal?.controlType).toBe("vassal_state");
+
+    // 11. Year 1453 CE: Fall of Constantinople & Early Ottoman / Timurid co-existence
+    const active1453 = filterActiveTerritories(initialTerritoryPeriods, 1453);
+    const pols1453 = new Set(active1453.map((t) => t.polityId));
+    expect(pols1453.has("pol_ottoman")).toBe(true);
+    expect(pols1453.has("pol_mamluk")).toBe(true);
+    expect(pols1453.has("pol_timurid")).toBe(true);
+    expect(pols1453.has("pol_delhi_sultanate")).toBe(true);
+
+    // 12. Year 1550 CE: The Three Gunpowder Empires (Ottoman, Safavid, Mughal)
     const active1550 = filterActiveTerritories(initialTerritoryPeriods, 1550);
     const pols1550 = new Set(active1550.map((t) => t.polityId));
     expect(pols1550.has("pol_ottoman")).toBe(true);
     expect(pols1550.has("pol_safavid")).toBe(true);
     expect(pols1550.has("pol_mughal")).toBe(true);
+
+    // 13. Year 1683 CE: Second Siege of Vienna & Mughal Zenith
+    const active1683 = filterActiveTerritories(initialTerritoryPeriods, 1683);
+    const pols1683 = new Set(active1683.map((t) => t.polityId));
+    expect(pols1683.has("pol_ottoman")).toBe(true);
+    expect(pols1683.has("pol_safavid")).toBe(true);
+    expect(pols1683.has("pol_mughal")).toBe(true);
+
+    // 14. Year 1850 CE: Late Ottoman Empire & Later Mughal Realm
+    const active1850 = filterActiveTerritories(initialTerritoryPeriods, 1850);
+    const pols1850 = new Set(active1850.map((t) => t.polityId));
+    expect(pols1850.has("pol_ottoman")).toBe(true);
+    expect(pols1850.has("pol_mughal")).toBe(true);
+    const lateOttoman = active1850.find((t) => t.id === "ter_ottoman_late_1684_1922");
+    expect(lateOttoman).toBeDefined();
+    const lateMughal = active1850.find((t) => t.id === "ter_mughal_late_1708_1857");
+    expect(lateMughal).toBeDefined();
   });
 
-  it("converts territories to valid GeoJSON FeatureCollection with properties", () => {
+  it("converts territories to valid GeoJSON FeatureCollection with properties and preserves MultiPolygon geometries", () => {
+    // Check MultiPolygon support in year 980 (Caliphate of Córdoba)
+    const active980 = filterActiveTerritories(initialTerritoryPeriods, 980);
+    const fc980 = formatTerritoriesToGeoJson(active980);
+    const cordobaFeature = fc980.features.find((f) => f.properties.polityId === "pol_cordoba_caliphate");
+    expect(cordobaFeature).toBeDefined();
+    expect(cordobaFeature?.geometry.type).toBe("MultiPolygon");
+
+    // Check year 1550
     const active1550 = filterActiveTerritories(initialTerritoryPeriods, 1550);
     const featureCollection = formatTerritoriesToGeoJson(active1550);
 
@@ -161,7 +226,7 @@ describe("Phase 2: Empire Territories & Dynastic Boundaries", () => {
       expect(feat.id).toBeDefined();
       expect(feat.properties.polityId).toBeDefined();
       expect(feat.properties.regionName).toBeDefined();
-      expect(feat.geometry.type).toBe("Polygon");
+      expect(["Polygon", "MultiPolygon"]).toContain(feat.geometry.type);
     });
   });
 });

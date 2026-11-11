@@ -1,4 +1,5 @@
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
+export * from "./validateGeometry";
 
 /**
  * Pure predicate function checking if a territory period was active in a given year.

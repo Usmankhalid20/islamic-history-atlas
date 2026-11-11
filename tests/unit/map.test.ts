@@ -20,31 +20,36 @@ describe("Historical Map Cartographic Integrity & Coordinate Verification", () =
       expect(t.regionName).toBeDefined();
       expect(t.validFromYear).toBeLessThanOrEqual(t.validToYear);
 
-      const geo = t.geometryGeojson as GeoJSON.Polygon;
+      const geo = t.geometryGeojson as GeoJSON.Polygon | GeoJSON.MultiPolygon;
       expect(geo).toBeDefined();
-      expect(geo.type).toBe("Polygon");
+      expect(["Polygon", "MultiPolygon"]).toContain(geo.type);
       expect(Array.isArray(geo.coordinates)).toBe(true);
       expect(geo.coordinates.length).toBeGreaterThanOrEqual(1);
 
-      const exteriorRing = geo.coordinates[0];
-      expect(exteriorRing.length).toBeGreaterThanOrEqual(4); // GeoJSON polygon ring minimum 4 points
+      const ringsToCheck = geo.type === "Polygon"
+        ? [geo.coordinates[0]]
+        : geo.coordinates.map((poly) => poly[0]);
 
-      // First and last coordinate must be identical (closed ring)
-      const first = exteriorRing[0];
-      const last = exteriorRing[exteriorRing.length - 1];
-      expect(first[0]).toBe(last[0]);
-      expect(first[1]).toBe(last[1]);
+      ringsToCheck.forEach((ring) => {
+        expect(ring.length).toBeGreaterThanOrEqual(4); // GeoJSON polygon ring minimum 4 points
 
-      // Coordinates order verification: [longitude, latitude]
-      exteriorRing.forEach(([lng, lat]) => {
-        expect(typeof lng).toBe("number");
-        expect(typeof lat).toBe("number");
-        // Latitude valid range (-90 to 90), Islamic world: 10°N to 55°N
-        expect(lat).toBeGreaterThanOrEqual(10);
-        expect(lat).toBeLessThanOrEqual(55);
-        // Longitude valid range (-180 to 180), Islamic world: -15°W (Al-Andalus/Morocco) to 95°E (Bengal/Mughal/Delhi)
-        expect(lng).toBeGreaterThanOrEqual(-15);
-        expect(lng).toBeLessThanOrEqual(95);
+        // First and last coordinate must be identical (closed ring)
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        expect(first[0]).toBeCloseTo(last[0], 4);
+        expect(first[1]).toBeCloseTo(last[1], 4);
+
+        // Coordinates order verification: [longitude, latitude]
+        ring.forEach(([lng, lat]) => {
+          expect(typeof lng).toBe("number");
+          expect(typeof lat).toBe("number");
+          // Latitude valid range (-90 to 90), Islamic world: 10°N to 55°N
+          expect(lat).toBeGreaterThanOrEqual(10);
+          expect(lat).toBeLessThanOrEqual(55);
+          // Longitude valid range (-180 to 180), Islamic world: -15°W (Al-Andalus/Morocco) to 95°E (Bengal/Mughal/Delhi)
+          expect(lng).toBeGreaterThanOrEqual(-15);
+          expect(lng).toBeLessThanOrEqual(95);
+        });
       });
     });
   });
