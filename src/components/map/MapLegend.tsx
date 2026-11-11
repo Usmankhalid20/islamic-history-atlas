@@ -246,6 +246,31 @@ export function MapLegend({
               )}
             </div>
           </div>
+
+          {/* Administrative Sovereignty & Boundary Types Guide */}
+          <div className="pt-2 border-t border-archival-border/60 space-y-1.5">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-archival-muted font-semibold">
+              Administrative Sovereignty &amp; Frontiers
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 text-[10px] text-archival-muted">
+              <div className="flex items-center gap-1.5 bg-archival-bg/50 px-2 py-1 rounded border border-archival-border/40">
+                <span className="inline-block w-4 border-t-2 border-stone-800 shrink-0" />
+                <span className="truncate" title="Direct imperial governance with caliphal governors & direct taxation">Direct Imperial Rule</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-archival-bg/50 px-2 py-1 rounded border border-archival-border/40">
+                <span className="inline-block w-4 border-t-2 border-dotted border-stone-700 shrink-0" />
+                <span className="truncate" title="Autonomous vassal or tributary state paying tribute and military alliance">Vassal / Tributary</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-archival-bg/50 px-2 py-1 rounded border border-archival-border/40">
+                <span className="inline-block w-4 border-t-2 border-dashed border-rose-600 shrink-0" />
+                <span className="truncate" title="Contested frontier marches (al-Thughur) with active borderland friction">Contested Frontier</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-archival-bg/50 px-2 py-1 rounded border border-archival-border/40">
+                <span className="inline-block w-4 border-t-2 border-dashed border-purple-600 shrink-0" style={{ borderStyle: "dashed" }} />
+                <span className="truncate" title="Temporary military staging theater during ongoing campaigns">Temp. Occupation</span>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <button

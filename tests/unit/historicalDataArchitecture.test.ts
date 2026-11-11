@@ -207,6 +207,7 @@ describe("Phase 4: Historical Data Architecture & Geometry Validation", () => {
         "vassal_state",
         "claimed",
         "contested",
+        "disputed",
         "temporary_occupation",
       ]);
 

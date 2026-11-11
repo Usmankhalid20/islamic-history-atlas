@@ -6,10 +6,12 @@ import {
   initialCampaigns,
 } from "@/lib/data/historicalSeed";
 import { filterActiveTerritories } from "@/lib/geo/territoryUtils";
+import { computeTerritoryShift, type TerritoryShiftSummary } from "@/lib/geo/territoryDynamics";
 import type { PolityRecord, NewPolityRecord } from "@/lib/db/schema/polities";
 import type { NewMonumentRecord } from "@/lib/db/schema/monuments";
 import type { TradeRouteRecord } from "@/lib/db/schema/tradeRoutes";
 import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
+import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
 
 export type AnyPolity = PolityRecord | NewPolityRecord;
 
@@ -40,6 +42,10 @@ export interface EraComparisonDelta {
   campaignsActiveB: (Omit<NewCampaignRecord, "createdAt"> & { createdAt?: Date })[];
   territoriesCountA: number;
   territoriesCountB: number;
+  territoryShift: TerritoryShiftSummary;
+  territoriesGained: TerritoryPeriodRecord[];
+  territoriesLost: TerritoryPeriodRecord[];
+  netTerritoryDelta: number;
 }
 
 export const COMPARISON_PRESETS: ComparisonPreset[] = [
@@ -103,6 +109,66 @@ export const COMPARISON_PRESETS: ComparisonPreset[] = [
       "Kennedy (2004), ch. 6",
     ],
   },
+  {
+    id: "preset_seljuk_expansion",
+    title: "The Great Seljuk Surge into Anatolia",
+    shortName: "1040 vs. 1071 CE",
+    yearA: 1040,
+    yearB: 1071,
+    description:
+      "From the victory at Dandanaqan over the Ghaznavids to Sultan Alp Arslan's triumph over Emperor Romanos IV at Manzikert, follow the Seljuk unification of Iran, Iraq, and Anatolia.",
+    keyHistoricalTakeaway:
+      "The Seljuk Turks reunified the eastern Islamic heartlands under Sunni caliphal legitimacy and opened the Anatolian plateau to Turkish settlement and the Sultanate of Rum.",
+    primarySources: [
+      "Carole Hillenbrand, Turkish Myth and Muslim Symbol: The Battle of Manzikert (2007)",
+      "C.E. Bosworth, The Ghaznavids (1963)",
+    ],
+  },
+  {
+    id: "preset_crusades_to_mongols",
+    title: "From Hattin to Ain Jalut: Crusades & Mongols",
+    shortName: "1187 vs. 1260 CE",
+    yearA: 1187,
+    yearB: 1260,
+    description:
+      "Contrast Saladin's recovery of Jerusalem at the Battle of Hattin with the catastrophic sack of Baghdad (1258) and Sultan Qutuz and Baybars' fateful defense of Islam at Ain Jalut.",
+    keyHistoricalTakeaway:
+      "While the Ayyubids dismantled the Crusader kingdoms, the Mongol Ilkhanate erased the 500-year-old Abbasid Caliphate in Baghdad before being permanently halted by the Mamluks in Palestine.",
+    primarySources: [
+      "Reuven Amitai-Preiss, Mongols and Mamluks (Cambridge 1995)",
+      "Malcolm Lyons & D.E.P. Jackson, Saladin: The Politics of the Holy War (1982)",
+    ],
+  },
+  {
+    id: "preset_constantinople_to_panipat",
+    title: "Dawn of the Gunpowder Dynasties",
+    shortName: "1453 vs. 1526 CE",
+    yearA: 1453,
+    yearB: 1526,
+    description:
+      "Observe the transformation from Mehmed II's conquest of Constantinople to Babur's victory at Panipat, marking the rise of the Ottoman, Safavid, and Mughal Gunpowder Empires.",
+    keyHistoricalTakeaway:
+      "Firearm technology, chained artillery carts, and centralized fiscal-military institutions allowed Islamic empires to control territory from the gates of Vienna to the Bay of Bengal.",
+    primarySources: [
+      "Halil Inalcik, The Ottoman Empire: The Classical Age 1300–1600 (1973)",
+      "Zahir al-Din Babur, Baburnama",
+    ],
+  },
+  {
+    id: "preset_gunpowder_zenith_to_modern",
+    title: "Gunpowder Zenith to Imperial Contraction",
+    shortName: "1550 vs. 1857 CE",
+    yearA: 1550,
+    yearB: 1857,
+    description:
+      "Compare the sixteenth-century apex of Suleiman the Magnificent, Shah Tahmasp, and Akbar with the nineteenth-century colonial fragmentation and the fall of the Mughal throne in Delhi.",
+    keyHistoricalTakeaway:
+      "From universal transcontinental dominance in the 16th century to defensive modernization, regional autonomy movements, and European colonial expansion by 1857.",
+    primarySources: [
+      "Suraiya Faroqhi, The Ottoman Empire and the World Around It (2004)",
+      "Jadunath Sarkar, Fall of the Mughal Empire (1932)",
+    ],
+  },
 ];
 
 /**
@@ -151,6 +217,9 @@ export function computeEraDelta(yearA: number, yearB: number): EraComparisonDelt
     (c) => c.startYear <= yearB && c.endYear >= yearB
   );
 
+  // Compute analytical territorial shift
+  const territoryShift = computeTerritoryShift(yearA, yearB);
+
   return {
     yearA,
     yearB,
@@ -167,5 +236,9 @@ export function computeEraDelta(yearA: number, yearB: number): EraComparisonDelt
     campaignsActiveB,
     territoriesCountA: territoriesA.length,
     territoriesCountB: territoriesB.length,
+    territoryShift,
+    territoriesGained: territoryShift.gainedTerritories,
+    territoriesLost: territoryShift.lostTerritories,
+    netTerritoryDelta: territoryShift.netProvinceDelta,
   };
 }

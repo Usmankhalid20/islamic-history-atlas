@@ -12,10 +12,10 @@ describe("Historiographical Timeline Comparison Mode", () => {
       expect(preset.id).toBeDefined();
       expect(preset.title.length).toBeGreaterThan(10);
       expect(preset.shortName).toContain("vs.");
-      expect(preset.yearA).toBeGreaterThanOrEqual(632);
-      expect(preset.yearA).toBeLessThanOrEqual(1000);
-      expect(preset.yearB).toBeGreaterThanOrEqual(632);
-      expect(preset.yearB).toBeLessThanOrEqual(1000);
+      expect(preset.yearA).toBeGreaterThanOrEqual(500);
+      expect(preset.yearA).toBeLessThanOrEqual(1980);
+      expect(preset.yearB).toBeGreaterThanOrEqual(500);
+      expect(preset.yearB).toBeLessThanOrEqual(1980);
       expect(preset.description.length).toBeGreaterThan(20);
       expect(preset.keyHistoricalTakeaway.length).toBeGreaterThan(20);
       expect(preset.primarySources.length).toBeGreaterThanOrEqual(1);
@@ -94,5 +94,15 @@ describe("Historiographical Timeline Comparison Mode", () => {
       expect(m.foundingYear).toBeGreaterThan(750);
       expect(m.foundingYear).toBeLessThanOrEqual(900);
     });
+  });
+
+  it("calculates territorial shifts, gained territories, and lost territories in era comparisons", () => {
+    // 632 (Medinan Core) vs 661 (Umayyad caliphate expansion)
+    const delta = computeEraDelta(632, 661);
+    expect(delta.territoryShift).toBeDefined();
+    expect(delta.territoriesGained.length).toBeGreaterThan(0);
+    expect(delta.territoriesLost.length).toBeGreaterThanOrEqual(0);
+    expect(typeof delta.netTerritoryDelta).toBe("number");
+    expect(delta.territoryShift.polityDeltas.length).toBeGreaterThan(0);
   });
 });

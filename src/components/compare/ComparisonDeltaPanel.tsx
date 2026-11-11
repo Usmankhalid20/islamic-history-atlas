@@ -11,6 +11,9 @@ import {
   ShieldAlert,
   Sparkles,
   Info,
+  MapPin,
+  PlusCircle,
+  MinusCircle,
 } from "lucide-react";
 
 interface ComparisonDeltaPanelProps {
@@ -133,6 +136,101 @@ export function ComparisonDeltaPanel({ delta, activePreset }: ComparisonDeltaPan
             </div>
           )}
         </div>
+      </div>
+
+      {/* Territorial Gains, Losses & Boundary Shifts Breakdown */}
+      <div className="p-4 rounded-xl border border-archival-border bg-archival-bg/60 space-y-3 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-archival-border/60 pb-2">
+          <span className="font-serif font-bold text-archival-ink flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
+            <span>Territorial Shifts & Boundary Evolution</span>
+          </span>
+          <span
+            className={`font-mono text-xs font-bold px-2 py-0.5 rounded border ${
+              delta.netTerritoryDelta >= 0
+                ? "bg-emerald-100 text-emerald-950 border-emerald-300"
+                : "bg-red-100 text-red-950 border-red-300"
+            }`}
+          >
+            Net Delta: {delta.netTerritoryDelta >= 0 ? `+${delta.netTerritoryDelta}` : delta.netTerritoryDelta} Provinces
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Gained Provinces */}
+          <div className="p-3 rounded-lg border border-emerald-200/80 bg-emerald-50/60 space-y-1.5">
+            <span className="font-serif font-semibold text-emerald-950 flex items-center gap-1.5 text-xs">
+              <PlusCircle className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
+              <span>Newly Annexed / Expanded Territories ({delta.territoriesGained.length})</span>
+            </span>
+            {delta.territoriesGained.length === 0 ? (
+              <p className="text-[11px] text-emerald-800/70 italic">
+                No new territorial annexations detected by {formattedB}.
+              </p>
+            ) : (
+              <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                {delta.territoriesGained.map((t) => (
+                  <div
+                    key={t.id}
+                    className="p-1.5 rounded bg-white/90 border border-emerald-200 text-emerald-950 text-[11px] flex items-center justify-between"
+                  >
+                    <span className="font-medium truncate mr-1">{t.regionName}</span>
+                    <span className="text-[10px] font-mono capitalize px-1 py-0.2 rounded bg-emerald-100 text-emerald-800 shrink-0">
+                      {t.controlType.replace("_", " ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Lost Provinces */}
+          <div className="p-3 rounded-lg border border-red-200/80 bg-red-50/60 space-y-1.5">
+            <span className="font-serif font-semibold text-red-950 flex items-center gap-1.5 text-xs">
+              <MinusCircle className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
+              <span>Ceded / Collapsed Territories ({delta.territoriesLost.length})</span>
+            </span>
+            {delta.territoriesLost.length === 0 ? (
+              <p className="text-[11px] text-red-800/70 italic">
+                No territorial losses detected between {formattedA} and {formattedB}.
+              </p>
+            ) : (
+              <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                {delta.territoriesLost.map((t) => (
+                  <div
+                    key={t.id}
+                    className="p-1.5 rounded bg-white/90 border border-red-200 text-red-950 text-[11px] flex items-center justify-between"
+                  >
+                    <span className="font-medium truncate mr-1 line-through text-red-800">
+                      {t.regionName}
+                    </span>
+                    <span className="text-[10px] font-mono capitalize px-1 py-0.2 rounded bg-red-100 text-red-800 shrink-0">
+                      lost
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Dynasty expansion ranking */}
+        {delta.territoryShift.polityDeltas.length > 0 && (
+          <div className="pt-2 border-t border-archival-border/40 text-[11px] flex flex-wrap items-center gap-2">
+            <span className="font-serif font-semibold text-archival-ink">Territorial Balance by Dynasty:</span>
+            {delta.territoryShift.polityDeltas.map((pd) => (
+              <span
+                key={pd.polityId}
+                className="px-2 py-0.5 rounded border bg-archival-surface border-archival-border text-archival-ink font-mono text-[10px] flex items-center gap-1"
+              >
+                <span>{pd.canonicalName}:</span>
+                <span className={pd.netDelta >= 0 ? "text-emerald-700 font-bold" : "text-red-700 font-bold"}>
+                  {pd.netDelta >= 0 ? `+${pd.netDelta}` : pd.netDelta}
+                </span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Monuments & Intellectual Foundations in between */}

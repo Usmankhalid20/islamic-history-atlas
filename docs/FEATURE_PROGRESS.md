@@ -15,7 +15,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | **COMPLETE** | 181/181 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 5** | **Empire Information Panel** | `feature/empire-information` | **COMPLETE** | 185/185 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | **COMPLETE** | 193/193 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
-| **Phase 7** | **Historical Territory Changes** | `feature/territorial-changes` | *Planned* | - |
+| **Phase 7** | **Historical Territory Changes** | `feature/territorial-changes` | **COMPLETE** | 206/206 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 8** | **Search and Filters** | `feature/map-filters` | *Planned* | - |
 | **Phase 9** | **Final UI/UX & Performance** | `feature/ui-performance` | *Planned* | - |
 
@@ -244,6 +244,39 @@ This document tracks the incremental, branch-based implementation of the **Islam
 - **Verification Results**:
   - `npm run type-check`: 0 errors.
   - `npm test`: 30 test suites, 193 tests passed.
+  - `npm run lint`: 0 warnings, 0 errors.
+  - `npm run build`: 53/53 static pages compiled successfully.
+
+---
+
+### Phase 7: Historical Territory Changes & Sovereignty Evolution
+- **Branch**: `feature/territorial-changes`
+- **Goal**: Model territorial expansion and decline across time (500 AD – 1980 AD), implement visual hierarchy for administrative sovereignty and boundary classifications (direct rule, vassal protectorate, tributary realm, contested frontier, temporary occupation), enable smooth animated transitions during boundary changes, and calculate province-level gains (+) and losses (-) between eras and epochs.
+- **Implemented Features**:
+  1. `src/lib/geo/territoryDynamics.ts`:
+     - `ADMINISTRATIVE_TYPES`: Scholarly administrative registry defining the 5 historical sovereignty classifications with metadata, descriptions, and cartographic styles (`strokeDash`, `weightMultiplier`, `opacityMultiplier`, badge colors).
+     - `computeTerritoryShift(fromYear, toYear)`: Analytical engine calculating gained provinces, lost provinces, persistent territories, net province delta, and polity expansion balance rankings.
+     - `getEmpireTerritorialEpochs(polityId)`: Chronological epoch classifier labeling provincial transitions into expansion, zenith, contraction, and successor phases.
+  2. `src/lib/geo/comparisonUtils.ts`:
+     - Expanded `COMPARISON_PRESETS` from 4 to 8 landmark historical benchmarks (632 vs 661, 749 vs 756, 750 vs 969, 786 vs 900, 1040 vs 1071, 1187 vs 1260, 1453 vs 1526, 1526 vs 1857 CE).
+     - Wired `computeTerritoryShift` directly into `computeEraDelta`, supplying `territoryShift`, `territoriesGained`, `territoriesLost`, and `netTerritoryDelta`.
+  3. `src/components/compare/ComparisonDeltaPanel.tsx`:
+     - Added dedicated "Territorial Shifts & Boundary Evolution" section displaying newly annexed provinces (+), ceded/collapsed provinces (-), net province delta badge, and dynasty balance ranking.
+  4. `src/app/globals.css`:
+     - Added smooth SVG transition styling for Leaflet polygon interactive paths (`transition: fill-opacity 0.35s ease, stroke-width 0.25s ease, stroke 0.25s ease`), preventing visual snapping or jarring redraws during scrubbing or timeline playback.
+  5. `src/components/atlas/TerritoryDetailPanel.tsx`:
+     - Enriched province detail panel with administrative sovereignty badge and historical definition from `ADMINISTRATIVE_TYPES`.
+     - Added epoch duration interval (`validToYear - validFromYear`).
+  6. `src/components/map/MapLegend.tsx`:
+     - Added dedicated "Administrative Sovereignty & Frontiers" guide displaying line and stroke treatments for Direct Imperial Rule (solid), Vassal/Tributary (dotted), Contested Frontier (dashed), and Temporary Occupation (dash-dotted).
+  7. `src/components/atlas/AtlasExplorer.tsx`:
+     - Added dynamic 25-Year Boundary Shift Evolution Bar (`+{recentShift.gainedTerritories.length} annexed`, `-{recentShift.lostTerritories.length} ceded`).
+     - Added interactive "Inspect provincial changes" toggle revealing exact annexed and ceded provinces with one-click territory inspection.
+  8. `tests/unit/territoryChanges.test.ts`:
+     - 12 unit tests verifying administrative classifications, stroke dash styles, analytical territory shift calculations across historical benchmarks (632 vs 661, 749 vs 756, 1040 vs 1075, 1258 vs 1260 CE), zero-delta symmetry, reverse chronological ordering, and dynastic epoch resolution.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 31 test suites, 206 tests passed.
   - `npm run lint`: 0 warnings, 0 errors.
   - `npm run build`: 53/53 static pages compiled successfully.
 

@@ -37,6 +37,11 @@ textarea:focus-visible {
   image-rendering: crisp-edges;
 }
 
+/* Smooth Cartographic Boundary Transitions */
+.leaflet-interactive {
+  transition: fill-opacity 0.35s ease, stroke-width 0.25s ease, stroke 0.25s ease;
+}
+
 .leaflet-container {
   background-color: #FAF8F5 !important;
 }

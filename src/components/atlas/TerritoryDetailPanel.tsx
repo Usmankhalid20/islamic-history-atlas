@@ -5,6 +5,7 @@ import type { NewPolityRecord } from "@/lib/db/schema/polities";
 import { initialPolities, initialSources } from "@/lib/data/historicalSeed";
 import { POLITY_COLORS } from "@/components/map/HistoricalMap";
 import { formatHistoricalYear } from "@/lib/utils";
+import { ADMINISTRATIVE_TYPES, type AdministrativeControlType } from "@/lib/geo/territoryDynamics";
 
 interface TerritoryDetailPanelProps {
   territory: TerritoryPeriodRecord;
@@ -20,6 +21,10 @@ export function TerritoryDetailPanel({
   const polity = initialPolities.find((p) => p.id === territory.polityId);
   const relevantSources = initialSources; // In MVP seed, all claims cite our baseline peer-reviewed works
   const polityColor = POLITY_COLORS[territory.polityId] || { fill: "#64748B", stroke: "#475569" };
+  const adminMeta =
+    ADMINISTRATIVE_TYPES[territory.controlType as AdministrativeControlType] ||
+    ADMINISTRATIVE_TYPES.direct;
+  const epochDuration = territory.validToYear - territory.validFromYear;
 
   return (
     <div
@@ -70,26 +75,44 @@ export function TerritoryDetailPanel({
 
       {/* Dates and Control Details */}
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="bg-archival-bg p-2.5 rounded border border-archival-border/60">
+        <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60">
           <span className="text-archival-muted block mb-0.5">Control Period</span>
           <span className="font-mono font-semibold text-archival-ink">
             {formatHistoricalYear(territory.validFromYear)} – {formatHistoricalYear(territory.validToYear)}
           </span>
-        </div>
-        <div className="bg-archival-bg p-2.5 rounded border border-archival-border/60">
-          <span className="text-archival-muted block mb-0.5">Control Type</span>
-          <span className="font-semibold capitalize text-archival-ink">
-            {territory.controlType} control
+          <span className="text-[10px] text-archival-muted font-mono block mt-0.5">
+            {epochDuration} years duration
           </span>
         </div>
+        <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col justify-between">
+          <div>
+            <span className="text-archival-muted block mb-0.5">Administrative Status</span>
+            <span
+              className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold border ${adminMeta.cartographicStyle.badgeBg} ${adminMeta.cartographicStyle.badgeText} ${adminMeta.cartographicStyle.badgeBorder}`}
+            >
+              {adminMeta.label}
+            </span>
+          </div>
+        </div>
         {polity?.capitalCity && (
-          <div className="col-span-2 bg-archival-bg p-2.5 rounded border border-archival-border/60">
+          <div className="col-span-2 bg-archival-bg p-2.5 rounded-lg border border-archival-border/60">
             <span className="text-archival-muted block mb-0.5">Imperial Capital</span>
             <span className="font-serif font-semibold text-archival-ink">
               📍 {polity.capitalCity}
             </span>
           </div>
         )}
+      </div>
+
+      {/* Administrative Status Historiographical Context */}
+      <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 text-xs space-y-1">
+        <span className="text-[11px] font-serif font-semibold text-archival-ink flex items-center gap-1.5">
+          <Globe className="w-3.5 h-3.5 text-archival-gold" />
+          <span>Governance Mode:</span>
+        </span>
+        <p className="text-[11px] text-archival-muted leading-relaxed font-sans">
+          {adminMeta.description}
+        </p>
       </div>
 
       {/* Evidence & Confidence Badge (FR-08) */}
