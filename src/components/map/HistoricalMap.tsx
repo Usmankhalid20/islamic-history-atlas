@@ -10,6 +10,7 @@ import type { NewCampaignRecord } from "@/lib/db/schema/campaigns";
 import type { HistoricalDiscrepancy } from "@/lib/data/discrepanciesSeed";
 import type { HistoricalCity } from "@/lib/data/historicalCitiesSeed";
 import { HISTORICAL_CITIES } from "@/lib/data/historicalCitiesSeed";
+import { getBattleById } from "@/lib/data/historicalBattlesSeed";
 import { MapControls, HISTORICAL_REGIONS, HistoricalRegion, BasemapStyle } from "./MapControls";
 import { MapLegend } from "./MapLegend";
 import { MapLayerControl } from "./MapLayerControl";
@@ -110,12 +111,12 @@ const BASEMAP_CONFIGS: Record<
 /**
  * Creates custom SVG icon HTML for historical battle markers
  */
-function createBattleIconSvg(isSelected: boolean): string {
-  const size = isSelected ? 30 : 24;
+function createBattleIconSvg(isSelected: boolean, isExactYear = false): string {
+  const size = isSelected ? 32 : isExactYear ? 28 : 24;
   return `
     <div style="width: ${size}px; height: ${size}px; position: relative; display: flex; align-items: center; justify-content: center;">
-      ${isSelected ? `<div style="position: absolute; inset: -4px; border-radius: 9999px; border: 2px solid #DC2626; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.75;"></div>` : ""}
-      <div style="width: 100%; height: 100%; border-radius: 9999px; background: #DC2626; border: 2px solid ${isSelected ? "#000000" : "#991B1B"}; box-shadow: 0 2px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center;">
+      ${isSelected ? `<div style="position: absolute; inset: -5px; border-radius: 9999px; border: 2.5px solid #DC2626; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.85;"></div>` : isExactYear ? `<div style="position: absolute; inset: -4px; border-radius: 9999px; border: 2px solid #F59E0B; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; opacity: 0.8;"></div>` : ""}
+      <div style="width: 100%; height: 100%; border-radius: 9999px; background: ${isExactYear ? "#991B1B" : "#DC2626"}; border: 2px solid ${isSelected ? "#000000" : isExactYear ? "#F59E0B" : "#7F1D1D"}; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
         <svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.58}" height="${size * 0.58}" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
           <line x1="13" y1="19" x2="19" y2="13" />
@@ -585,14 +586,17 @@ export function HistoricalMap({
           const lat = geojson.coordinates[1];
           const lng = geojson.coordinates[0];
           const isSelected = event.id === selectedEventId;
+          const isExactYear = selectedYear !== undefined && event.eventYear === selectedYear;
+          const battle = getBattleById(event.id) || getBattleById(event.title);
 
-          // Render high-precision SVG icon
-          const iconHtml = createBattleIconSvg(isSelected);
+          // Render high-precision SVG icon with exact-year aura
+          const iconHtml = createBattleIconSvg(isSelected, isExactYear);
+          const iconSize = isSelected ? 32 : isExactYear ? 28 : 24;
           const customIcon = L.divIcon({
             html: iconHtml,
             className: "historical-map-battle-icon",
-            iconSize: [isSelected ? 30 : 24, isSelected ? 30 : 24],
-            iconAnchor: [isSelected ? 15 : 12, isSelected ? 15 : 12],
+            iconSize: [iconSize, iconSize],
+            iconAnchor: [iconSize / 2, iconSize / 2],
           });
 
           const marker = L.marker([lat, lng], {
@@ -600,20 +604,39 @@ export function HistoricalMap({
             pane: "eventsPane",
           });
 
-          marker.bindTooltip(
-            `<strong>${event.title} (${event.eventYear} CE)</strong><br/><span class="capitalize text-gray-500">${event.eventType}</span> • ${event.locationName || ""}`,
-            { direction: "top", offset: [0, -12], className: "font-sans text-xs" }
-          );
+          if (battle) {
+            marker.bindTooltip(
+              `<strong>${battle.name} (${battle.year} CE)</strong><br/><span class="text-red-700 font-semibold">${battle.belligerentA.name} vs ${battle.belligerentB.name}</span><br/><span class="text-emerald-700 font-medium text-[11px]">${battle.outcome}</span>`,
+              { direction: "top", offset: [0, -14], className: "font-sans text-xs" }
+            );
 
-          marker.bindPopup(
-            `<div class="p-1 font-sans">
-              <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${event.title}</div>
-              <div class="text-[11px] text-red-700 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${event.eventType} • ${event.eventYear} CE</div>
-              <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${event.summary}</p>
-              ${event.locationName ? `<div class="text-[11px] text-stone-500 italic border-t border-stone-200 pt-1">📍 ${event.locationName}</div>` : ""}
-            </div>`,
-            { maxWidth: 280 }
-          );
+            marker.bindPopup(
+              `<div class="p-1 font-sans">
+                <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${battle.name}</div>
+                <div class="text-[11px] text-red-700 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">Major Battle • ${battle.year} CE</div>
+                <div class="text-xs font-semibold text-stone-800 mb-1">⚔️ ${battle.belligerentA.name} vs ${battle.belligerentB.name}</div>
+                <div class="text-[11px] text-emerald-800 font-medium bg-emerald-50 p-1.5 rounded border border-emerald-200 mb-1.5"><strong>Outcome:</strong> ${battle.outcome}</div>
+                <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${event.summary}</p>
+                ${event.locationName ? `<div class="text-[11px] text-stone-500 italic border-t border-stone-200 pt-1">📍 ${event.locationName}</div>` : ""}
+              </div>`,
+              { maxWidth: 290 }
+            );
+          } else {
+            marker.bindTooltip(
+              `<strong>${event.title} (${event.eventYear} CE)</strong><br/><span class="capitalize text-gray-500">${event.eventType}</span> • ${event.locationName || ""}`,
+              { direction: "top", offset: [0, -12], className: "font-sans text-xs" }
+            );
+
+            marker.bindPopup(
+              `<div class="p-1 font-sans">
+                <div class="font-serif font-bold text-sm text-stone-900 leading-tight">${event.title}</div>
+                <div class="text-[11px] text-red-700 font-semibold tracking-wide uppercase mt-0.5 mb-1.5">${event.eventType} • ${event.eventYear} CE</div>
+                <p class="text-xs text-stone-700 leading-relaxed font-sans mb-1">${event.summary}</p>
+                ${event.locationName ? `<div class="text-[11px] text-stone-500 italic border-t border-stone-200 pt-1">📍 ${event.locationName}</div>` : ""}
+              </div>`,
+              { maxWidth: 280 }
+            );
+          }
 
           marker.on("click", () => {
             if (onSelectEvent) {
@@ -631,7 +654,7 @@ export function HistoricalMap({
     }
 
     updateEventMarkers();
-  }, [mapInstance, events, selectedEventId, onSelectEvent, showEvents]);
+  }, [mapInstance, events, selectedEventId, onSelectEvent, showEvents, selectedYear]);
 
   // Update Trade & Pilgrimage Routes Layer
   useEffect(() => {

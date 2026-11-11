@@ -2179,6 +2179,142 @@ export const initialCampaigns: (Omit<NewCampaignRecord, "createdAt"> & { created
     description: "Governor-General of al-Andalus Abd al-Rahman al-Ghafiqi led a massive cavalry offensive across the Pyrenees into Frankish Gaul, routing Duke Odo at Bordeaux. Marching north along the Roman road towards the rich abbey of St. Martin at Tours, his army collided with the disciplined Frankish forces of Charles Martel between Poitiers and Tours (Ma'rakat Balat al-Shuhada).",
     reviewStatus: "published",
   },
+  {
+    id: "camp_alp_arslan_1070_1071",
+    name: "Sultan Alp Arslan's Armenian & Manzikert Campaign",
+    startYear: 1070,
+    endYear: 1071,
+    polityId: "pol_seljuk",
+    commanderName: "Sultan Alp Arslan & Afshin Bey",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [51.42, 35.6], // Rayy (Seljuk imperial capital)
+        [46.29, 38.08], // Tabriz
+        [43.57, 40.51], // Ani Citadel
+        [42.48, 38.75], // Ahlat (Lake Van base)
+        [42.54, 39.14], // Manzikert (Malazgirt)
+      ],
+    },
+    keyLocations: "Rayy → Tabriz → Ani Citadel → Lake Van (Ahlat) → Manzikert",
+    strategicOutcome: "Decisive Seljuk victory; capture of Byzantine Emperor Romanos IV; permanent collapse of the Byzantine eastern frontier in Anatolia.",
+    description: "Mobilized from the Seljuk administrative heartland in Rayy. After taking the Armenian fortress of Ani, Alp Arslan confronted Romanos IV's grand imperial coalition at Manzikert, executing classic nomadic crescent envelopments that opened Anatolia to Turkish settlement.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_saladin_hattin_1187",
+    name: "Saladin's Syrian Mobilization & Hattin Liberation Campaign",
+    startYear: 1187,
+    endYear: 1187,
+    polityId: "pol_ayyubid",
+    commanderName: "Salah al-Din al-Ayyubi (Saladin)",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [36.3, 33.51], // Damascus
+        [36.48, 32.52], // Bosra
+        [35.8, 32.7], // Yarmouk crossing
+        [35.53, 32.79], // Tiberias
+        [35.45, 32.8], // Horns of Hattin
+        [35.21, 31.77], // Jerusalem (al-Quds)
+      ],
+    },
+    keyLocations: "Damascus → Bosra → Tiberias → Horns of Hattin → Jerusalem (al-Quds)",
+    strategicOutcome: "Total annihilation of the Crusader royal field army at Hattin; recovery of Jerusalem and the coastal strongholds of Palestine.",
+    description: "Saladin assembled the combined armed hosts of Egypt, Damascus, Aleppo, and the Jazira. By besieging Tiberias, he lured King Guy's thirsty armored army onto the arid plateau of Hattin, encircling and defeating them before liberating Jerusalem.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_baybars_levant_1260_1265",
+    name: "Sultan Baybars' Levantine Defense & Counter-Crusade",
+    startYear: 1260,
+    endYear: 1265,
+    polityId: "pol_mamluk",
+    commanderName: "Sultan Rukn al-Din Baybars al-Bunduqdari",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [31.24, 30.04], // Cairo
+        [31.56, 30.42], // Bilbeis
+        [34.46, 31.5], // Gaza
+        [35.37, 32.55], // Ain Jalut
+        [36.3, 33.51], // Damascus
+        [34.89, 32.5], // Caesarea
+      ],
+    },
+    keyLocations: "Cairo → Sinai Passage → Gaza → Ain Jalut → Damascus → Caesarea",
+    strategicOutcome: "Halted the Mongol conquest of the Levant and systematically dismantled Frankish Crusader coastal fortresses.",
+    description: "After victory over Kitbuqa at Ain Jalut in 1260, Baybars consolidated the Mamluk Sultanate, establishing courier posts (barid) and launching seasonal campaigns that recovered Caesarea, Arsuf, and Safed.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_constantinople_1453",
+    name: "Sultan Mehmed II's Thracian March & Siege of Constantinople",
+    startYear: 1452,
+    endYear: 1453,
+    polityId: "pol_ottoman",
+    commanderName: "Sultan Mehmed II (al-Fatih)",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [26.55, 41.67], // Edirne (Ottoman capital)
+        [27.22, 41.73], // Kirkkilise
+        [27.76, 41.57], // Vize
+        [29.05, 41.08], // Rumelihisarı (Bosporus fortress)
+        [28.97, 41.01], // Constantinople
+      ],
+    },
+    keyLocations: "Edirne (Adrianople) → Kirkkilise → Rumeli Fortress → Golden Horn → Constantinople",
+    strategicOutcome: "Conquest of Constantinople; end of the Byzantine Empire; established Istanbul as the eternal Ottoman imperial capital.",
+    description: "Marching from Edirne with 80,000 soldiers and the massive basilisk siege guns of Urban. Mehmed cut the Bosporus with Rumelihisarı, transported galleys overland across Galata into the Golden Horn, and breached the Romanus gate on 29 May 1453.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_babur_panipat_1525_1526",
+    name: "Babur's Transoxiana to Hindustan Conquest & Panipat",
+    startYear: 1525,
+    endYear: 1526,
+    polityId: "pol_mughal",
+    commanderName: "Zahir al-Din Muhammad Babur",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [69.17, 34.53], // Kabul
+        [70.45, 34.43], // Jalalabad
+        [71.52, 34.01], // Peshawar
+        [73.05, 33.6], // Rawalpindi / Potohar
+        [74.35, 31.52], // Lahore
+        [74.8, 30.6], // Sirhind / Punjab staging ground
+      ],
+    },
+    keyLocations: "Kabul → Khyber Pass → Peshawar → Lahore → Sirhind → Panipat",
+    strategicOutcome: "Crushing victory over Sultan Ibrahim Lodi; demise of the Delhi Sultanate; foundation of the Mughal Empire in Hindustan.",
+    description: "Descending from Kabul through the Khyber Pass with 12,000 veteran horsemen. Babur crossed the Indus, captured Lahore, and deployed chained carts (araba) and cannons at Panipat to overwhelm the Delhi elephant army.",
+    reviewStatus: "published",
+  },
+  {
+    id: "camp_suleiman_mohacs_1526",
+    name: "Suleiman the Magnificent's Hungarian & Danube Campaign",
+    startYear: 1526,
+    endYear: 1526,
+    polityId: "pol_ottoman",
+    commanderName: "Sultan Suleiman I Kanuni & Ibrahim Pasha",
+    routeGeojson: {
+      type: "LineString",
+      coordinates: [
+        [28.97, 41.01], // Istanbul
+        [26.55, 41.67], // Edirne
+        [23.32, 42.7], // Sofia
+        [20.46, 44.78], // Belgrade
+        [19.86, 45.25], // Petrovaradin
+        [18.68, 45.99], // Mohács (Danube)
+      ],
+    },
+    keyLocations: "Istanbul → Edirne → Sofia → Belgrade Fortress → Petrovaradin → Mohács",
+    strategicOutcome: "Collapse of the medieval Kingdom of Hungary; expansion of the Ottoman frontier to Buda and the threshold of Central Europe.",
+    description: "Suleiman advanced northwest along the imperial military highway with 60,000 troops and 300 cannons. Crossing the Sava and Drava on pontoons, the Ottoman army routed King Louis II's heavy knights at Mohács in a legendary two-hour engagement.",
+    reviewStatus: "published",
+  },
 ];
 
 

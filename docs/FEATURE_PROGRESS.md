@@ -14,7 +14,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | **COMPLETE** | 163/163 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | **COMPLETE** | 181/181 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 5** | **Empire Information Panel** | `feature/empire-information` | **COMPLETE** | 185/185 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
-| **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | *Planned* | - |
+| **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | **COMPLETE** | 193/193 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 7** | **Historical Territory Changes** | `feature/territorial-changes` | *Planned* | - |
 | **Phase 8** | **Search and Filters** | `feature/map-filters` | *Planned* | - |
 | **Phase 9** | **Final UI/UX & Performance** | `feature/ui-performance` | *Planned* | - |
@@ -199,6 +199,54 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm test`: 29 test suites, 185 tests passed.
   - `npm run lint`: 0 warnings, 0 errors.
   - `npm run build`: 53/53 static pages compiled successfully.
+
+---
+
+### Phase 6: Major Battles and Military Campaigns
+- **Branch**: `feature/historical-battles`
+- **Goal**: Implement high-precision crossed-swords cartographic battle markers, an interactive Battle Detail Panel with opposing belligerents, primary commanders, outcome/winner, and historical significance, directed military campaign paths with directional march arrows, and dynamic temporal year filtering.
+- **Implemented Features**:
+  1. `src/lib/data/historicalBattlesSeed.ts`:
+     - Curated dataset of 33 major historical battles spanning 624 CE to 1739 CE across early Islam, Rashidun, Umayyad, Abbasid, Seljuk, Almoravid, Almohad, Ayyubid, Mamluk, Timurid, Ottoman, and Mughal eras.
+     - Structured `HistoricalBattle` type with `belligerentA`, `belligerentB`, primary field commanders on both sides, outcome, victor resolution, tactical maneuver analysis, and primary source citations.
+     - Helper utilities: `getBattleById`, `convertBattleToEventRecord`, `filterBattlesByYear`, and `getBattlesForCampaign`.
+  2. `src/lib/data/historicalSeed.ts` & Neon Database Synchronization:
+     - Expanded `initialCampaigns` from 7 to 13 strategic military expeditions across later eras:
+       - Sultan Alp Arslan's Armenian & Manzikert Campaign (1070–1071 CE)
+       - Saladin's Syrian Mobilization & Hattin Liberation (1187 CE)
+       - Sultan Baybars' Levantine Defense & Counter-Crusade (1260–1265 CE)
+       - Sultan Mehmed II's Siege of Constantinople (1452–1453 CE)
+       - Babur's Panipat Conquest of Hindustan (1525–1526 CE)
+       - Suleiman the Magnificent's Hungarian & Danube Campaign (1526 CE)
+     - Successfully seeded all 13 campaigns to the live PostgreSQL database (`npm run db:seed`).
+  3. `src/components/atlas/EventDetailPanel.tsx`:
+     - Dedicated, scholarly Battle Briefing layout when inspecting battle events:
+       - Classical native script orthography (Arabic, Persian, Ottoman Turkish).
+       - Side-by-side Combatants Faceoff with dynastic color badges, combat roles (attacker/defender), and primary field commanders.
+       - Prominent `VICTOR` and strategic outcome banners.
+       - Historical Significance card detailing lasting geopolitical and civilizational impacts.
+       - Tactical Analysis card breaking down maneuvers, terrain, and siege engineering.
+       - Direct cross-entity link: "View Campaign" button linking battles to corresponding campaign corridors.
+       - Historiographical source citations (al-Tabari, al-Baladhuri, Baburnama, Ibn al-Athir, etc.).
+  4. `src/components/atlas/CampaignDetailPanel.tsx`:
+     - Added "Pivotal Engagements of this Expedition" section linking campaigns directly to battle briefings with an "Inspect" button.
+     - Linked commanding dynasties with `onSelectPolity` navigation.
+  5. `src/components/map/HistoricalMap.tsx`:
+     - Enhanced `createBattleIconSvg`: added dynamic pulsing gold halo for battles active in the exact `selectedYear` (`isExactYear`) and black accent with ping for selected markers.
+     - Elevated tooltips and popups: display belligerents, commanders, outcomes, and instant battle inspection.
+  6. `src/components/atlas/AtlasExplorer.tsx`:
+     - Unified historical events combining catalogued battles and generic events across the 500–1980 CE timeline.
+     - Added interactive temporal filtering mode pills: `±25y Era`, `Exact Year`, and `All`.
+     - Added live battles breakdown count in the metrics grid.
+     - Wired seamless navigation between battles, campaigns, and polities across all panels.
+  7. `tests/unit/historicalBattles.test.ts`:
+     - 8 unit tests verifying dataset completeness, combatants and commanders structure, geographic coordinate boundaries, `getBattleById` resolution, `convertBattleToEventRecord` RFC 7946 compliance, temporal benchmark filtering (636, 1071, 1187, 1260, 1453, 1526, 1683 CE), campaign linkage, and route geometries.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 30 test suites, 193 tests passed.
+  - `npm run lint`: 0 warnings, 0 errors.
+  - `npm run build`: 53/53 static pages compiled successfully.
+
 
 
 

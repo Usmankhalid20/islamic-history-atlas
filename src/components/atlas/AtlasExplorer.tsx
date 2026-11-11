@@ -25,6 +25,10 @@ import {
 } from "@/lib/data/historicalSeed";
 import { HISTORICAL_CITIES, type HistoricalCity } from "@/lib/data/historicalCitiesSeed";
 import {
+  HISTORICAL_BATTLES,
+  convertBattleToEventRecord,
+} from "@/lib/data/historicalBattlesSeed";
+import {
   initialHistoricalDiscrepancies,
   type HistoricalDiscrepancy,
 } from "@/lib/data/discrepanciesSeed";
@@ -126,6 +130,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
   const [showTerritories, setShowTerritories] = useState<boolean>(true);
   const [showEvents, setShowEvents] = useState<boolean>(true);
   const [showAllEvents, setShowAllEvents] = useState<boolean>(false);
+  const [exactYearEventsOnly, setExactYearEventsOnly] = useState<boolean>(false);
   const [showRoutes, setShowRoutes] = useState<boolean>(true);
   const [showMonuments, setShowMonuments] = useState<boolean>(true);
   const [showCampaigns, setShowCampaigns] = useState<boolean>(true);
@@ -291,15 +296,31 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     return initialPolities.filter((p) => activePolityIds.has(p.id));
   }, [activeTerritories]);
 
-  // Filter events: either all events or events near selected year (within ±25 years)
+  // Unified historical events dataset combining generic events and all catalogued battles
+  const allHistoricalEvents = useMemo(() => {
+    const battleIds = new Set(HISTORICAL_BATTLES.map((b) => b.id));
+    const genericEvents = initialHistoricalEvents.filter(
+      (e) =>
+        !battleIds.has(e.id) &&
+        e.id !== "evt_battle_of_yarmouk_636" &&
+        e.id !== "evt_battle_of_zab_750"
+    );
+    const battleEvents = HISTORICAL_BATTLES.map(convertBattleToEventRecord);
+    return [...battleEvents, ...genericEvents].sort((a, b) => a.eventYear - b.eventYear);
+  }, []);
+
+  // Filter events: either all events, exact year only, or events within ±25 years of selectedYear
   const displayedEvents = useMemo(() => {
     if (showAllEvents) {
-      return initialHistoricalEvents;
+      return allHistoricalEvents;
     }
-    return initialHistoricalEvents.filter(
+    if (exactYearEventsOnly) {
+      return allHistoricalEvents.filter((e) => e.eventYear === selectedYear);
+    }
+    return allHistoricalEvents.filter(
       (e) => Math.abs(e.eventYear - selectedYear) <= 25
     );
-  }, [selectedYear, showAllEvents]);
+  }, [allHistoricalEvents, selectedYear, showAllEvents, exactYearEventsOnly]);
 
   // Filter active trade and pilgrimage routes for selected year
   const activeRoutes = useMemo(() => {
@@ -792,6 +813,14 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             <CampaignDetailPanel
               campaign={selectedCampaign}
               onClose={() => setSelectedCampaign(null)}
+              onSelectEvent={(e) => {
+                setSelectedCampaign(null);
+                setSelectedEvent(e);
+              }}
+              onSelectPolity={(p) => {
+                setSelectedCampaign(null);
+                setSelectedPolity(p);
+              }}
             />
           ) : selectedMonument ? (
             <MonumentDetailPanel
@@ -807,6 +836,14 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             <EventDetailPanel
               event={selectedEvent}
               onClose={() => setSelectedEvent(null)}
+              onSelectCampaign={(c) => {
+                setSelectedEvent(null);
+                setSelectedCampaign(c);
+              }}
+              onSelectPolity={(p) => {
+                setSelectedEvent(null);
+                setSelectedPolity(p);
+              }}
             />
           ) : selectedPolity ? (
             <EmpireDetailPanel
@@ -872,10 +909,13 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                 </div>
                 <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
                   <span className="text-[10px] uppercase font-mono tracking-wider text-archival-muted">
-                    Era Events
+                    Battles & Events
                   </span>
-                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5">
-                    {displayedEvents.length}
+                  <span className="text-lg font-serif font-bold text-archival-ink mt-0.5 flex items-baseline gap-1">
+                    <span>{displayedEvents.length}</span>
+                    <span className="text-[11px] font-sans font-normal text-red-600">
+                      ({displayedEvents.filter((e) => e.eventType === "battle").length} battles)
+                    </span>
                   </span>
                 </div>
                 <div className="bg-archival-bg p-2.5 rounded-lg border border-archival-border/60 flex flex-col">
@@ -901,14 +941,57 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           {/* Quick Era Events List */}
           {displayedEvents.length > 0 && (
             <div className="bg-archival-surface border border-archival-border rounded-xl p-4 space-y-3 shadow-sm">
-              <div className="flex items-center justify-between pb-2 border-b border-archival-border/60 text-xs font-serif font-semibold text-archival-ink">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-archival-border/60 text-xs font-serif font-semibold text-archival-ink">
                 <span className="flex items-center gap-1.5">
-                  <Swords className="w-3.5 h-3.5 text-archival-gold" aria-hidden="true" />
-                  <span>Era Events ({displayedEvents.length})</span>
+                  <Swords className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
+                  <span>Battles & Events ({displayedEvents.length})</span>
                 </span>
-                <span className="text-[10px] text-archival-muted font-sans font-normal">
-                  {showAllEvents ? "All 632–1000 CE" : `±25y of ${formatHistoricalYear(selectedYear)}`}
-                </span>
+                
+                {/* Temporal Filter Steppers / Mode Selectors */}
+                <div className="flex items-center gap-1 text-[10px] font-sans font-medium">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAllEvents(false);
+                      setExactYearEventsOnly(false);
+                    }}
+                    className={`px-2 py-0.5 rounded transition-colors ${
+                      !showAllEvents && !exactYearEventsOnly
+                        ? "bg-archival-gold text-white font-bold"
+                        : "bg-archival-bg text-archival-muted hover:text-archival-ink"
+                    }`}
+                  >
+                    ±25y Era
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAllEvents(false);
+                      setExactYearEventsOnly(true);
+                    }}
+                    className={`px-2 py-0.5 rounded transition-colors ${
+                      exactYearEventsOnly
+                        ? "bg-red-600 text-white font-bold"
+                        : "bg-archival-bg text-archival-muted hover:text-archival-ink"
+                    }`}
+                  >
+                    Exact {formatHistoricalYear(selectedYear)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAllEvents(true);
+                      setExactYearEventsOnly(false);
+                    }}
+                    className={`px-2 py-0.5 rounded transition-colors ${
+                      showAllEvents
+                        ? "bg-archival-gold text-white font-bold"
+                        : "bg-archival-bg text-archival-muted hover:text-archival-ink"
+                    }`}
+                  >
+                    All
+                  </button>
+                </div>
               </div>
               <div className="space-y-2 max-h-60 sm:max-h-72 overflow-y-auto pr-1">
                 {displayedEvents.map((ev) => (
@@ -925,19 +1008,30 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
                     }}
                     className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
                       selectedEvent?.id === ev.id
-                        ? "bg-archival-gold/10 border-archival-gold text-archival-ink shadow-xs"
+                        ? "bg-red-50/80 border-red-500 text-archival-ink shadow-xs ring-1 ring-red-400"
                         : "bg-archival-bg hover:bg-archival-border/30 border-archival-border/50 text-archival-muted"
                     }`}
                   >
                     <div className="flex items-center justify-between font-mono text-[11px]">
-                      <span className="font-semibold text-archival-ink truncate mr-2">{ev.title}</span>
+                      <span className="font-semibold text-archival-ink truncate mr-2 flex items-center gap-1.5">
+                        {ev.eventType === "battle" && (
+                          <Swords className="w-3 h-3 text-red-600 shrink-0" aria-hidden="true" />
+                        )}
+                        <span className="truncate">{ev.title}</span>
+                      </span>
                       <span className="text-archival-gold font-bold shrink-0">{formatHistoricalYear(ev.eventYear)}</span>
                     </div>
                     <div className="text-[10px] text-archival-muted truncate mt-1 capitalize flex items-center gap-1.5">
-                      <span className="inline-block px-1.5 py-0.5 rounded bg-archival-surface border border-archival-border/60 font-sans">
+                      <span
+                        className={`inline-block px-1.5 py-0.5 rounded font-sans font-medium ${
+                          ev.eventType === "battle"
+                            ? "bg-red-100 text-red-900 border border-red-200"
+                            : "bg-archival-surface border border-archival-border/60 text-archival-ink"
+                        }`}
+                      >
                         {ev.eventType}
                       </span>
-                      <span>{ev.locationName || "Recorded site"}</span>
+                      <span className="truncate">{ev.locationName || "Recorded site"}</span>
                     </div>
                   </button>
                 ))}
