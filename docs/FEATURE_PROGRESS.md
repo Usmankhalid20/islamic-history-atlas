@@ -13,7 +13,7 @@ This document tracks the incremental, branch-based implementation of the **Islam
 | **Phase 2** | **Empire Territories & Boundaries** | `feature/empire-territories` | **COMPLETE** | 154/154 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 3** | **Historical Timeline (500–1980 AD)** | `feature/historical-timeline` | **COMPLETE** | 163/163 Tests Passed, Type-Check 0 errors, Build 51/51 pages |
 | **Phase 4** | **Historical Data Architecture** | `feature/historical-data` | **COMPLETE** | 181/181 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
-| **Phase 5** | **Empire Information Panel** | `feature/empire-information` | *Planned* | - |
+| **Phase 5** | **Empire Information Panel** | `feature/empire-information` | **COMPLETE** | 185/185 Tests Passed, Type-Check 0 errors, Build 53/53 pages |
 | **Phase 6** | **Battles & Military Campaigns** | `feature/historical-battles` | *Planned* | - |
 | **Phase 7** | **Historical Territory Changes** | `feature/territorial-changes` | *Planned* | - |
 | **Phase 8** | **Search and Filters** | `feature/map-filters` | *Planned* | - |
@@ -167,6 +167,39 @@ This document tracks the incremental, branch-based implementation of the **Islam
   - `npm test`: 28 test suites, 181 tests passed.
   - `npm run lint`: 0 warnings, 0 errors.
   - `npm run build`: 53/53 static pages compiled successfully.
+
+---
+
+### Phase 5: Empire Information Panel
+- **Branch**: `feature/empire-information`
+- **Goal**: Implement a dedicated, tabbed, interactive Empire Information Panel displaying dynastic overviews, classical native Arabic/Persian titles, capital cities, active reigning monarchs in the selected historical year, architectural monuments, Golden Age polymaths, and mapped territorial epochs.
+- **Implemented Features**:
+  1. `src/components/atlas/EmpireDetailPanel.tsx`:
+     - Classical native script dictionary (`POLITY_NATIVE_TITLES`) providing authentic Arabic/Persian orthography across all 21 polities.
+     - 5 distinct exploratory tabs:
+       - **Overview**: Dynastic timeline, era, government structure, capital cities, and founding narrative.
+       - **Sovereigns & Reigns**: Dynamic temporal detection of active reigning monarch for `selectedYear` with regnal dates and full dynastic sovereign succession chronology.
+       - **Architecture & Polymaths**: Monumental architecture and patronized Islamic Golden Age scholars and scientists.
+       - **Domains**: Territorial epochs, administrative control classifications, and province listings.
+       - **Sources**: Historiographical references, primary sources, and academic citations.
+     - Interactive controls to close, jump to capitals, and inspect related entities.
+  2. `src/components/atlas/AtlasExplorer.tsx`:
+     - Added `selectedPolity` state with deep-link URL synchronization (`entity=polity&id=...`).
+     - Transformed active empire badges in the top toolbar into interactive buttons to launch the Empire Information Panel directly.
+     - Integrated `EmpireDetailPanel` into the side drawer hierarchy with priority and dismissal management.
+     - Passed `selectedPolityId` to `<HistoricalMap />` for dynamic territory highlighting.
+  3. `src/components/map/HistoricalMap.tsx`:
+     - Added `selectedPolityId` prop enabling dynamic cartographic empire highlighting: all provinces of the selected empire receive an accentuated border (`#f59e0b`, weight 3.5, opacity 1) while non-selected territories are subtly dimmed to 0.12 opacity without unmounting layers.
+  4. `src/components/atlas/TerritoryDetailPanel.tsx` & `src/components/atlas/CityDetailPanel.tsx`:
+     - Added `onSelectPolity` callback and "Inspect Empire" action buttons allowing users to pivot seamlessly from inspecting any province or imperial capital to the full dynastic overview.
+  5. `tests/unit/empireInformation.test.ts`:
+     - 4 unit tests verifying native script coverage for all 21 polities, dynamic monarch resolution across 8 benchmark years (640, 710, 800, 950, 1080, 1190, 1550, 1600 CE), capital and territory integrity, and cultural patronage.
+- **Verification Results**:
+  - `npm run type-check`: 0 errors.
+  - `npm test`: 29 test suites, 185 tests passed.
+  - `npm run lint`: 0 warnings, 0 errors.
+  - `npm run build`: 53/53 static pages compiled successfully.
+
 
 
 

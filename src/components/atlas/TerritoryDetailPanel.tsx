@@ -1,6 +1,7 @@
 import React from "react";
-import { X, BookOpen, ShieldAlert, CheckCircle2, Globe } from "lucide-react";
+import { X, BookOpen, ShieldAlert, CheckCircle2, Globe, Crown, ChevronRight } from "lucide-react";
 import type { TerritoryPeriodRecord } from "@/lib/db/schema/territoryPeriods";
+import type { NewPolityRecord } from "@/lib/db/schema/polities";
 import { initialPolities, initialSources } from "@/lib/data/historicalSeed";
 import { POLITY_COLORS } from "@/components/map/HistoricalMap";
 import { formatHistoricalYear } from "@/lib/utils";
@@ -8,11 +9,13 @@ import { formatHistoricalYear } from "@/lib/utils";
 interface TerritoryDetailPanelProps {
   territory: TerritoryPeriodRecord;
   onClose: () => void;
+  onSelectPolity?: (polity: NewPolityRecord) => void;
 }
 
 export function TerritoryDetailPanel({
   territory,
   onClose,
+  onSelectPolity,
 }: TerritoryDetailPanelProps) {
   const polity = initialPolities.find((p) => p.id === territory.polityId);
   const relevantSources = initialSources; // In MVP seed, all claims cite our baseline peer-reviewed works
@@ -36,9 +39,20 @@ export function TerritoryDetailPanel({
               }}
               aria-hidden="true"
             />
-            <span className="text-xs font-mono uppercase tracking-wider text-archival-gold">
-              {polity?.canonicalName || "Polity Record"}
-            </span>
+            {polity && onSelectPolity ? (
+              <button
+                type="button"
+                onClick={() => onSelectPolity(polity)}
+                className="text-xs font-mono uppercase tracking-wider text-archival-gold hover:underline flex items-center gap-1 font-bold"
+              >
+                <span>{polity.canonicalName}</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            ) : (
+              <span className="text-xs font-mono uppercase tracking-wider text-archival-gold">
+                {polity?.canonicalName || "Polity Record"}
+              </span>
+            )}
           </div>
           <h3 id="territory-title" className="text-xl font-serif font-bold text-archival-ink">
             {territory.regionName}
@@ -101,6 +115,21 @@ export function TerritoryDetailPanel({
           <span className="font-serif font-semibold text-archival-ink">Polity Overview:</span>
           <p className="text-archival-muted leading-relaxed">{polity.overview}</p>
         </div>
+      )}
+
+      {/* View Full Empire Profile Button */}
+      {polity && onSelectPolity && (
+        <button
+          type="button"
+          onClick={() => onSelectPolity(polity)}
+          className="w-full flex items-center justify-between p-2.5 rounded-lg bg-archival-bg hover:bg-archival-border/40 border border-archival-border/80 text-xs font-semibold text-archival-ink transition-colors shadow-2xs"
+        >
+          <span className="flex items-center gap-2">
+            <Crown className="w-4 h-4 text-archival-gold" />
+            <span>Inspect Empire: {polity.canonicalName}</span>
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-archival-muted" />
+        </button>
       )}
 
       {/* Cited Sources (FR-09) */}

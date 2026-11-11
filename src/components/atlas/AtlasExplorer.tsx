@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { YearSlider } from "@/components/timeline/YearSlider";
 import { TerritoryDetailPanel } from "@/components/atlas/TerritoryDetailPanel";
+import { EmpireDetailPanel } from "@/components/atlas/EmpireDetailPanel";
 import { EventDetailPanel } from "@/components/atlas/EventDetailPanel";
 import { RouteDetailPanel } from "@/components/atlas/RouteDetailPanel";
 import { MonumentDetailPanel } from "@/components/atlas/MonumentDetailPanel";
@@ -13,6 +14,7 @@ import { CityDetailPanel } from "@/components/atlas/CityDetailPanel";
 import { HistoricalInquiryWidget } from "@/components/atlas/HistoricalInquiryWidget";
 import { ExportModal } from "@/components/atlas/ExportModal";
 import { DiscrepancyInspectorModal } from "@/components/atlas/DiscrepancyInspectorModal";
+import type { NewPolityRecord } from "@/lib/db/schema/polities";
 import {
   initialTerritoryPeriods,
   initialPolities,
@@ -107,6 +109,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
 
   const [selectedYear, setSelectedYear] = useState<number>(defaultYear);
   const [selectedTerritory, setSelectedTerritory] = useState<TerritoryPeriodRecord | null>(null);
+  const [selectedPolity, setSelectedPolity] = useState<NewPolityRecord | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<HistoricalEventRecord | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<
     (Omit<TradeRouteRecord, "createdAt"> & { createdAt?: Date }) | null
@@ -199,6 +202,9 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
       } else if (entityParam === "territory") {
         const found = initialTerritoryPeriods.find((t) => t.id === idParam);
         if (found) setSelectedTerritory(found);
+      } else if (entityParam === "polity") {
+        const found = initialPolities.find((p) => p.id === idParam);
+        if (found) setSelectedPolity(found);
       }
     }
   }, [searchParams]);
@@ -236,6 +242,9 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     } else if (selectedTerritory) {
       params.set("entity", "territory");
       params.set("id", selectedTerritory.id);
+    } else if (selectedPolity) {
+      params.set("entity", "polity");
+      params.set("id", selectedPolity.id);
     }
 
     const newUrl = `${window.location.pathname}?${params.toString()}`;
@@ -256,6 +265,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
     selectedRoute,
     selectedEvent,
     selectedTerritory,
+    selectedPolity,
   ]);
 
   // Copy shareable view URL to clipboard
@@ -338,6 +348,12 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
           ) {
             setSelectedTerritory(null);
           }
+          if (
+            selectedPolity &&
+            (selectedPolity.startYear > year || (selectedPolity.endYear && selectedPolity.endYear < year))
+          ) {
+            setSelectedPolity(null);
+          }
         }}
       />
 
@@ -360,15 +376,36 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               </span>
             ) : (
               activePolities.map((polity) => (
-                <span
+                <button
                   key={polity.id}
-                  className={`px-2.5 py-0.5 rounded-full border text-[11px] font-medium font-sans ${
+                  type="button"
+                  onClick={() => {
+                    if (selectedPolity?.id === polity.id) {
+                      setSelectedPolity(null);
+                    } else {
+                      setSelectedPolity(polity);
+                      setSelectedTerritory(null);
+                      setSelectedEvent(null);
+                      setSelectedRoute(null);
+                      setSelectedMonument(null);
+                      setSelectedCampaign(null);
+                      setSelectedDiscrepancy(null);
+                      setSelectedCity(null);
+                    }
+                  }}
+                  className={`px-2.5 py-0.5 rounded-full border text-[11px] font-medium font-sans cursor-pointer transition-all hover:scale-105 active:scale-95 ${
                     POLITY_BADGE_COLORS[polity.id] || "bg-gray-100 text-gray-800 border-gray-300"
+                  } ${
+                    selectedPolity?.id === polity.id
+                      ? "ring-2 ring-archival-gold font-bold shadow-xs scale-105"
+                      : "opacity-90 hover:opacity-100"
                   }`}
+                  title={`Inspect empire profile: ${polity.canonicalName}`}
                 >
+                  <span className="mr-1">👑</span>
                   {polity.canonicalName} ({formatHistoricalYear(polity.startYear)}–
                   {polity.endYear ? formatHistoricalYear(polity.endYear) : "present"})
-                </span>
+                </button>
               ))
             )}
           </div>
@@ -615,6 +652,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             campaigns={activeCampaigns}
             discrepancies={activeDiscrepancies}
             selectedTerritoryId={selectedTerritory?.id}
+            selectedPolityId={selectedPolity?.id}
             selectedEventId={selectedEvent?.id}
             selectedRouteId={selectedRoute?.id}
             selectedMonumentId={selectedMonument?.id}
@@ -624,6 +662,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             selectedYear={selectedYear}
             onSelectTerritory={(t) => {
               setSelectedTerritory(t);
+              setSelectedPolity(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
@@ -633,6 +672,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             onSelectEvent={(e) => {
               setSelectedEvent(e);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedRoute(null);
               setSelectedMonument(null);
@@ -642,6 +682,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             onSelectRoute={(r) => {
               setSelectedRoute(r);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedMonument(null);
@@ -651,6 +692,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             onSelectMonument={(m) => {
               setSelectedMonument(m);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
@@ -660,6 +702,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             onSelectCampaign={(c) => {
               setSelectedCampaign(c);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
@@ -670,6 +713,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             onSelectDiscrepancy={(d) => {
               setSelectedDiscrepancy(d);
               setIsDiscrepancyModalOpen(true);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
@@ -679,6 +723,7 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
             }}
             onSelectCity={(city) => {
               setSelectedCity(city);
+              setSelectedPolity(null);
               setSelectedTerritory(null);
               setSelectedEvent(null);
               setSelectedRoute(null);
@@ -763,16 +808,37 @@ function AtlasExplorerContent({ initialYear }: AtlasExplorerProps) {
               event={selectedEvent}
               onClose={() => setSelectedEvent(null)}
             />
+          ) : selectedPolity ? (
+            <EmpireDetailPanel
+              polity={selectedPolity}
+              selectedYear={selectedYear}
+              onClose={() => setSelectedPolity(null)}
+              onSelectTerritory={(t) => {
+                setSelectedTerritory(t);
+                setSelectedPolity(null);
+              }}
+            />
           ) : selectedCity ? (
             <CityDetailPanel
               city={selectedCity}
               selectedYear={selectedYear}
               onClose={() => setSelectedCity(null)}
+              onSelectPolity={(polityId) => {
+                const found = initialPolities.find((p) => p.id === polityId);
+                if (found) {
+                  setSelectedCity(null);
+                  setSelectedPolity(found);
+                }
+              }}
             />
           ) : selectedTerritory ? (
             <TerritoryDetailPanel
               territory={selectedTerritory}
               onClose={() => setSelectedTerritory(null)}
+              onSelectPolity={(polity) => {
+                setSelectedTerritory(null);
+                setSelectedPolity(polity);
+              }}
             />
           ) : (
             <div className="bg-archival-surface border border-archival-border rounded-xl p-5 space-y-4 shadow-sm">

@@ -31,6 +31,7 @@ export interface HistoricalMapProps {
   onSelectDiscrepancy?: (discrepancy: HistoricalDiscrepancy) => void;
   onSelectCity?: (city: HistoricalCity) => void;
   selectedTerritoryId?: string | null;
+  selectedPolityId?: string | null;
   selectedEventId?: string | null;
   selectedRouteId?: string | null;
   selectedMonumentId?: string | null;
@@ -216,6 +217,7 @@ export function HistoricalMap({
   onSelectDiscrepancy,
   onSelectCity,
   selectedTerritoryId,
+  selectedPolityId,
   selectedEventId,
   selectedRouteId,
   selectedMonumentId,
@@ -460,8 +462,8 @@ export function HistoricalMap({
         style: (feature) => {
           const t = feature?.properties as TerritoryPeriodRecord;
           const colors = POLITY_COLORS[t.polityId] || DEFAULT_STYLE;
-          const isSelected = t.id === selectedTerritoryId;
-          const hasSelection = Boolean(selectedTerritoryId);
+          const isSelected = t.id === selectedTerritoryId || (Boolean(selectedPolityId) && t.polityId === selectedPolityId);
+          const hasSelection = Boolean(selectedTerritoryId || selectedPolityId);
 
           // Dim unselected territories when an empire/territory is actively selected
           const effectiveBaseOpacity = hasSelection
@@ -557,7 +559,7 @@ export function HistoricalMap({
     }
 
     updateLayers();
-  }, [mapInstance, territories, selectedTerritoryId, onSelectTerritory, showTerritories, territoryOpacity]);
+  }, [mapInstance, territories, selectedTerritoryId, selectedPolityId, onSelectTerritory, showTerritories, territoryOpacity]);
 
   // Update Event markers layer
   useEffect(() => {

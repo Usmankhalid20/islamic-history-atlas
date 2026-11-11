@@ -8,9 +8,10 @@ interface CityDetailPanelProps {
   city: HistoricalCity;
   selectedYear: number;
   onClose: () => void;
+  onSelectPolity?: (polityId: string) => void;
 }
 
-export function CityDetailPanel({ city, selectedYear, onClose }: CityDetailPanelProps) {
+export function CityDetailPanel({ city, selectedYear, onClose, onSelectPolity }: CityDetailPanelProps) {
   // Check if the city was an imperial capital in the selected year
   const currentCapitalEra = city.capitalEras.find(
     (era) => selectedYear >= era.fromYear && selectedYear <= era.toYear
@@ -112,9 +113,20 @@ export function CityDetailPanel({ city, selectedYear, onClose }: CityDetailPanel
         </div>
         <div className="bg-archival-bg/70 p-2 rounded-lg border border-archival-border/60">
           <span className="text-archival-muted block font-mono text-[10px]">RULING POWER ({selectedYear} CE)</span>
-          <span className="font-medium text-archival-ink capitalize">
-            {currentRulingPower ? currentRulingPower.polityId.replace("pol_", "").replace("_", " ") : "Autonomous / Regional"}
-          </span>
+          {currentRulingPower && onSelectPolity ? (
+            <button
+              type="button"
+              onClick={() => onSelectPolity(currentRulingPower.polityId)}
+              className="font-medium text-archival-gold hover:underline capitalize text-left flex items-center gap-1"
+            >
+              <span>{currentRulingPower.polityId.replace("pol_", "").replace("_", " ")}</span>
+              <span className="text-[10px]">↗</span>
+            </button>
+          ) : (
+            <span className="font-medium text-archival-ink capitalize">
+              {currentRulingPower ? currentRulingPower.polityId.replace("pol_", "").replace("_", " ") : "Autonomous / Regional"}
+            </span>
+          )}
         </div>
       </div>
 
